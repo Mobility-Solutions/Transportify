@@ -1,7 +1,7 @@
 import 'PuntoTransportify.dart';
 import 'Usuario.dart';
 
-class Viaje {
+class Paquete {
   double largo, ancho, alto;
   double peso;
   bool fragil;
@@ -10,7 +10,7 @@ class Viaje {
   Usuario remitente;
   double precio;
 
-  Viaje(
+  Paquete(
       {this.alto,
       this.ancho,
       this.largo,
