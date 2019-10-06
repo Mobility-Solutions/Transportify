@@ -38,6 +38,13 @@
             {
               "client_id": "841442889795-dvp0mc56sdaledq6pvl11a3b46r6e87c.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "841442889795-461c4hu0bb2q1b2jeeb63bk26uk3n13r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.mobilitysolutions.transportify"
+              }
             }
           ]
         }
