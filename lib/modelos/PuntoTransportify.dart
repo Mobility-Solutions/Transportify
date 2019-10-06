@@ -1,11 +1,20 @@
-import 'package:transportify/modelos/PuntoGeografico.dart';
 
-class Viaje{
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class PuntoTransportify {
   String nombre;
   String direccion;
-  PuntoGeografico localizacion;
+  double latitud, longitud;
 
-  Viaje(this.nombre, this.direccion, this.localizacion);
+  PuntoTransportify({this.nombre, this.direccion, this.latitud, this.longitud});
 
+  PuntoTransportify.fromSnapshot(DocumentSnapshot snapshot) {
+    this.nombre = snapshot['nombre'];
+    this.direccion = snapshot['direccion'];
 
+    GeoPoint localizacion = snapshot['localizacion'];
+    this.latitud = localizacion?.latitude;
+    this.longitud = localizacion?.longitude;
+  }
+  
 }
