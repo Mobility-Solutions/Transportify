@@ -1,20 +1,23 @@
+import 'PuntoTransportify.dart';
+import 'Usuario.dart';
 
-
-import 'package:transportify/modelos/enumerados/FragilidadPaquete.dart';
-
-class Viaje{
-  double alto;
-  double ancho;
-  double largo;
+class Viaje {
+  double largo, ancho, alto;
   double peso;
-  FragilidadPaquete fragilidad;
-  String id_destino;
-  String id_origen;
-  String id_remitente;
+  bool fragil;
+  PuntoTransportify destino;
+  PuntoTransportify origen;
+  Usuario remitente;
   double precio;
 
-  Viaje(this.alto, this.ancho, this.largo, this.peso, this.fragilidad,
-      this.id_destino, this.id_origen, this.id_remitente, this.precio);
-
-
+  Viaje(
+      {this.alto,
+      this.ancho,
+      this.largo,
+      this.peso,
+      this.fragil,
+      this.destino,
+      this.origen,
+      this.remitente,
+      this.precio});
 }
