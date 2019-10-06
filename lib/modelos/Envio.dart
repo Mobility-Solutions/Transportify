@@ -1,12 +1,11 @@
-import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
+import 'Paquete.dart';
+import 'Viaje.dart';
+import 'enumerados/EstadoPaquete.dart';
 
-class Envio{
-  String id;
- EstadoPaquete estado;
- String id_paquete;
- String id_viaje;
+class Envio {
+  EstadoPaquete estado;
+  Paquete paquete;
+  Viaje viaje;
 
-  Envio(this.id, this.estado, this.id_paquete, this.id_viaje);
-
-
+  Envio({this.estado, this.paquete, this.viaje});
 }
