@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/vistas/paqueteForm.dart';
-import 'package:transportify/vistas/sequimientoView.dart';
+import 'package:transportify/vistas/paqueteListView.dart';
+import 'package:transportify/vistas/paqueteSequimientoView.dart';
 import 'package:transportify/vistas/viajeForm.dart';
+import 'package:transportify/vistas/viajeListView.dart';
 
 void main() => runApp(MyApp());
 
@@ -109,8 +111,19 @@ class _MyHomePageState extends State<MyHomePage> {
         return new SeguimientoView();
       }));
       break;
-    
-    
+      case 3:
+      Navigator.of(context)
+      .push(MaterialPageRoute<Null>(builder: (BuildContext context){
+        return new PaqueteListView();
+      }));
+      break;
+      case 4:
+      Navigator.of(context)
+      .push(MaterialPageRoute<Null>(builder: (BuildContext context){
+        return new ViajeListView();
+      }));
+      break;
+      default:
     }
   }
 
@@ -143,17 +156,26 @@ class _MyHomePageState extends State<MyHomePage> {
         items: const<BottomNavigationBarItem>[
           BottomNavigationBarItem(
               icon: Icon(Icons.add),
-              title: Text('Crear Paquete')
+              title: Text('Paquete')
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.add),
-              title: Text('Crear Viaje')
+              title: Text('Viaje')
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.add),
               title: Text('Seguimiento')
-          )
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              title: Text('Paquete')
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              title: Text('Viaje')
+          ),
         ],
+        type: BottomNavigationBarType.fixed,
         onTap: (int index){
             _onItemTapped(index);
         },
