@@ -108,7 +108,23 @@ class _MyHomePageState extends State<MyHomePage> {
               Firestore.instance.collection('puntos_transportify').snapshots(),
           builder: _buildListaPuntosTransportify,
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const<BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+              icon: Icon(Icons.add),
+              title: Text('Crear Viaje')
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.add),
+              title: Text('Crear Paquete')
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.add),
+              title: Text('Seguimiento')
+          )
+        ],
+        selectedItemColor: Colors.blue[800],), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
