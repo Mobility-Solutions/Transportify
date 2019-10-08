@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
+import 'package:transportify/vistas/paqueteForm.dart';
+import 'package:transportify/vistas/sequimientoView.dart';
+import 'package:transportify/vistas/viajeForm.dart';
 
 void main() => runApp(MyApp());
 
@@ -86,6 +89,31 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void _onItemTapped(int index){
+    switch (index) {
+      case 0:
+        Navigator.of(context)
+      .push(MaterialPageRoute<Null>(builder: (BuildContext context){
+        return new PaqueteForm();
+      }));
+        break;
+      case 1:
+      Navigator.of(context)
+      .push(MaterialPageRoute<Null>(builder: (BuildContext context){
+        return new ViajeForm();
+      }));
+      break;
+      case 2:
+      Navigator.of(context)
+      .push(MaterialPageRoute<Null>(builder: (BuildContext context){
+        return new SeguimientoView();
+      }));
+      break;
+    
+    
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -94,6 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+    int _currentIndex  = 0;
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -110,6 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
         items: const<BottomNavigationBarItem>[
           BottomNavigationBarItem(
               icon: Icon(Icons.add),
@@ -124,6 +154,9 @@ class _MyHomePageState extends State<MyHomePage> {
               title: Text('Seguimiento')
           )
         ],
+        onTap: (int index){
+            _onItemTapped(index);
+        },
         selectedItemColor: Colors.blue[800],), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
