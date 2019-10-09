@@ -53,76 +53,40 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<PuntoTransportify> puntosTransportify = [];
+  PuntoTransportify _puntoSeleccionado;
 
-  Widget _buildListItemPuntosTransportify(BuildContext context, DocumentSnapshot snapshot) {
-    PuntoTransportify punto = PuntoTransportify.fromSnapshot(snapshot);
-    puntosTransportify.add(punto);
-
-    return ListTile(
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            'Nombre: ${punto.nombre}',
-          ),
-          Text(
-            'Direccion: ${punto.direccion}',
-          ),
-          Text(
-            'Latitud: ${punto.latitud}',
-          ),
-          Text(
-            'Longitud: ${punto.longitud}',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildListaPuntosTransportify(
-      BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-    if (!snapshot.hasData) return const Text('Cargando...');
-    return ListView.builder(
-      itemExtent: 100.0,
-      itemCount: snapshot.data.documents.length,
-      itemBuilder: (context, index) =>
-          _buildListItemPuntosTransportify(context, snapshot.data.documents[index]),
-    );
-  }
-
-  void _onItemTapped(int index){
+  void _onItemTapped(int index) {
     switch (index) {
       case 0:
         Navigator.of(context)
-      .push(MaterialPageRoute<Null>(builder: (BuildContext context){
-        return new PaqueteForm();
-      }));
+            .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+          return new PaqueteForm();
+        }));
         break;
       case 1:
-      Navigator.of(context)
-      .push(MaterialPageRoute<Null>(builder: (BuildContext context){
-        return new ViajeForm();
-      }));
-      break;
+        Navigator.of(context)
+            .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+          return new ViajeForm();
+        }));
+        break;
       case 2:
-      Navigator.of(context)
-      .push(MaterialPageRoute<Null>(builder: (BuildContext context){
-        return new SeguimientoView();
-      }));
-      break;
+        Navigator.of(context)
+            .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+          return new SeguimientoView();
+        }));
+        break;
       case 3:
-      Navigator.of(context)
-      .push(MaterialPageRoute<Null>(builder: (BuildContext context){
-        return new PaqueteListView();
-      }));
-      break;
+        Navigator.of(context)
+            .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+          return new PaqueteListView();
+        }));
+        break;
       case 4:
-      Navigator.of(context)
-      .push(MaterialPageRoute<Null>(builder: (BuildContext context){
-        return new ViajeListView();
-      }));
-      break;
+        Navigator.of(context)
+            .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+          return new ViajeListView();
+        }));
+        break;
       default:
     }
   }
@@ -135,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    int _currentIndex  = 0;
+    int _currentIndex = 0;
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -145,41 +109,39 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: StreamBuilder(
-          stream:
-              Firestore.instance.collection('puntos_transportify').snapshots(),
-          builder: _buildListaPuntosTransportify,
+        child: PuntoTransportify.obtenerDropDown(
+          onChanged: (nuevoPunto) {
+            setState(() {
+              this._puntoSeleccionado = nuevoPunto;
+            });
+          },
+          value: _puntoSeleccionado,
         ),
+        // child: StreamBuilder(
+        //   stream:
+        //       Firestore.instance.collection('puntos_transportify').snapshots(),
+        //   builder: _buildListaPuntosTransportify,
+        // ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        items: const<BottomNavigationBarItem>[
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-              icon: Icon(Icons.add),
-              title: Text('Paquete')
-          ),
+              icon: Icon(Icons.add), title: Text('Paquete')),
+          BottomNavigationBarItem(icon: Icon(Icons.add), title: Text('Viaje')),
           BottomNavigationBarItem(
-              icon: Icon(Icons.add),
-              title: Text('Viaje')
-          ),
+              icon: Icon(Icons.add), title: Text('Seguimiento')),
           BottomNavigationBarItem(
-              icon: Icon(Icons.add),
-              title: Text('Seguimiento')
-          ),
+              icon: Icon(Icons.search), title: Text('Paquete')),
           BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              title: Text('Paquete')
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              title: Text('Viaje')
-          ),
+              icon: Icon(Icons.search), title: Text('Viaje')),
         ],
         type: BottomNavigationBarType.fixed,
-        onTap: (int index){
-            _onItemTapped(index);
+        onTap: (int index) {
+          _onItemTapped(index);
         },
-        selectedItemColor: Colors.blue[800],), // This trailing comma makes auto-formatting nicer for build methods.
+        selectedItemColor: Colors.blue[800],
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
