@@ -66,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         Navigator.of(context)
             .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-          return new ViajeForm();
+          return new MyViajeForm();
         }));
         break;
       case 2:
