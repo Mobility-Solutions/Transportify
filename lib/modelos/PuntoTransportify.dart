@@ -27,9 +27,20 @@ class PuntoTransportify {
   @override
   int get hashCode => id.hashCode;
 
-  static StreamBuilder obtenerStreamBuilderListado(Function(BuildContext, AsyncSnapshot<dynamic>) builder) {
-    return StreamBuilder(
-      stream: Firestore.instance.collection('puntos_transportify').snapshots(),
+  static StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
+    return obtenerStreamBuilderCollectionBD('puntos_transportify', builder);
+  }
+
+  static StreamBuilder<QuerySnapshot> obtenerStreamBuilderCollectionBD(String collection, Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance.collection(collection).snapshots(),
+      builder: builder
+    );
+  }
+
+  static StreamBuilder<DocumentSnapshot> obtenerStreamBuilderDocumentBD(String path, Function(BuildContext, AsyncSnapshot<DocumentSnapshot>) builder) {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: Firestore.instance.document(path).snapshots(),
       builder: builder
     );
   }
@@ -38,13 +49,13 @@ class PuntoTransportify {
     return obtenerStreamBuilderListado(_obtenerDropDownBuilder(onChanged, value));
   }
 
-  static Function(BuildContext, AsyncSnapshot<dynamic>) _obtenerDropDownBuilder(Function(dynamic) onChanged, dynamic value) {
-    return (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+  static Function(BuildContext, AsyncSnapshot<QuerySnapshot>) _obtenerDropDownBuilder(Function(dynamic) onChanged, dynamic value) {
+    return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
       return _obtenerDropDown(context, snapshot, onChanged, value);
     };
   }
 
-  static Widget _obtenerDropDown(BuildContext context, AsyncSnapshot<dynamic> snapshot, Function(dynamic) onChanged, dynamic value) {
+  static Widget _obtenerDropDown(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot, Function(dynamic) onChanged, dynamic value) {
     if (!snapshot.hasData) return const Text('Cargando...');
 
     List<DropdownMenuItem> items = new List<DropdownMenuItem>();
