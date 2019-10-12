@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transportify/middleware/myWidgets.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/vistas/paqueteForm.dart';
 import 'package:transportify/vistas/paqueteListView.dart';
@@ -108,7 +109,9 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: PuntoTransportify.obtenerDropDown(
+        child: myWidgets.obtenerDropDown(
+        //child: PuntoTransportify.obtenerDropDown(
+
           onChanged: (nuevoPunto) {
             setState(() {
               this._puntoSeleccionado = nuevoPunto;

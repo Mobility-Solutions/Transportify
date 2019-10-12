@@ -8,4 +8,5 @@ class Envio {
   Viaje viaje;
 
   Envio({this.estado, this.paquete, this.viaje});
+
 }
