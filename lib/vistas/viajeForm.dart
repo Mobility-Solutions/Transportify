@@ -17,22 +17,113 @@ class _MyViajeFormState extends State<MyViajeForm> {
 
     String _date = "Not set";
     String _time = "Not set";
+    String _originPoint = "Not set";
+    String _destinationPoint = "Not set";
 
   @override 
-  Widget build(BuildContext context) => new Scaffold(
+  Widget build(BuildContext context) {
+    
+    
+
+    return Scaffold(
       
       appBar: AppBar(
         title: Text("Publicar un Viaje"),
         backgroundColor: Colors.blue[700],
+        elevation: 0.0
       ),
       body: Padding(
-        padding: const EdgeInsets.all(0),
+        padding: EdgeInsets.only(left:14.0, right: 14.0),
         child: Container (
           child: Column(
             
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget> [
+              /** 
+               * **************************
+               * SELECTOR DE PUNTO ORIGEN *
+               * **************************
+               * */
+               SizedBox(
+                height: 50.0,
+              ),
+              RaisedButton(
+                
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0)),
+                //elevation: 4.0,
+                color: Colors.white,
+                //child: new Text('Selecciona fecha'),
+                onPressed: () {
+                  
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 50.0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text( 
+                        "Punto de Origen",
+                        style: TextStyle(
+                          color: Colors.blue[800],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14.0),
+                      ),
+                      Icon( 
+                        Icons.location_on,
+                        size: 20.0,
+                        color: Colors.blue[800],
+                      ),
+                    ],
+                  ),
+                ), 
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              /** 
+               * ***************************
+               * SELECTOR DE PUNTO DESTINO *
+               * ***************************
+               * */
+              RaisedButton(
+                
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0)),
+                //elevation: 4.0,
+                color: Colors.white,
+                //child: new Text('Selecciona fecha'),
+                onPressed: () {
+                  
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 50.0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text( 
+                        "Punto de Destino ",
+                        style: TextStyle(
+                          color: Colors.blue[800],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14.0),
+                      ),
+                      Icon( 
+                        Icons.location_on,
+                        size: 20.0,
+                        color: Colors.blue[800],
+                      ),
+                    ],
+                  ),
+                ), 
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+
               /** 
                * *******************
                * SELECTOR DE FECHA *
@@ -42,7 +133,7 @@ class _MyViajeFormState extends State<MyViajeForm> {
                 
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0)),
-                elevation: 4.0,
+                //elevation: 4.0,
                 color: Colors.white,
                 //child: new Text('Selecciona fecha'),
                 onPressed: () {
@@ -112,7 +203,7 @@ class _MyViajeFormState extends State<MyViajeForm> {
               RaisedButton(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0)),
-                elevation: 4.0,
+                //elevation: 4.0,
                 onPressed: () {
                   DatePicker.showTimePicker(
                     context,
@@ -165,13 +256,50 @@ class _MyViajeFormState extends State<MyViajeForm> {
                   ),
                 ),
                 color: Colors.white,
+              ),
+              SizedBox(
+                height: 100.0,
+              ),
+              /** 
+               * ******************
+               * BOTÓN DE ACEPTAR *
+               * ******************
+               * */
+              RaisedButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0)),
+                //elevation: 4.0,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 60.0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      
+                      Text(
+                        "ACEPTAR",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0),
+                      ),
+                    ],
+                  ),
+                ),
+                color: Colors.indigo[800],
               )
             ],
           ),
         ),
+        
       ),
+
       backgroundColor: Colors.blue[700],
     );
+  }
 
     
 
