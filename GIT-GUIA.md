@@ -7,17 +7,29 @@ Guía rápida para el uso de Git en nuestro proyecto.
 La estructura de ramas para el control de versiones Git de nuestro proyecto es la siguiente:
 
 +-- master_old
+
 +-- master
+
 &nbsp; |   +-- sprint1/master
+
 &nbsp; &nbsp; &nbsp;||   +-- sprint1/<ID_UT>
+
 &nbsp; &nbsp; &nbsp;||   +-- sprint1/<ID_UT>
+
 &nbsp; &nbsp; &nbsp;||   +-- sprint1/<ID_UT>
+
 &nbsp; &nbsp; &nbsp;||   +-- ...
+
 &nbsp; |   +-- sprint2/master
+
 &nbsp; &nbsp; ||   +-- sprint2/<ID_UT>
+
 &nbsp; &nbsp; ||   +-- ...
+
 &nbsp; |   +-- sprint3/master
+
 &nbsp; &nbsp; ||   +-- sprint3/<ID_UT>
+
 &nbsp; &nbsp; ||   +-- ...
 
 
