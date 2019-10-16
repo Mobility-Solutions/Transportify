@@ -16,7 +16,8 @@ class PuntoTransportify {
   String ciudad;
   double latitud, longitud;
 
-  PuntoTransportify({this.nombre, this.direccion, this.ciudad, this.latitud, this.longitud});
+  PuntoTransportify(
+      {this.nombre, this.direccion, this.ciudad, this.latitud, this.longitud});
 
   PuntoTransportify.fromSnapshot(DocumentSnapshot snapshot) {
     this.id = snapshot.documentID;
@@ -44,27 +45,34 @@ class PuntoTransportify {
       String collection,
       Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
     return StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection(collection).snapshots(),
-        builder: builder);
+      stream: Firestore.instance.collection(collection).snapshots(),
+      builder: builder,
+    );
   }
 
   static StreamBuilder<DocumentSnapshot> obtenerStreamBuilderDocumentBD(
       String path,
       Function(BuildContext, AsyncSnapshot<DocumentSnapshot>) builder) {
     return StreamBuilder<DocumentSnapshot>(
-        stream: Firestore.instance.document(path).snapshots(),
-        builder: builder);
+      stream: Firestore.instance.document(path).snapshots(),
+      builder: builder,
+    );
   }
 
-  static Widget obtenerDropDown({Function(String) onCiudadChanged, String ciudadValue, Function(PuntoTransportify) onPuntoChanged}) {
+  static Widget obtenerDropDown(
+      {Function(String) onCiudadChanged,
+      String ciudadValue,
+      Function(PuntoTransportify) onPuntoChanged}) {
     return obtenerStreamBuilderListado(
         _obtenerDropDownBuilder(onCiudadChanged, ciudadValue, onPuntoChanged));
   }
 
   static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
-      _obtenerDropDownBuilder(Function(String) onCiudadChanged, String ciudadValue, Function(PuntoTransportify) onPuntoChanged) {
+      _obtenerDropDownBuilder(Function(String) onCiudadChanged,
+          String ciudadValue, Function(PuntoTransportify) onPuntoChanged) {
     return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      return _obtenerDropDown(context, snapshot, onCiudadChanged, ciudadValue, onPuntoChanged);
+      return _obtenerDropDown(
+          context, snapshot, onCiudadChanged, ciudadValue, onPuntoChanged);
     };
   }
 
@@ -133,15 +141,8 @@ class PuntoTransportify {
     return puntos.where((punto) => punto[atributo_ciudad] == ciudad);
   }
 
-  // static DropdownMenuItem _obtenerDropDownMenuItem(DocumentSnapshot snapshot) {
-  //   PuntoTransportify punto = PuntoTransportify.fromSnapshot(snapshot);
-  //   return DropdownMenuItem(
-  //     child: Text(punto?.nombre ?? ""),
-  //     value: punto,
-  //   );
-  // }
-
-  static Widget _obtenerListViewItem(DocumentSnapshot snapshot, Function(PuntoTransportify) onSelected) {
+  static Widget _obtenerListViewItem(
+      DocumentSnapshot snapshot, Function(PuntoTransportify) onSelected) {
     PuntoTransportify punto = PuntoTransportify.fromSnapshot(snapshot);
 
     String texto = punto?.nombre;
