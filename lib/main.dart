@@ -109,9 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: myWidgets.obtenerDropDown(
-        //child: PuntoTransportify.obtenerDropDown(
-
+        child: MyWidgets.obtenerDropDown(
           onChanged: (nuevoPunto) {
             setState(() {
               this._puntoSeleccionado = nuevoPunto;
