@@ -1,20 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 
-import '../modelos/Envio.dart';
-
-class Datos{
-
-  static StreamBuilder obtenerStreamBuilder_PuntosTransportify(Function(BuildContext, AsyncSnapshot<dynamic>) builder) {
-    //Junta el buildesr con un flujo de datos
-    return StreamBuilder(
-        stream: Firestore.instance.collection('puntos_transportify')
-            .snapshots(),
-        builder: builder
+class Datos {
+  static StreamBuilder<QuerySnapshot> obtenerStreamBuilderCollectionBD(
+      String collection,
+      Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance.collection(collection).snapshots(),
+      builder: builder,
     );
   }
 
-
-
-
+  static StreamBuilder<DocumentSnapshot> obtenerStreamBuilderDocumentBD(
+      String path,
+      Function(BuildContext, AsyncSnapshot<DocumentSnapshot>) builder) {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: Firestore.instance.document(path).snapshots(),
+      builder: builder,
+    );
+  }
 }
