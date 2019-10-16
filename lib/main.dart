@@ -53,7 +53,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  PuntoTransportify _puntoSeleccionado;
+  String _ciudadSeleccionada;
 
   void _onItemTapped(int index) {
     switch (index) {
@@ -109,13 +109,13 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: MyWidgets.obtenerDropDown(
-          onChanged: (nuevoPunto) {
+        child: PuntoTransportify.obtenerDropDown(
+          onCiudadChanged: (nuevaCiudad) {
             setState(() {
-              this._puntoSeleccionado = nuevoPunto;
+              this._ciudadSeleccionada = nuevaCiudad;
             });
           },
-          value: _puntoSeleccionado,
+          ciudadValue: _ciudadSeleccionada,
         ),
         // child: StreamBuilder(
         //   stream:
