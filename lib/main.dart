@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:transportify/middleware/myWidgets.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/vistas/paqueteForm.dart';
 import 'package:transportify/vistas/paqueteListView.dart';
