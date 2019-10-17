@@ -1,6 +1,6 @@
 # Guía de uso del Middleware
 
-## Cómo obtener los datos de una colección o un documento
+## Obtener los datos de una colección o un documento
 
 Para obtener los datos de una colección o de un documento, debes hacer uso de los métodos `Datos.obtenerStreamBuilderCollectionBD(...)` y `Datos.obtenerStreamBuilderDocumentBD(...)` respectivamente.
 
@@ -132,18 +132,32 @@ Por ejemplo, para la clase `PuntoTransportify`, están definidos así (en la cla
   static const String atributo_localizacion = 'localizacion';
 ```
 
-Además, es recomendable disponer de métodos que accedan al campo del snapshot directamente por ti, para que las llamadas desde otras clases sean más claras y concisas.
+Además, es recomendable disponer de métodos que accedan al campo del documento directamente por ti, para que las llamadas desde otras clases sean más claras y concisas.
 
 ```dart
-  static String obtenerNombre(DocumentSnapshot snapshot) => snapshot[atributo_nombre];
-  static String obtenerDireccion(DocumentSnapshot snapshot) => snapshot[atributo_direccion];
-  static String obtenerCiudad(DocumentSnapshot snapshot) => snapshot[atributo_ciudad];
-  static GeoPoint obtenerLocalizacion(DocumentSnapshot snapshot) => snapshot[atributo_localizacion];
+  static String obtenerNombre(DocumentSnapshot documento) => documento[atributo_nombre];
+  static String obtenerDireccion(DocumentSnapshot documento) => documento[atributo_direccion];
+  static String obtenerCiudad(DocumentSnapshot documento) => documento[atributo_ciudad];
+  static GeoPoint obtenerLocalizacion(DocumentSnapshot documento) => documento[atributo_localizacion];
 ```
+Para crear la instancia de tu objeto a partir del `DocumentSnapshot`, lo ideal sería crear un constructor apropiado. Este es el constructor de `PuntoTransportify`:
+```dart
+PuntoTransportify.fromSnapshot(DocumentSnapshot snapshot) {
+    this.id = snapshot.documentID; // La id no requiere acceso al Map, está en este atributo
+    this.nombre = PuntoTransportifyBD.obtenerNombre(snapshot);
+    this.direccion = PuntoTransportifyBD.obtenerDireccion(snapshot);
+    this.ciudad = PuntoTransportifyBD.obtenerCiudad(snapshot);
 
-## Cómo hacer los métodos para crear un documento
+    GeoPoint localizacion = PuntoTransportifyBD.obtenerLocalizacion(snapshot);
+    this.latitud = localizacion?.latitude;
+    this.longitud = localizacion?.longitude;
+  }
+```
+Como puedes ver, aprovechamos los métodos creados anteriormente para obtener cada uno de los atributos necesarios para el objeto.
 
-1.- Primero, necesitas un método que te convierta el objeto en un `Map<string, dynamic>`.
+## Crear y modificar documentos
+
+Tanto para crear documentos como para modificar existentes, necesitas un método que te convierta el objeto asociado en un `Map<string, dynamic>`.
 
 - La `key` es una `String` indicando el nombre del campo para la Base de datos.
 - El `value` es el valor de ese campo. (`dynamic` quiere decir que puede ser de cualquier tipo)
@@ -164,9 +178,13 @@ Ejemplo para la clase `PuntoTransportify`:
     return map;
   }
 ```
->Este código no forma parte del código de la aplicación actualmente, porque la clase `PuntoTransportify` no permite la creación de nuevos puntos desde dentro de la app.
+>Este código no forma parte del código de la aplicación actualmente, porque la clase `PuntoTransportify` no permite ninguna alteración del listado de puntos desde dentro de la app.
 
-2.- Una vez tengas el método de conversión a Map, creas un método público, con el cual podrás crear documentos de tu objeto en la Base de Datos a partir de una instancia del mismo.
+A partir de este punto, los pasos para crear y para modificar documentos son distintos.
+
+### Crear documentos
+
+Una vez tengas el método de conversión a Map, creas un método público, con el cual podrás crear documentos de tu objeto en la Base de Datos a partir de una instancia del mismo.
 
 Este sólo deberá llamar al método conversor que creaste en el *primer paso* para obtener el `Map`. Este servirá al método `Datos.crearDocument(...)` para crear el documento a partir de los campos y sus valores.
 
@@ -177,3 +195,11 @@ static Future<DocumentReference> crearPuntoEnBD(PuntoTransportify punto) {
   }
 ```
 >El parámetro `coleccion_puntos` es una `String` *constante* con el path de la colección en la base de datos. En el caso de `PuntoTransportify`, su valor es `'puntos_transportify'`.
+
+### Modificar documentos
+ 
+ Para modificar un documento ya existente, necesitas una referencia (`DocumentReference`) del documento que deseas modificar. Para ello, lo más sencillo es guardarla cuando obtienes el documento (véase la *primera sección* para más detalles). Para obtenerlo a partir del `DocumentSnapshot`, sólo tienes que llamar al atributo `reference` de este. Guárdalo como atributo en tu objeto cuando lo construyas a partir de la `snapshot` (Mira el apartado *"Facilitando el acceso a los campos de un documento"* para más detalles). Ya con la referencia, solo debes llamar al método `setData(...)` pasándole el `Map` que puedes crear gracias al método que has hecho anteriormente.
+
+ ## Borrar documentos
+
+ Para borrar documentos, necesitas la `DocumentReference` del documento que deseas borrar, al igual que ocurre al querer *modificarlo* (mira la sección *"Modificar documentos"* para saber cómo conseguirla). Aquí, es tan fácil como llamar al método `delete()` de esta clase.
