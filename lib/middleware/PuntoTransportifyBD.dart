@@ -17,19 +17,6 @@ class PuntoTransportifyBD {
   static String obtenerCiudad(DocumentSnapshot snapshot) => snapshot[atributo_ciudad];
   static GeoPoint obtenerLocalizacion(DocumentSnapshot snapshot) => snapshot[atributo_localizacion];
 
-  static Map<String, dynamic> puntoToMap(PuntoTransportify punto) {
-    Map<String, dynamic> map = Map<String, dynamic>();
-    
-    map[atributo_nombre] = punto.nombre;
-    map[atributo_direccion] = punto.direccion;
-    map[atributo_ciudad] = punto.ciudad;
-
-    GeoPoint localizacion = GeoPoint(punto.latitud, punto.longitud);
-    map[atributo_localizacion] = localizacion;
-
-    return map;
-  }
-
   static StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(
       Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
     return Datos.obtenerStreamBuilderCollectionBD(coleccion_puntos, builder);
