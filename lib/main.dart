@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/vistas/paqueteForm.dart';
 import 'package:transportify/vistas/paqueteListView.dart';
 import 'package:transportify/vistas/paqueteSequimientoView.dart';
 import 'package:transportify/vistas/viajeForm.dart';
 import 'package:transportify/vistas/viajeListView.dart';
+
+import 'middleware/PuntoTransportifyBD.dart';
 
 void main() => runApp(MyApp());
 
@@ -108,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: PuntoTransportify.obtenerDropDown(
+        child: PuntoTransportifyBD.obtenerDropDownCiudadesYListadoPuntos(
           onCiudadChanged: (nuevaCiudad) {
             setState(() {
               this._ciudadSeleccionada = nuevaCiudad;
@@ -116,11 +117,6 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           ciudadValue: _ciudadSeleccionada,
         ),
-        // child: StreamBuilder(
-        //   stream:
-        //       Firestore.instance.collection('puntos_transportify').snapshots(),
-        //   builder: _buildListaPuntosTransportify,
-        // ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
