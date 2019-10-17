@@ -37,7 +37,7 @@ La estructura de ramas para el control de versiones Git de nuestro proyecto es l
 
 A continuación explicamos cada uno de los tipos de rama:
 
-- master_old: es nuestro antigua rama principal que tenemos como backup por si hay un error interno en la estructura.
+- master_old: es nuestra antigua rama principal que tenemos como backup por si hay un error interno en la estructura.
 - master: es la rama principal que contiene todas las ramas de los tres sprints que componen el proyecto.
 - sprintX/master: ramas que cuelgan de master, son las que van a contener las ramas que vamos creando por cada UT que contiene el sprint.
 - sprintX/ID_UT: ramas que componen sprintX/master y se crean por cada UT del sprint.
@@ -99,9 +99,42 @@ Cuando ya hayamos acabado la tarea y queramos unir nuestra Rama tarea a la del s
 
 2.- Documentar y rellenar la Pull Request.
 
-3.- Asignar como Reviewer de la Pull Request al que vaya a realizar las Pruebas de Aceptación y presionar "*Create pull request*".
+3.- Asignar como Reviewer de la Pull Request al que vaya a realizar las Pruebas de Aceptación (*si ya se ha asignado esa persona en Worki*) y presionar "*Create pull request*". 
+
+(Si nadie se ha asignado a Pruebas de Aceptación, es la persona que se asigne en Worki la que debe ir a GitHub y asignarse como Reviewer de la Pull Request correspondiente).
 
 4.- El reviewer debe revisar la pull request aplicando las pruebas de aceptación, denegarlo si no se han superado las pruebas o aceptarlo en caso de que se hayan superado y mergear.
+
+
+## Obteniendo cambios de otras ramas (dependencias)
+En caso de que necesitemos obtener cambios realizados por otra rama (por ejemplo, porque nuestra UT depende del trabajo de otra), debemos de realizar un *merge* de dicha rama *hacia la nuestra*. Esto se puede realizar desde nuestra IDE o mediante línea de comandos:
+
+1.- Situarnos en nuestra "rama tarea".
+
+```shell
+git checkout -b sprintX/<ID_UT>
+```
+
+2.- Realizamos un *merge* con la rama de la cual queremos obtener cambios:
+
+```shell
+git merge <rama de la que dependes>
+```
+
+3.- Solucionamos los conflictos que surjan entre ambas ramas (si hay) (*Muy recomendado hacerlo desde la IDE*)
+
+
+4.- Realizamos un *commit* con todos los cambios:
+
+```shell
+git commit -m "<Mensaje avisando del merge que has hecho, y para qué era.>"
+```
+
+5.- Realizamos un *push* para subir los cambios del merge:
+
+```shell
+git push -u origin sprint1/<ID_UT>
+```
 
 ## Bibliografía
 
