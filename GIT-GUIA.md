@@ -6,31 +6,22 @@ Guía rápida para el uso de Git en nuestro proyecto.
 
 La estructura de ramas para el control de versiones Git de nuestro proyecto es la siguiente:
 
-+-- master_old
-
-+-- master
-
-&nbsp; |   +-- sprint1/master
-
-&nbsp; &nbsp; &nbsp;||   +-- sprint1/<ID_UT>
-
-&nbsp; &nbsp; &nbsp;||   +-- sprint1/<ID_UT>
-
-&nbsp; &nbsp; &nbsp;||   +-- sprint1/<ID_UT>
-
-&nbsp; &nbsp; &nbsp;||   +-- ...
-
-&nbsp; |   +-- sprint2/master
-
-&nbsp; &nbsp; ||   +-- sprint2/<ID_UT>
-
-&nbsp; &nbsp; ||   +-- ...
-
-&nbsp; |   +-- sprint3/master
-
-&nbsp; &nbsp; ||   +-- sprint3/<ID_UT>
-
-&nbsp; &nbsp; ||   +-- ...
+```bash
+├── master_old
+├── master
+│   ├── sprint1/master
+│   │   ├── sprint1/<ID_UT>
+│   │   ├── sprint1/<ID_UT>
+│   │   ├── sprint1/<ID_UT>
+│   ├── sprint2/master
+│   │   ├── sprint2/<ID_UT>
+│   │   ├── sprint2/<ID_UT>
+│   │   ├── sprint2/<ID_UT>
+│   ├── sprint3/master
+│   │   ├── sprint3/<ID_UT>
+│   │   ├── sprint3/<ID_UT>
+│   │   ├── sprint3/<ID_UT>
+```
 
 
 ## Ramas
@@ -46,7 +37,7 @@ A continuación explicamos cada uno de los tipos de rama:
 
 Cuando queramos empezar por una UT específica que tengamos asignada en nuestro tablón, deberemos ejecutar los siguientes comandos:
 
-1.- Situarnos en la rama sprintX/master donde queramos crear nuestra "rama tarea". (*Si estamos trabajando con algún IDE que soporte Control de Versiones lo podremos hacer directamente Ej: En Visual Studio Code en el menú de la derecha abajo.*)
+1.- Situarnos en la rama sprintX/master donde queramos crear nuestra "rama tarea". (*Si estamos trabajando con algún IDE que soporte Control de Versiones lo podremos hacer directamente Ej: En Visual Studio Code en el menú de la izquierda-abajo.*)
 
 ```shell
 git checkout -b sprintX/master
@@ -107,33 +98,30 @@ Cuando ya hayamos acabado la tarea y queramos unir nuestra Rama tarea a la del s
 
 
 ## Obteniendo cambios de otras ramas (dependencias)
-En caso de que necesitemos obtener cambios realizados por otra rama (por ejemplo, porque nuestra UT depende del trabajo de otra), debemos de realizar un *merge* de dicha rama *hacia la nuestra*. Esto se puede realizar desde nuestra IDE o mediante línea de comandos:
+Cuando necesitemos obtener cambios realizados por otra rama (por ejemplo, porque nuestra UT depende del trabajo de otra), debemos de realizar un *rebase* de dicha rama *hacia la nuestra*. Esto se puede realizar desde nuestra IDE o mediante línea de comandos. Por ejemplo (*queremos obtener los cambios de sprintX/master desde nuestra rama tarea*):
 
-1.- Situarnos en nuestra "rama tarea".
+1.- Situarnos en la rama donde queremos obtener los cambios:
+
+```shell
+git checkout -b sprintX/master
+```
+
+2.- Realizamos un *pull* para obtener los cambios de la rama:
+
+```shell
+git pull
+```
+
+3.- Volvemos a nuestra rama tarea:
 
 ```shell
 git checkout -b sprintX/<ID_UT>
 ```
 
-2.- Realizamos un *merge* con la rama de la cual queremos obtener cambios:
+4.- Realizamos *rebase* de la rama y solucionamos los conflictos que surjan entre ambas ramas (si hay) (*Muy recomendado hacerlo desde la IDE*)
 
 ```shell
-git merge <rama de la que dependes>
-```
-
-3.- Solucionamos los conflictos que surjan entre ambas ramas (si hay) (*Muy recomendado hacerlo desde la IDE*)
-
-
-4.- Realizamos un *commit* con todos los cambios:
-
-```shell
-git commit -m "<Mensaje avisando del merge que has hecho, y para qué era.>"
-```
-
-5.- Realizamos un *push* para subir los cambios del merge:
-
-```shell
-git push -u origin sprint1/<ID_UT>
+git rebase sprintX/master
 ```
 
 ## Bibliografía
