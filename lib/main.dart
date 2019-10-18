@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/vistas/paqueteForm.dart';
 import 'package:transportify/vistas/paqueteListView.dart';
-import 'package:transportify/vistas/paqueteSequimientoView.dart';
+import 'package:transportify/vistas/paqueteSeguimiento/listaPaquetesEnviados.dart';
 import 'package:transportify/vistas/viajeForm.dart';
 import 'package:transportify/vistas/viajeListView.dart';
 
@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 2:
         Navigator.of(context)
             .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-          return new SeguimientoView();
+          return new ListaPaquetesView();
         }));
         break;
       case 3:
