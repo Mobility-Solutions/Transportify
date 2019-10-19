@@ -1,24 +1,40 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:transportify/middleware/PaqueteTransportify.dart';
 import 'package:transportify/middleware/PuntoTransportifyBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/util/style.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+
+import '../modelos/Paquete.dart';
 
 class PaqueteForm extends StatefulWidget {
-  static const String tag = 'paquete-form';
   static const String title = 'Nuevo Paquete';
-  static PuntoTransportify puntoOrigen, puntoDestino;
 
   @override
   _PaqueteFormState createState() => _PaqueteFormState();
 }
 
 class _PaqueteFormState extends State<PaqueteForm> {
+  final nombreController = TextEditingController();
   final pesoController = TextEditingController();
   final origenController = TextEditingController();
   final destinoController = TextEditingController();
+  final fechaController = TextEditingController();
+  final altoController = TextEditingController();
+  final anchoController = TextEditingController();
+  final largoController = TextEditingController();
 
-  var peso = 0.0;
+  double peso = 0.0;
+  bool _fragil = false;
+
+  PuntoTransportify puntoOrigen, puntoDestino;
+
+  String _date;
+
+  PaqueteTransportify conexionBD = new PaqueteTransportify();
+
+  final _formKey = GlobalKey<FormState>();
 
   Future<Null> getTransportifyPoint(bool origen) async {
     PuntoTransportify returnPunto = await showDialog(
@@ -27,10 +43,10 @@ class _PaqueteFormState extends State<PaqueteForm> {
           return PuntosDialog();
         });
     if (origen) {
-      PaqueteForm.puntoOrigen = returnPunto;
+      puntoOrigen = returnPunto;
       origenController.text = returnPunto.nombre;
     } else if (!origen) {
-      PaqueteForm.puntoDestino = returnPunto;
+      puntoDestino = returnPunto;
       destinoController.text = returnPunto.nombre;
     }
   }
@@ -57,170 +73,288 @@ class _PaqueteFormState extends State<PaqueteForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(PaqueteForm.title),
+    return Form(
+      key: _formKey,
+      child: Scaffold(
+        appBar: AppBar(
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: Text(PaqueteForm.title),
+          backgroundColor: TransportifyColors.primarySwatch,
+          elevation: 0.0,
+        ),
         backgroundColor: TransportifyColors.primarySwatch,
-        elevation: 0.0,
-      ),
-      backgroundColor: TransportifyColors.primarySwatch,
-      body: Center(
-        child: ListView(
-          padding: EdgeInsets.only(left: 15.0, right: 15.0),
-          children: <Widget>[
-            SizedBox(height: 5.0),
-            TextFormField(
-              maxLines: 1,
-              keyboardType: TextInputType.text,
-              autofocus: false,
-              style: TextStyle(color: TransportifyColors.primarySwatch),
-              decoration: returnInputDecoration("Nombre"),
-            ),
-
-            SizedBox(height: 5.0),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: TextFormField(
-                    maxLines: 1,
-                    keyboardType: TextInputType.text,
-                    autofocus: false,
-                    style: TextStyle(color: TransportifyColors.primarySwatch),
-                    decoration: returnInputDecoration("Peso"),
-                    onChanged: (text) {
-                      peso = double.parse(text);
-                    },
-                    controller: pesoController,
-                  ),
-                ),
-                SizedBox(width: 10),
-                Flexible(
-                  child: RaisedButton(
-                    color: TransportifyColors.primarySwatch[900],
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      add();
-                    },
-                  ),
-                ),
-                SizedBox(width: 10),
-                Flexible(
-                  child: RaisedButton(
-                    color: TransportifyColors.primarySwatch[900],
-                    child: Icon(
-                      Icons.remove,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      remove();
-                    },
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Flexible(
+        body: Center(
+          child: ListView(
+            padding: EdgeInsets.only(left: 15.0, right: 15.0),
+            children: <Widget>[
+              SizedBox(height: 10.0),
+              TextFormField(
+                maxLines: 1,
+                keyboardType: TextInputType.text,
+                autofocus: false,
+                style: TextStyle(color: TransportifyColors.primarySwatch),
+                decoration: returnInputDecoration("Nombre"),
+                validator: (value) {
+                  if (value.isEmpty)
+                    return 'Nombre';
+                  else
+                    return null;
+                },
+              ),
+              SizedBox(height: 20.0),
+              Row(
+                children: <Widget>[
+                  Expanded(
                     child: TextFormField(
-                  maxLines: 1,
-                  keyboardType: TextInputType.text,
-                  autofocus: false,
-                  style: TextStyle(color: TransportifyColors.primarySwatch),
-                  decoration: returnInputDecoration("Alto(cm)"),
-                )),
-                Flexible(
-                  child: TextFormField(
+                      maxLines: 1,
+                      keyboardType: TextInputType.number,
+                      autofocus: false,
+                      style: TextStyle(color: TransportifyColors.primarySwatch),
+                      decoration: returnInputDecoration("Peso"),
+                      onChanged: (text) {
+                        peso = double.parse(text);
+                      },
+                      controller: pesoController,
+                      validator: (value) {
+                        if (value.isEmpty)
+                          return 'Peso';
+                        else
+                          return null;
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 10.0),
+                  Flexible(
+                    child: RaisedButton(
+                      color: TransportifyColors.primarySwatch[900],
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        add();
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Flexible(
+                    child: RaisedButton(
+                      color: TransportifyColors.primarySwatch[900],
+                      child: Icon(
+                        Icons.remove,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        remove();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Flexible(
+                      child: TextFormField(
                     maxLines: 1,
-                    keyboardType: TextInputType.text,
+                    keyboardType: TextInputType.number,
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
-                    decoration: returnInputDecoration("Ancho(cm)"),
+                    decoration: returnInputDecoration("Alto(cm)"),
+                    controller: altoController,
+                    validator: (value) {
+                      if (value.isEmpty)
+                        return 'Alto(cm)';
+                      else
+                        return null;
+                    },
+                  )),
+                  Flexible(
+                    child: TextFormField(
+                      maxLines: 1,
+                      keyboardType: TextInputType.number,
+                      autofocus: false,
+                      style: TextStyle(color: TransportifyColors.primarySwatch),
+                      decoration: returnInputDecoration("Ancho(cm)"),
+                      controller: anchoController,
+                      validator: (value) {
+                        if (value.isEmpty)
+                          return 'Ancho(cm)';
+                        else
+                          return null;
+                      },
+                    ),
                   ),
-                ),
-                Flexible(
-                  child: TextFormField(
-                    maxLines: 1,
-                    keyboardType: TextInputType.text,
-                    autofocus: false,
-                    style: TextStyle(color: TransportifyColors.primarySwatch),
-                    decoration: returnInputDecoration("Largo(cm)"),
+                  Flexible(
+                    child: TextFormField(
+                      maxLines: 1,
+                      keyboardType: TextInputType.number,
+                      autofocus: false,
+                      style: TextStyle(color: TransportifyColors.primarySwatch),
+                      decoration: returnInputDecoration("Largo(cm)"),
+                      controller: largoController,
+                      validator: (value) {
+                        if (value.isEmpty)
+                          return 'Largo(cm)';
+                        else
+                          return null;
+                      },
+                    ),
                   ),
+                ],
+              ),
+              SizedBox(height: 20.0),
+              TextFormField(
+                maxLines: 1,
+                keyboardType: TextInputType.text,
+                autofocus: false,
+                style: TextStyle(color: TransportifyColors.primarySwatch),
+                controller: origenController,
+                decoration:
+                    returnInputDecoration("Punto Transportify de origen"),
+                onTap: () {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  getTransportifyPoint(true);
+                },
+                validator: (value) {
+                  if (value.isEmpty || puntoDestino.id == puntoOrigen.id)
+                    return 'El punto de origen y destino no deben coincidir.';
+                  else
+                    return null;
+                },
+              ),
+              SizedBox(height: 20.0),
+              TextFormField(
+                maxLines: 1,
+                autofocus: false,
+                style: TextStyle(color: TransportifyColors.primarySwatch),
+                controller: destinoController,
+                decoration:
+                    returnInputDecoration("Punto Transportify de destino"),
+                onTap: () {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  getTransportifyPoint(false);
+                },
+                validator: (value) {
+                  if (value.isEmpty || puntoDestino.id == puntoOrigen.id)
+                    return 'El punto de origen y destino no deben coincidir.';
+                  else
+                    return null;
+                },
+              ),
+              SizedBox(height: 20.0),
+              TextFormField(
+                maxLines: 1,
+                controller: fechaController,
+                onTap: () {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  DatePicker.showDatePicker(context,
+                      theme: DatePickerTheme(
+                        containerHeight: 200.0,
+                      ),
+                      showTitleActions: true,
+                      minTime: DateTime.now(),
+                      maxTime: new DateTime(DateTime.now().year + 3),
+                      //onChanged: (date) {print ('change $date');},
+                      onConfirm: (date) {
+                    _date = '${date.year} - ${date.month} - ${date.day}';
+                    setState(() {
+                      fechaController.text = _date;
+                    });
+                  }, currentTime: DateTime.now(), locale: LocaleType.en);
+                },
+                keyboardType: TextInputType.datetime,
+                autofocus: false,
+                style: TextStyle(color: TransportifyColors.primarySwatch),
+                decoration: returnInputDecoration(
+                    "Fecha de entrega al punto Transportify"),
+                validator: (value) {
+                  if (value.isEmpty)
+                    return 'Introduzca una fecha de entrega.';
+                  else
+                    return null;
+                },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Flexible(
+                      child: Text(
+                    'Frágil',
+                    style: TextStyle(color: Colors.white,fontSize: 18.0,),
+                  )),
+                  Flexible(
+                    child: Checkbox(
+                      value: _fragil,
+                      checkColor: TransportifyColors.primarySwatch[900],
+                      activeColor: Colors.white,
+                      onChanged: (bool value) {
+                        setState(() {
+                          _fragil = value;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: new Stack(
+          overflow: Overflow.visible,
+          alignment: new FractionalOffset(5, 0.5),
+          children: [
+            new Container(
+                height: 80.0, color: TransportifyColors.primarySwatch),
+            new Row(
+              children: <Widget>[
+                SizedBox(width: 15,),
+                Expanded(
+                  child: buildButtonContainer("ACEPTAR"),
                 ),
+                SizedBox(
+                  width: 20,
+                ),
+                Expanded(
+                  child: buildButtonContainer("CANCELAR"),
+                ),
+                SizedBox(width: 15,),
               ],
-            ),
-            SizedBox(height: 10.0),
-            TextFormField(
-              maxLines: 1,
-              keyboardType: TextInputType.text,
-              autofocus: false,
-              style: TextStyle(color: TransportifyColors.primarySwatch),
-              controller: origenController,
-              decoration: returnInputDecoration("Punto Transportify de origen"),
-              onTap: () {
-                getTransportifyPoint(true);
-              },
-            ),
-            SizedBox(height: 10.0),
-            TextFormField(
-              maxLines: 1,
-              keyboardType: TextInputType.text,
-              autofocus: false,
-              style: TextStyle(color: TransportifyColors.primarySwatch),
-              controller: destinoController,
-              decoration:
-                  returnInputDecoration("Punto Transportify de destino"),
-              onTap: () {
-                getTransportifyPoint(false);
-              },
-            ),
-            SizedBox(height: 10.0),
-            TextFormField(
-              maxLines: 1,
-              keyboardType: TextInputType.datetime,
-              autofocus: false,
-              style: TextStyle(color: TransportifyColors.primarySwatch),
-              decoration: returnInputDecoration(
-                  "Fecha de entrega al punto Transportify"),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: new Stack(
-        overflow: Overflow.visible,
-        alignment: new FractionalOffset(5, 0.5),
-        children: [
-          new Container(height: 80.0, color: TransportifyColors.primarySwatch),
-          new Row(
-            children: <Widget>[
-              Expanded(
-                child: buildButtonContainer("ACEPTAR"),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              Expanded(
-                child: buildButtonContainer("CANCELAR"),
-              )
-            ],
-          ),
-        ],
-      ),
     );
+  }
+
+  Paquete getPaqueteFromControllers() {
+    double _alto = double.parse(altoController.text);
+    double _ancho = double.parse(anchoController.text);
+    double _largo = double.parse(largoController.text);
+    double _peso = double.parse(pesoController.text);
+
+    return new Paquete(
+        alto: _alto,
+        ancho: _ancho,
+        largo: _largo,
+        peso: _peso,
+        fragil: _fragil,
+        origenId: puntoOrigen.id,
+        destinoId: puntoDestino.id);
   }
 
   Widget buildButtonContainer(String hintText) {
     return GestureDetector(
         onTap: () {
           if (hintText == "ACEPTAR") {
-
-          } else {}
+            if(_formKey.currentState.validate()){
+            Paquete paquete = getPaqueteFromControllers();
+            PaqueteTransportify.crearPaqueteEnBD(paquete);
+            doneDialog();
+            }
+          } else {Navigator.pop(context);}
         },
         child: Container(
           height: 56.0,
@@ -239,6 +373,23 @@ class _PaqueteFormState extends State<PaqueteForm> {
           ),
         ));
   }
+
+  doneDialog() async {
+  await showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text("Paquete creado"),
+      content: Text("El paquete ha sido creado con éxito."),
+          actions: [
+            new FlatButton(
+              child: new Text("CERRAR"),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+  );
+  Navigator.pop(context);
+}
 }
 
 class PuntosDialog extends StatefulWidget {
