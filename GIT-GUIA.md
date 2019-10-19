@@ -118,11 +118,45 @@ git pull
 git checkout -b sprintX/<ID_UT>
 ```
 
-4.- Realizamos *rebase* de la rama y solucionamos los conflictos que surjan entre ambas ramas (si hay) (*Muy recomendado hacerlo desde la IDE*)
+4.- Realizamos *rebase* de la rama y solucionamos los conflictos que surjan entre ambas ramas (si hay) (*Muy recomendado hacerlo desde la IDE*):
 
 ```shell
 git rebase sprintX/master
 ```
+
+5.- Actualizamos los cambios en remoto:
+
+```shell
+git push --force
+```
+Con esto ya hemos obtenido los cambios de otra rama en la nuestra.
+
+**IMPORTANTE**: Debido a que el *rebase* resetea los *commits* afectados y los vuelve a realizar, las versiones locales y remotas dejan de coincidir (de ahí el *--force*), y genera problemas en aquellas versiones locales de vuestra rama que tengáis (en todas salvo en aquella desde la que hayáis hecho el *rebase*).
+
+Si tenéis vuestra rama en distintos sitios, debéis realizar los siguientes pasos en los repositorios locales afectados:
+
+>**Aviso**: Aseguraos de que todo vuestro trabajo local esté actualizado en remoto. Tras seguir estos pasos, todo el trabajo local que no se haya subido se perderá (incluso los commits locales).
+
+1.- Situarnos en la rama afectada (donde obtuvisteis los cambios):
+
+```shell
+git checkout -b sprintX/<ID_UT>
+```
+2.- Descargamos la última versión remota de todas las ramas:
+
+```shell
+git fetch --all
+```
+*(esto no generará conflictos, pues no hará comparaciones con las locales)*
+
+3.- Reseteamos la rama local para que coincida con la remota:
+```shell
+git reset --hard origin/sprintX/<ID_UT>
+```
+
+En principio con esto debería estar todo arreglado. En el caso de que tengáis más problemas, borrar el repositorio local y volver a clonarlo seguramente solucione el problema.
+
+>Recordad: si tenéis problemas con vuestro repositorio local, **nunca** hagáis push con el repositorio remoto, porque vuestros problemas acabarán ahí. Siempre es mejor borrar el repositorio y volverlo a clonar, que tener que arreglar errores que hayan acabado en la versión remota. *(Siempre y cuando no tengáis trabajo local sin pushear, en ese caso mejor no perderlo, claro)*
 
 ## Bibliografía
 
@@ -130,3 +164,5 @@ git rebase sprintX/master
 - https://gist.github.com/aaossa/7db152babead60ab097ba2c898d379a6
 - https://stackoverflow.com/questions/4470523/create-a-branch-in-git-from-another-branch/27318410
 - https://www.atlassian.com/git/tutorials/cherry-pick
+- https://git-scm.com/docs/git-rebase
+- https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files
