@@ -123,7 +123,7 @@ Future<Null> getTransportifyPoint(bool origen) async {
                   },
                   validator: (value) {
                     if (puntoOrigen == null || puntoDestino == null)
-                      return 'Introduzca los puntos origen';
+                      return 'Introduzca los puntos origen y destino';
                     else if (puntoDestino.id == puntoOrigen.id)
                       return 'Los puntos no deben coincidir.';
                     else
