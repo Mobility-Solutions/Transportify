@@ -3,7 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../modelos/Paquete.dart';
 import 'Datos.dart';
 
-class PaqueteTransportify{
+class PaqueteTransportifyBD{
+  static const String coleccion_paquetes = 'paquetes';
+
   static const String atributo_nombre="nombre";
   static const String atributo_alto="alto";
   static const String atributo_ancho= "ancho";
@@ -16,11 +18,20 @@ class PaqueteTransportify{
   static const String atributo_precio = "precio";
   static const String atributo_fecha_entrega = "fecha_entrega";
 
-  static const String coleccion_paquetes = 'paquetes';
+  static String obtenerNombre(DocumentSnapshot snapshot) => snapshot[atributo_nombre];
+  static double obtenerAlto(DocumentSnapshot snapshot) => snapshot[atributo_alto];
+  static double obtenerAncho(DocumentSnapshot snapshot) => snapshot[atributo_ancho];
+  static bool obtenerFragil(DocumentSnapshot snapshot) => snapshot[atributo_fragil];
+  static String obtenerIdDestino(DocumentSnapshot snapshot) => snapshot[atributo_id_destino];
+  static String obtenerIdOrigen(DocumentSnapshot snapshot) => snapshot[atributo_id_origen];
+  static String obtenerIdRemitente(DocumentSnapshot snapshot) => snapshot[atributo_id_remitente];
+  static double obtenerLargo(DocumentSnapshot snapshot) => snapshot[atributo_largo];
+  static double obtenerPeso(DocumentSnapshot snapshot) => snapshot[atributo_peso];
+  static double obtenerPrecio(DocumentSnapshot snapshot) => snapshot[atributo_precio];
+  static DateTime obtenerFechaEntrega(DocumentSnapshot snapshot) => snapshot[atributo_fecha_entrega];
 
   static Map<String, dynamic> paqueteToMap(Paquete paquete) {
     Map<String, dynamic> map = Map<String, dynamic>();
-
     map[atributo_nombre] = paquete.nombre;
     map[atributo_alto] = paquete.alto;
     map[atributo_ancho] = paquete.ancho;
