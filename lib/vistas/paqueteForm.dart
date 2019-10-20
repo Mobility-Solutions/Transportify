@@ -32,7 +32,6 @@ class _PaqueteFormState extends State<PaqueteForm> {
 
   DateTime _fechaentrega;
 
-
   final _formKey = GlobalKey<FormState>();
 
   Future<Null> getTransportifyPoint(bool origen) async {
