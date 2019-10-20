@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:transportify/middleware/PaqueteTransportify.dart';
+import 'package:transportify/middleware/PaqueteTransportifyBD.dart';
 import 'package:transportify/middleware/PuntoTransportifyBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/util/style.dart';
@@ -32,7 +32,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
 
   DateTime _fechaentrega;
 
-  PaqueteTransportify conexionBD = new PaqueteTransportify();
+  PaqueteTransportifyBD conexionBD = new PaqueteTransportifyBD();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -168,7 +168,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                     decoration: returnInputDecoration("Alto(cm)"),
                     controller: altoController,
                     validator: (value) {
-                      if (value.isEmpty || double.parse(value) < 0)
+                      if (value.isEmpty || double.parse(value) <= 0)
                         return 'Alto(cm)';
                       else
                         return null;
@@ -183,7 +183,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                       decoration: returnInputDecoration("Ancho(cm)"),
                       controller: anchoController,
                       validator: (value) {
-                        if (value.isEmpty || double.parse(value) < 0)
+                        if (value.isEmpty || double.parse(value) <= 0)
                           return 'Ancho(cm)';
                         else
                           return null;
@@ -199,7 +199,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                       decoration: returnInputDecoration("Largo(cm)"),
                       controller: largoController,
                       validator: (value) {
-                        if (value.isEmpty || double.parse(value) < 0)
+                        if (value.isEmpty || double.parse(value) <= 0)
                           return 'Largo(cm)';
                         else
                           return null;
@@ -371,7 +371,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
           if (hintText == "ACEPTAR") {
             if (_formKey.currentState.validate()) {
               Paquete paquete = getPaqueteFromControllers();
-              PaqueteTransportify.crearPaqueteEnBD(paquete);
+              PaqueteTransportifyBD.crearPaqueteEnBD(paquete);
               doneDialog();
             }
           } else {
