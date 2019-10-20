@@ -118,7 +118,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                       },
                       controller: pesoController,
                       validator: (value) {
-                        if (value.isEmpty)
+                        if (value.isEmpty || double.parse(value) <= 0)
                           return 'Peso';
                         else
                           return null;
