@@ -32,7 +32,6 @@ class _PaqueteFormState extends State<PaqueteForm> {
 
   DateTime _fechaentrega;
 
-  PaqueteTransportifyBD conexionBD = new PaqueteTransportifyBD();
 
   final _formKey = GlobalKey<FormState>();
 
