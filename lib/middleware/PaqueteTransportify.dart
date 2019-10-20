@@ -4,6 +4,7 @@ import '../modelos/Paquete.dart';
 import 'Datos.dart';
 
 class PaqueteTransportify{
+  static const String atributo_nombre="nombre";
   static const String atributo_alto="alto";
   static const String atributo_ancho= "ancho";
   static const String atributo_fragil = "fragil";
@@ -13,12 +14,14 @@ class PaqueteTransportify{
   static const String atributo_largo = "largo";
   static const String atributo_peso = "peso";
   static const String atributo_precio = "precio";
+  static const String atributo_fecha_entrega = "fecha_entrega";
 
   static const String coleccion_paquetes = 'paquetes';
 
   static Map<String, dynamic> paqueteToMap(Paquete paquete) {
     Map<String, dynamic> map = Map<String, dynamic>();
 
+    map[atributo_nombre] = paquete.nombre;
     map[atributo_alto] = paquete.alto;
     map[atributo_ancho] = paquete.ancho;
     map[atributo_fragil] = paquete.fragil;
@@ -28,6 +31,7 @@ class PaqueteTransportify{
     map[atributo_largo] = paquete.largo;
     map[atributo_peso] = paquete.peso;
     map[atributo_precio] = paquete.precio;
+    map[atributo_fecha_entrega] = paquete.fechaEntrega;
     return map;
   }
 

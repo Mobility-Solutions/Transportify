@@ -30,7 +30,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
 
   PuntoTransportify puntoOrigen, puntoDestino;
 
-  String _date;
+  DateTime _fechaentrega;
 
   PaqueteTransportify conexionBD = new PaqueteTransportify();
 
@@ -42,12 +42,14 @@ class _PaqueteFormState extends State<PaqueteForm> {
         builder: (_) {
           return PuntosDialog();
         });
-    if (origen) {
-      puntoOrigen = returnPunto;
-      origenController.text = returnPunto.nombre;
-    } else if (!origen) {
-      puntoDestino = returnPunto;
-      destinoController.text = returnPunto.nombre;
+    if (returnPunto != null) {
+      if (origen) {
+        puntoOrigen = returnPunto;
+        origenController.text = puntoOrigen?.nombre;
+      } else if (!origen) {
+        puntoDestino = returnPunto;
+        destinoController.text = puntoDestino?.nombre;
+      }
     }
   }
 
@@ -95,6 +97,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 decoration: returnInputDecoration("Nombre"),
+                controller: nombreController,
                 validator: (value) {
                   if (value.isEmpty)
                     return 'Nombre';
@@ -165,7 +168,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                     decoration: returnInputDecoration("Alto(cm)"),
                     controller: altoController,
                     validator: (value) {
-                      if (value.isEmpty)
+                      if (value.isEmpty || double.parse(value) < 0)
                         return 'Alto(cm)';
                       else
                         return null;
@@ -180,7 +183,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                       decoration: returnInputDecoration("Ancho(cm)"),
                       controller: anchoController,
                       validator: (value) {
-                        if (value.isEmpty)
+                        if (value.isEmpty || double.parse(value) < 0)
                           return 'Ancho(cm)';
                         else
                           return null;
@@ -196,7 +199,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                       decoration: returnInputDecoration("Largo(cm)"),
                       controller: largoController,
                       validator: (value) {
-                        if (value.isEmpty)
+                        if (value.isEmpty || double.parse(value) < 0)
                           return 'Largo(cm)';
                         else
                           return null;
@@ -219,8 +222,10 @@ class _PaqueteFormState extends State<PaqueteForm> {
                   getTransportifyPoint(true);
                 },
                 validator: (value) {
-                  if (value.isEmpty || puntoDestino.id == puntoOrigen.id)
-                    return 'El punto de origen y destino no deben coincidir.';
+                  if (puntoOrigen == null || puntoDestino == null)
+                    return 'Introduzca los puntos origen y destino';
+                  else if (puntoDestino.id == puntoOrigen.id)
+                    return 'Los puntos no deben coincidir.';
                   else
                     return null;
                 },
@@ -238,8 +243,10 @@ class _PaqueteFormState extends State<PaqueteForm> {
                   getTransportifyPoint(false);
                 },
                 validator: (value) {
-                  if (value.isEmpty || puntoDestino.id == puntoOrigen.id)
-                    return 'El punto de origen y destino no deben coincidir.';
+                  if (puntoOrigen == null || puntoDestino == null)
+                    return 'Introduzca los puntos origen y destino';
+                  else if (puntoDestino.id == puntoOrigen.id)
+                    return 'Los puntos no deben coincidir.';
                   else
                     return null;
                 },
@@ -255,15 +262,17 @@ class _PaqueteFormState extends State<PaqueteForm> {
                         containerHeight: 200.0,
                       ),
                       showTitleActions: true,
-                      minTime: DateTime.now(),
+                      minTime: new DateTime(DateTime.now().year,
+                          DateTime.now().month, DateTime.now().day + 1),
                       maxTime: new DateTime(DateTime.now().year + 3),
                       //onChanged: (date) {print ('change $date');},
                       onConfirm: (date) {
-                    _date = '${date.year} - ${date.month} - ${date.day}';
+                    _fechaentrega = date;
+                    String _date = '${date.day} - ${date.month} - ${date.year}';
                     setState(() {
                       fechaController.text = _date;
                     });
-                  }, currentTime: DateTime.now(), locale: LocaleType.en);
+                  }, currentTime: DateTime.now(), locale: LocaleType.es);
                 },
                 keyboardType: TextInputType.datetime,
                 autofocus: false,
@@ -283,7 +292,10 @@ class _PaqueteFormState extends State<PaqueteForm> {
                   Flexible(
                       child: Text(
                     'Frágil',
-                    style: TextStyle(color: Colors.white,fontSize: 18.0,),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.0,
+                    ),
                   )),
                   Flexible(
                     child: Checkbox(
@@ -310,7 +322,9 @@ class _PaqueteFormState extends State<PaqueteForm> {
                 height: 80.0, color: TransportifyColors.primarySwatch),
             new Row(
               children: <Widget>[
-                SizedBox(width: 15,),
+                SizedBox(
+                  width: 15,
+                ),
                 Expanded(
                   child: buildButtonContainer("ACEPTAR"),
                 ),
@@ -320,7 +334,9 @@ class _PaqueteFormState extends State<PaqueteForm> {
                 Expanded(
                   child: buildButtonContainer("CANCELAR"),
                 ),
-                SizedBox(width: 15,),
+                SizedBox(
+                  width: 15,
+                ),
               ],
             ),
           ],
@@ -334,27 +350,33 @@ class _PaqueteFormState extends State<PaqueteForm> {
     double _ancho = double.parse(anchoController.text);
     double _largo = double.parse(largoController.text);
     double _peso = double.parse(pesoController.text);
+    String _nombre = nombreController.text;
+    print(_nombre);
 
     return new Paquete(
+        nombre: _nombre,
         alto: _alto,
         ancho: _ancho,
         largo: _largo,
         peso: _peso,
         fragil: _fragil,
         origenId: puntoOrigen.id,
-        destinoId: puntoDestino.id);
+        destinoId: puntoDestino.id,
+        fechaEntrega: _fechaentrega);
   }
 
   Widget buildButtonContainer(String hintText) {
     return GestureDetector(
         onTap: () {
           if (hintText == "ACEPTAR") {
-            if(_formKey.currentState.validate()){
-            Paquete paquete = getPaqueteFromControllers();
-            PaqueteTransportify.crearPaqueteEnBD(paquete);
-            doneDialog();
+            if (_formKey.currentState.validate()) {
+              Paquete paquete = getPaqueteFromControllers();
+              PaqueteTransportify.crearPaqueteEnBD(paquete);
+              doneDialog();
             }
-          } else {Navigator.pop(context);}
+          } else {
+            Navigator.pop(context);
+          }
         },
         child: Container(
           height: 56.0,
@@ -375,21 +397,21 @@ class _PaqueteFormState extends State<PaqueteForm> {
   }
 
   doneDialog() async {
-  await showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text("Paquete creado"),
-      content: Text("El paquete ha sido creado con éxito."),
-          actions: [
-            new FlatButton(
-              child: new Text("CERRAR"),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-  );
-  Navigator.pop(context);
-}
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Paquete creado"),
+        content: Text("El paquete ha sido creado con éxito."),
+        actions: [
+          new FlatButton(
+            child: new Text("CERRAR"),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
+    Navigator.pop(context);
+  }
 }
 
 class PuntosDialog extends StatefulWidget {

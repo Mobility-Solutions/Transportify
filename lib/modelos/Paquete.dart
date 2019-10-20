@@ -5,6 +5,7 @@ import 'Usuario.dart';
 
 class Paquete {
   String id;
+  String nombre;
   double largo, ancho, alto;
   double peso;
   bool fragil;
@@ -12,9 +13,11 @@ class Paquete {
   String origenId;
   String remitenteId;
   double precio;
+  DateTime fechaEntrega;
 
   Paquete(
-      {this.alto,
+      {this.nombre,
+      this.alto,
       this.ancho,
       this.largo,
       this.peso,
@@ -22,10 +25,12 @@ class Paquete {
       this.destinoId,
       this.origenId,
       this.remitenteId,
-      this.precio});
+      this.precio,
+      this.fechaEntrega});
 
   Paquete.fromSnapshot(DocumentSnapshot snapshot) {
     this.id = snapshot.documentID;
+    this.nombre = snapshot['nombre'];
     this.largo = snapshot['largo'];
     this.ancho = snapshot['ancho'];
     this.alto = snapshot['alto'];
@@ -36,6 +41,7 @@ class Paquete {
     this.destinoId = snapshot['id_destino'];
     this.origenId = snapshot['id_origen'];
     this.remitenteId = snapshot['id_remitente'];
+    this.fechaEntrega = snapshot['fecha_entrega'];
   }
 }
 
