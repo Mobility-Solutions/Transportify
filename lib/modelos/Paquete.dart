@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'PuntoTransportify.dart';
-import 'Usuario.dart';
+import 'package:transportify/middleware/PaqueteTransportifyBD.dart';
 
 class Paquete {
   String id;
+  String nombre;
   double largo, ancho, alto;
   double peso;
   bool fragil;
@@ -12,9 +11,11 @@ class Paquete {
   String origenId;
   String remitenteId;
   double precio;
+  DateTime fechaEntrega;
 
   Paquete(
-      {this.alto,
+      {this.nombre,
+      this.alto,
       this.ancho,
       this.largo,
       this.peso,
@@ -22,20 +23,22 @@ class Paquete {
       this.destinoId,
       this.origenId,
       this.remitenteId,
-      this.precio});
+      this.precio,
+      this.fechaEntrega});
 
   Paquete.fromSnapshot(DocumentSnapshot snapshot) {
     this.id = snapshot.documentID;
-    this.largo = snapshot['largo'];
-    this.ancho = snapshot['ancho'];
-    this.alto = snapshot['alto'];
-    this.peso = snapshot['peso'];
-    this.fragil = snapshot['fragil'];
-    this.precio = snapshot['precio'];
-
-    this.destinoId = snapshot['id_destino'];
-    this.origenId = snapshot['id_origen'];
-    this.remitenteId = snapshot['id_remitente'];
+    this.nombre = PaqueteTransportifyBD.obtenerNombre(snapshot);
+    this.largo = PaqueteTransportifyBD.obtenerLargo(snapshot);
+    this.ancho = PaqueteTransportifyBD.obtenerAncho(snapshot);
+    this.alto = PaqueteTransportifyBD.obtenerAlto(snapshot);
+    this.peso = PaqueteTransportifyBD.obtenerPeso(snapshot);
+    this.fragil = PaqueteTransportifyBD.obtenerFragil(snapshot);
+    this.precio = PaqueteTransportifyBD.obtenerPrecio(snapshot);
+    this.fechaEntrega = PaqueteTransportifyBD.obtenerFechaEntrega(snapshot);
+    this.destinoId = PaqueteTransportifyBD.obtenerIdDestino(snapshot);
+    this.origenId = PaqueteTransportifyBD.obtenerIdOrigen(snapshot);
+    this.remitenteId = PaqueteTransportifyBD.obtenerIdRemitente(snapshot);
   }
 }
 
