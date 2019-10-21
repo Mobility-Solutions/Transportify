@@ -79,7 +79,7 @@ class TransportifyFormButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPresed,
+      onTap: onPressed,
       child: Container(
         height: 56.0,
         width: MediaQuery.of(context).size.width,
