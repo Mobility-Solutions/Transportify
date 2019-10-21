@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:transportify/middleware/Datos.dart';
-import 'package:transportify/modelos/PuntoTransportify.dart';
 
 class EnviosBD {
   static const String coleccion_envios = 'envios';
@@ -18,6 +17,8 @@ class EnviosBD {
 
 static Function(BuildContext, AsyncSnapshot<QuerySnapshot>) _obtenerListaEnviosBuilder(Function(int estado) onTapMethod) {
     Function(BuildContext, AsyncSnapshot<dynamic>) listaEnviosBuilder =  (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+      if (!snapshot.hasData) return const Text('Cargando...');
+      
       //Metodo constructor del dropdown
       Widget listView;
 
