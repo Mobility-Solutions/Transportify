@@ -168,20 +168,22 @@ Future<Null> getTransportifyPoint(bool origen) async {
                  * */
                 Row(
                 children: <Widget>[
-                  Expanded(
+                  
+                  Container(
+                    width: 180,
                     child: TextFormField(
                       maxLines: 1,
                       keyboardType: TextInputType.number,
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
-                      decoration: returnInputDecoration("Peso"),
+                      decoration: returnInputDecoration("Carga Máxima (kg.)"),
                       onChanged: (text) {
                         peso = double.parse(text);
                       },
                       controller: pesoController,
                       validator: (value) {
                         if (value.isEmpty || double.parse(value) <= 0)
-                          return 'Peso';
+                          return 'Introduzca carga máxima.';
                         else
                           return null;
                       },
@@ -192,7 +194,7 @@ Future<Null> getTransportifyPoint(bool origen) async {
                     child: RaisedButton(
                       color: TransportifyColors.primarySwatch[900],
                       child: Icon(
-                        Icons.add,
+                        Icons.keyboard_arrow_up,
                         color: Colors.white,
                       ),
                       onPressed: () {
@@ -205,7 +207,7 @@ Future<Null> getTransportifyPoint(bool origen) async {
                     child: RaisedButton(
                       color: TransportifyColors.primarySwatch[900],
                       child: Icon(
-                        Icons.remove,
+                        Icons.keyboard_arrow_down,
                         color: Colors.white,
                       ),
                       onPressed: () {
@@ -246,7 +248,7 @@ Future<Null> getTransportifyPoint(bool origen) async {
                       setState(() {
                         fechaController.text = _date;
                       });
-                    }, currentTime: DateTime.now(), locale: LocaleType.en);
+                    }, currentTime: DateTime.now(), locale: LocaleType.es);
                   },
                   keyboardType: TextInputType.datetime,
                   autofocus: false,
@@ -288,7 +290,7 @@ Future<Null> getTransportifyPoint(bool origen) async {
                       setState(() {
                         horaController.text = _time;
                       });
-                    }, currentTime: DateTime.now(), locale: LocaleType.en);
+                    }, currentTime: DateTime.now(), locale: LocaleType.es);
                   },
                   decoration: returnInputDecoration(
                     "Hora de comienzo del viaje"
