@@ -9,8 +9,6 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import '../modelos/Paquete.dart';
 
 class PaqueteForm extends StatefulWidget {
-  static const String title = 'Nuevo Paquete';
-
   @override
   _PaqueteFormState createState() => _PaqueteFormState();
 }
@@ -59,17 +57,6 @@ class _PaqueteFormState extends State<PaqueteForm> {
     if (peso - 1 >= 0.0) pesoController.text = (peso -= 1).toString();
   }
 
-  InputDecoration returnInputDecoration(String hintText) {
-    return InputDecoration(
-      suffixIcon: hintText.startsWith("Punto") ? Icon(Icons.location_on) : null,
-      hintText: hintText,
-      hintStyle: TextStyle(color: TransportifyColors.primarySwatch),
-      filled: true,
-      fillColor: Colors.white,
-      contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +66,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: Text(PaqueteForm.title),
+          title: Text(TransportifyLabels.nuevoPaquete),
           backgroundColor: TransportifyColors.primarySwatch,
           elevation: 0.0,
         ),
@@ -94,7 +81,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                 keyboardType: TextInputType.text,
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
-                decoration: returnInputDecoration("Nombre"),
+                decoration: TransportifyMethods.returnTextFormDecoration("Nombre"),
                 controller: nombreController,
                 validator: (value) {
                   if (value.isEmpty)
@@ -112,7 +99,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                       keyboardType: TextInputType.number,
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
-                      decoration: returnInputDecoration("Peso"),
+                      decoration: TransportifyMethods.returnTextFormDecoration("Peso"),
                       onChanged: (text) {
                         peso = double.parse(text);
                       },
@@ -163,7 +150,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                     keyboardType: TextInputType.number,
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
-                    decoration: returnInputDecoration("Alto(cm)"),
+                    decoration: TransportifyMethods.returnTextFormDecoration("Alto(cm)"),
                     controller: altoController,
                     validator: (value) {
                       if (value.isEmpty || double.parse(value) <= 0)
@@ -178,7 +165,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                       keyboardType: TextInputType.number,
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
-                      decoration: returnInputDecoration("Ancho(cm)"),
+                      decoration: TransportifyMethods.returnTextFormDecoration("Ancho(cm)"),
                       controller: anchoController,
                       validator: (value) {
                         if (value.isEmpty || double.parse(value) <= 0)
@@ -194,7 +181,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                       keyboardType: TextInputType.number,
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
-                      decoration: returnInputDecoration("Largo(cm)"),
+                      decoration: TransportifyMethods.returnTextFormDecoration("Largo(cm)"),
                       controller: largoController,
                       validator: (value) {
                         if (value.isEmpty || double.parse(value) <= 0)
@@ -214,7 +201,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 controller: origenController,
                 decoration:
-                    returnInputDecoration("Punto Transportify de origen"),
+                    TransportifyMethods.returnTextFormDecoration("Punto Transportify de origen"),
                 onTap: () {
                   FocusScope.of(context).requestFocus(FocusNode());
                   getTransportifyPoint(true);
@@ -235,7 +222,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 controller: destinoController,
                 decoration:
-                    returnInputDecoration("Punto Transportify de destino"),
+                    TransportifyMethods.returnTextFormDecoration("Punto Transportify de destino"),
                 onTap: () {
                   FocusScope.of(context).requestFocus(FocusNode());
                   getTransportifyPoint(false);
@@ -275,7 +262,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                 keyboardType: TextInputType.datetime,
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
-                decoration: returnInputDecoration(
+                decoration: TransportifyMethods.returnTextFormDecoration(
                     "Fecha de entrega al punto Transportify"),
                 validator: (value) {
                   if (value.isEmpty)
@@ -364,52 +351,23 @@ class _PaqueteFormState extends State<PaqueteForm> {
   }
 
   Widget buildButtonContainer(String hintText) {
-    return GestureDetector(
-        onTap: () {
-          if (hintText == "ACEPTAR") {
-            if (_formKey.currentState.validate()) {
-              Paquete paquete = getPaqueteFromControllers();
-              PaqueteTransportifyBD.crearPaqueteEnBD(paquete);
-              doneDialog();
-            }
-          } else {
-            Navigator.pop(context);
+    return TransportifyFormButton(
+      text: hintText,
+      onPressed: () {
+        if (hintText == "ACEPTAR") {
+          if (_formKey.currentState.validate()) {
+            Paquete paquete = getPaqueteFromControllers();
+            PaqueteTransportifyBD.crearPaqueteEnBD(paquete);
+            TransportifyMethods.doneDialog(context,"Paquete creado",content:"El paquete ha sido creado con éxito");
           }
-        },
-        child: Container(
-          height: 56.0,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.0),
-              color: TransportifyColors.primarySwatch[900]),
-          child: Center(
-            child: Text(
-              hintText,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18.0,
-              ),
-            ),
-          ),
-        ));
+        } else {
+          Navigator.pop(context);
+        }
+      },
+    );
   }
 
-  doneDialog() async {
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Paquete creado"),
-        content: Text("El paquete ha sido creado con éxito."),
-        actions: [
-          new FlatButton(
-            child: new Text("CERRAR"),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
-      ),
-    );
-    Navigator.pop(context);
-  }
+  
 }
 
 class PuntosDialog extends StatefulWidget {
