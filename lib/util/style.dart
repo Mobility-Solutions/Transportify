@@ -71,7 +71,7 @@ class TransportifyContainer extends StatelessWidget {
 */
 
 class TransportifyFormButton extends StatelessWidget {
-  final GestureTapCallback onPresed;
+  final GestureTapCallback onPressed;
   final String text;
 
   TransportifyFormButton({@required this.onPresed, this.text});
