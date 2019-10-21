@@ -353,7 +353,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
   Widget buildButtonContainer(String hintText) {
     return TransportifyFormButton(
       text: hintText,
-      onPresed: () {
+      onPressed: () {
         if (hintText == "ACEPTAR") {
           if (_formKey.currentState.validate()) {
             Paquete paquete = getPaqueteFromControllers();
