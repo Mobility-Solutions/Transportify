@@ -15,19 +15,34 @@ class PaqueteListView extends StatefulWidget {
 
 class _PaqueteListViewState extends State<PaqueteListView>{
 
-  static bool pressed = false;
-  static int paquetesEncontrados = 0;
-  static String idPuntoOrigen = '';
-  static String idPuntoDestino = '';
-  static List<DocumentSnapshot> listaPaquetes = List<DocumentSnapshot>();
-  static ListView listaDePaquetes;
+  int paquetesEncontrados;
+  List<DocumentSnapshot> listaPaquetes = List<DocumentSnapshot>();
   final origenController = TextEditingController();
   final destinoController = TextEditingController();
-  static PuntoTransportify puntoOrigen, puntoDestino;
+  PuntoTransportify puntoOrigen, puntoDestino;
   bool visibilityList = false;
-
+  Text textoNPaquetes;
+  Visibility listaResultado;
   final _formKey = GlobalKey<FormState>();
 
+
+
+  Future<Null> getTransportifyPoint(bool origen) async {
+    PuntoTransportify returnPunto = await showDialog(
+        context: this.context,
+        builder: (_) {
+          return PuntosDialog();
+        });
+    if (returnPunto != null) {
+      if (origen) {
+        puntoOrigen = returnPunto;
+        origenController.text = puntoOrigen?.nombre;
+      } else if (!origen) {
+        puntoDestino = returnPunto;
+        destinoController.text = puntoDestino?.nombre;
+      }
+    }
+  }
 
 
   @override
@@ -37,6 +52,7 @@ class _PaqueteListViewState extends State<PaqueteListView>{
     child: Scaffold(
       appBar: AppBar(
         title: Text("Buscar Paquete"),
+        backgroundColor: TransportifyColors.primarySwatch,
       ),
       body: 
       Padding(
@@ -88,12 +104,19 @@ class _PaqueteListViewState extends State<PaqueteListView>{
                     getTransportifyPoint(false);
                   },
                   validator: (value) {
-                    if (puntoOrigen == null || puntoDestino == null)
+                    if (puntoOrigen == null || puntoDestino == null){
+                      visibilityList = false; listaPaquetes.clear(); 
                       return 'Introduzca los puntos origen y destino';
-                    else if (puntoDestino.id == puntoOrigen.id)
+                      
+                    }
+                    else if (puntoDestino.id == puntoOrigen.id){
+                      visibilityList = false; listaPaquetes.clear();
                       return 'Los puntos no deben coincidir.';
-                    else
+                    }
+                    else{
+                      visibilityList = true;
                       return null;
+                    }
                   },
                 ),
   
@@ -106,11 +129,23 @@ class _PaqueteListViewState extends State<PaqueteListView>{
                       Container(
                         margin: const EdgeInsets.all(10),
                         child:
-                           
-                          Text(
-                            'Paquetes encontrados:  $paquetesEncontrados',
+                          Row(
+                            children: <Widget>[
+                              Text(
+                            'Paquetes encontrados:  ',
                             style: TextStyle ( color : Colors.white, fontSize: 20),
-                          ),
+                              ),
+
+                              visibilityList ?
+                              textoNPaquetes = new Text(
+                                '${paquetesEncontrados}',
+                                style: TextStyle ( color : Colors.white, fontSize: 20),
+                              ) : new Container(),
+                          
+                            ],
+                          )
+                           
+                            
 
 
                         
@@ -128,6 +163,7 @@ class _PaqueteListViewState extends State<PaqueteListView>{
                             onPressed: (){
                               print('botón pulsado');
                               _onChangedVisibility(true);
+                             
                             },
                           ),
                         ),
@@ -136,8 +172,10 @@ class _PaqueteListViewState extends State<PaqueteListView>{
                   ),
             
                 visibilityList ? new Expanded(
+                  child: listaResultado = new Visibility(
+                  visible: visibilityList,
                   child: sacarListaPaquetes(),
-                ) : new Container(),
+                ),) : new Container(),
              
           ],
         ),
@@ -148,15 +186,12 @@ class _PaqueteListViewState extends State<PaqueteListView>{
   }
 
   void _onChangedVisibility(bool visibility){
-    if (listaPaquetes.length == 0){
-      
-    }
-    if (_formKey.currentState.validate()){
       setState(() {
-        visibilityList = visibility; 
+        if (_formKey.currentState.validate()){
         paquetesEncontrados = listaPaquetes.length;
+        listaPaquetes.clear();
+        }
       });
-    }
   }
 
   InputDecoration returnInputDecoration(String hintText) {
@@ -172,41 +207,24 @@ class _PaqueteListViewState extends State<PaqueteListView>{
     }
 
 
-    Future<Null> getTransportifyPoint(bool origen) async {
-    PuntoTransportify returnPunto = await showDialog(
-        context: this.context,
-        builder: (_) {
-          return PuntosDialog();
-        });
-    if (returnPunto != null) {
-      if (origen) {
-        puntoOrigen = returnPunto;
-        origenController.text = puntoOrigen?.nombre;
-      } else if (!origen) {
-        puntoDestino = returnPunto;
-        destinoController.text = puntoDestino?.nombre;
-      }
-    }
-  }
-
 
   static StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(
       Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
       return Datos.obtenerStreamBuilderCollectionBD('paquetes', builder);
     }
   
-  static Widget sacarListaPaquetes () {
+   Widget sacarListaPaquetes () {
     return obtenerStreamBuilderListado(obtenerListaBuilder());
   }
 
-  static Function (BuildContext, AsyncSnapshot<QuerySnapshot>)
+ Function (BuildContext, AsyncSnapshot<QuerySnapshot>)
     obtenerListaBuilder(){
       return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
       return _sacarListaPaquetes(context,snapshot);
     };
   }
 
-  static Widget _sacarListaPaquetes(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+  Widget _sacarListaPaquetes(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
     if (!snapshot.hasData) return const Text('Cargando...');
     List<DocumentSnapshot> coleccion = snapshot.data.documents;
     listaPaquetes.clear();
@@ -215,9 +233,9 @@ class _PaqueteListViewState extends State<PaqueteListView>{
         listaPaquetes.add(coleccion[i]);
       }
     }
-
+    paquetesEncontrados = listaPaquetes.length;
     
-    listaDePaquetes = ListView.separated(
+    return ListView.separated(
           
           padding : const EdgeInsets.only(left: 20,right: 20,top: 10,bottom: 10),
           itemCount : listaPaquetes.length,
@@ -353,7 +371,6 @@ class _PaqueteListViewState extends State<PaqueteListView>{
           },
           separatorBuilder: (BuildContext context, int index) => const Divider(),
         );
-      return listaDePaquetes;
   }
 
 
