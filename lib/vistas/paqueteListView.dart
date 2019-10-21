@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:transportify/middleware/PuntoTransportifyBD.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/middleware/Datos.dart';
-import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 
 class PaqueteListView extends StatefulWidget {
@@ -18,117 +17,178 @@ class _PaqueteListViewState extends State<PaqueteListView>{
 
   static bool pressed = false;
   static int paquetesEncontrados = 0;
-  String _ciudadOrigenSeleccionada;
-  String _ciudadDestinoSeleccionada;
   static String idPuntoOrigen = '';
   static String idPuntoDestino = '';
   static List<DocumentSnapshot> listaPaquetes = List<DocumentSnapshot>();
-  
-  //paquetesEncontrados = listaPaquetes.length;
-  
+  static ListView listaDePaquetes;
+  final origenController = TextEditingController();
+  final destinoController = TextEditingController();
+  static PuntoTransportify puntoOrigen, puntoDestino;
+  bool visibilityList = false;
+
+  final _formKey = GlobalKey<FormState>();
+
+
+
   @override
   Widget build(BuildContext context) {
-
-   
-    
-
-    
-    return Scaffold(
+    return Form(
+    key:_formKey, 
+    child: Scaffold(
       appBar: AppBar(
         title: Text("Buscar Paquete"),
       ),
       body: 
+      Padding(
+        padding: EdgeInsets.only(left:15.0, right: 15.0),
+        child:
         Column(
           children:[
-            
-            Text(
-              'Punto Origen',
-              textAlign: TextAlign.center,
-              style: TextStyle (fontSize: 20),
-            ),
 
-            Expanded(
-              child:
-                obtenerDropDownCiudadesYListadoPuntos(
-                  onCiudadChanged: (nuevaCiudad) {
-                    setState(() {
-                      this._ciudadOrigenSeleccionada = nuevaCiudad;
-                      idPuntoOrigen = _ciudadOrigenSeleccionada;
-                    });
-                  },
-                  puntoSeleccionado: _ciudadOrigenSeleccionada,
+                SizedBox(
+                  height: 20.0,
                 ),
-            ),
 
-            Text(
-              'Punto Destino',
-              textAlign: TextAlign.center,
-              style: TextStyle (fontSize: 20),
-            ),
-
-            
-              
-            Expanded(
-              child:
-                obtenerDropDownCiudadesYListadoPuntos(
-                  onCiudadChanged: (nuevaCiudad) {
-                    setState(() {
-                      this._ciudadDestinoSeleccionada = nuevaCiudad;
-                      idPuntoDestino = _ciudadDestinoSeleccionada;
-                      print(_ciudadDestinoSeleccionada);
-                    });
+                TextFormField(
+                  maxLines: 1,
+                  keyboardType: TextInputType.text,
+                  autofocus: false,
+                  style: TextStyle(color: TransportifyColors.primarySwatch),
+                  controller: origenController,
+                  decoration:
+                      returnInputDecoration("Punto Transportify de origen"),
+                  onTap: () {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                    getTransportifyPoint(true);
                   },
-                  puntoSeleccionado: _ciudadDestinoSeleccionada,
+                  validator: (value) {
+                    if (puntoOrigen == null || puntoDestino == null)
+                      return 'Introduzca los puntos origen y destino';
+                    else if (puntoDestino.id == puntoOrigen.id)
+                      return 'Los puntos no deben coincidir.';
+                    else
+                      return null;
+                  },
                 ),
-            ),
-            resultadosBusqueda,
-            new Expanded(
-              child: sacarListaPaquetes(),
-            )      
+
+
+                SizedBox(
+                  height: 20.0,
+                ),
+
+                TextFormField(
+                  maxLines: 1,
+                  autofocus: false,
+                  style: TextStyle(color: TransportifyColors.primarySwatch),
+                  controller: destinoController,
+                  decoration:
+                      returnInputDecoration("Punto Transportify de destino"),
+                  onTap: () {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                    getTransportifyPoint(false);
+                  },
+                  validator: (value) {
+                    if (puntoOrigen == null || puntoDestino == null)
+                      return 'Introduzca los puntos origen y destino';
+                    else if (puntoDestino.id == puntoOrigen.id)
+                      return 'Los puntos no deben coincidir.';
+                    else
+                      return null;
+                  },
+                ),
+  
+                Container(
+                  padding: const EdgeInsets.all(32),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children:[
+                      Container(
+                        margin: const EdgeInsets.all(10),
+                        child:
+                           
+                          Text(
+                            'Paquetes encontrados:  $paquetesEncontrados',
+                            style: TextStyle ( color : Colors.white, fontSize: 20),
+                          ),
+
+
+                        
+                      ),
+                        Container(
+                          decoration: new BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: TransportifyColors.primarySwatch[900],
+                          ),
+                          
+                          child:
+                          IconButton(
+                            icon: Icon(Icons.search),
+                            color: Colors.white,
+                            onPressed: (){
+                              print('botón pulsado');
+                              _onChangedVisibility(true);
+                            },
+                          ),
+                        ),
+                        ],
+                      ),
+                  ),
+            
+                visibilityList ? new Expanded(
+                  child: sacarListaPaquetes(),
+                ) : new Container(),
+             
           ],
         ),
+      ),
       backgroundColor: TransportifyColors.primarySwatch,
+    ),
     );
   }
 
-  
+  void _onChangedVisibility(bool visibility){
+    if (listaPaquetes.length == 0){
+      
+    }
+    if (_formKey.currentState.validate()){
+      setState(() {
+        visibilityList = visibility; 
+        paquetesEncontrados = listaPaquetes.length;
+      });
+    }
+  }
 
-  static Widget resultadosBusqueda = Container(
-    padding: const EdgeInsets.all(32),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children:[
-        Container(
-          margin: const EdgeInsets.all(10),
-          child: 
-            Text(
-              'Paquetes encontrados:  ${paquetesEncontrados}',
-              style: TextStyle ( color : Colors.white, fontSize: 20),
-            ),
-          
-        ),
-          Container(
-            decoration: new BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.blue,
-            ),
-            
-            child:
-            IconButton(
-              icon: Icon(Icons.search),
-              color: Colors.white,
-              onPressed: (){
-                
-                print('botón pulsado');
-                
-              },
-            ),
-          ),
-          ],
-        ),
-    );
-  
+  InputDecoration returnInputDecoration(String hintText) {
+    return InputDecoration(
+      suffixIcon: hintText.startsWith("Punto") ? Icon(Icons.location_on) : null,
+      hintText: hintText,
+      hintStyle: TextStyle(color: TransportifyColors.primarySwatch),
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+      );
+    }
+
+
+    Future<Null> getTransportifyPoint(bool origen) async {
+    PuntoTransportify returnPunto = await showDialog(
+        context: this.context,
+        builder: (_) {
+          return PuntosDialog();
+        });
+    if (returnPunto != null) {
+      if (origen) {
+        puntoOrigen = returnPunto;
+        origenController.text = puntoOrigen?.nombre;
+      } else if (!origen) {
+        puntoDestino = returnPunto;
+        destinoController.text = puntoDestino?.nombre;
+      }
+    }
+  }
+
 
   static StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(
       Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
@@ -149,14 +209,16 @@ class _PaqueteListViewState extends State<PaqueteListView>{
   static Widget _sacarListaPaquetes(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
     if (!snapshot.hasData) return const Text('Cargando...');
     List<DocumentSnapshot> coleccion = snapshot.data.documents;
-
+    listaPaquetes.clear();
     for (int i = 0; i<coleccion.length;i++){
-      if(coleccion[i]['id_destino'].toString() == idPuntoDestino && coleccion[i]['id_origen'].toString() == idPuntoOrigen){
+      if(coleccion[i]['id_destino'].toString() == puntoDestino.id && coleccion[i]['id_origen'].toString() == puntoOrigen.id){
         listaPaquetes.add(coleccion[i]);
       }
     }
 
-    return ListView.separated(
+    
+    listaDePaquetes = ListView.separated(
+          
           padding : const EdgeInsets.only(left: 20,right: 20,top: 10,bottom: 10),
           itemCount : listaPaquetes.length,
           itemBuilder : (BuildContext context, int index) {
@@ -169,54 +231,116 @@ class _PaqueteListViewState extends State<PaqueteListView>{
                     borderRadius: BorderRadius.circular(10),
                     color: Colors.white,
                   ),
-                  margin: const EdgeInsets.all(5),
                   height: 70,
-                  child: Row(         
+                  child: Row(
+                    
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,       
                     children: [
-                      Expanded(
-                        child:
                       Column(
-                        
+                        children:[
+                          Row(
+                            children: [
+                              Text(
+                                'Precio:',
+                                textAlign: TextAlign.right,
+                                style: TextStyle ( color : Colors.grey[500], fontSize: 18),      
+                              ),
+
+                              Text(
+                                ' ${listaPaquetes[index]['Precio']}',
+                                textAlign: TextAlign.right,
+                                style: TextStyle ( color : Colors.black, fontSize: 18),      
+                              ),
+                            ],
+                          ),
+
+                          Row(
+                            children: [
+
+                              Text(
+                            'Peso: ',
+                              textAlign: TextAlign.left,
+                              style: TextStyle ( color : Colors.grey[500], fontSize: 18),
+                            ),
+
+                            Text(
+                            '${listaPaquetes[index]['peso']}',
+                              textAlign: TextAlign.left,
+                              style: TextStyle ( color : Colors.black, fontSize: 18),
+                            ),
+
+                            ],
+                          ),
+
+                          Row(
+                            children: [
+                              Text(
+                                'Fragilidad: ',
+                                textAlign: TextAlign.left,
+                                style: TextStyle ( color : Colors.grey[500], fontSize: 18),
+                              ),
+
+                              Text(
+                                '${listaPaquetes[index]['fragil']}',
+                                textAlign: TextAlign.left,
+                                style: TextStyle ( color : Colors.black, fontSize: 18),
+                              ),
+
+                            ],
+                          )
+                          
+                          
+                          ],
+                        ),
+
+                       
+                      Column(
                         children: [
-                          Text(
-                            'Precio: ${listaPaquetes[index]['Precio']}',
-                            textAlign: TextAlign.right,
-                            style: TextStyle ( color : Colors.grey[500], fontSize: 20),
-                            
-                          ),
-                          Text(
-                            'Peso: ${listaPaquetes[index]['peso']}',
-                            textAlign: TextAlign.left,
-                            style: TextStyle ( color : Colors.grey[500], fontSize: 20),
-                          ),
-                          Text(
-                            'Fragilidad: ${listaPaquetes[index]['fragil']}',
-                            textAlign: TextAlign.left,
-                            style: TextStyle ( color : Colors.grey[500], fontSize: 20),
+                          Row(
+                            children:[
+                              Text(
+                                'Alto: ',
+                                style: TextStyle ( color : Colors.grey[500], fontSize: 18),
+                              ),
+
+                              Text(
+                                '${listaPaquetes[index]['alto']} cm',
+                                style: TextStyle ( color : Colors.black, fontSize: 18),
+                              ),
+                            ],
                           ),
                           
-                        ],
-                      ),
-                      ),
-                      Expanded(
-                        child:
-                      Column(
-                        children: [
-                          Text(
-                            'Alto: ${listaPaquetes[index]['alto']}',
-                            style: TextStyle ( color : Colors.grey[500], fontSize: 20),
+                          Row(
+                            children: <Widget>[
+                              Text(
+                                'Ancho: ',
+                                style: TextStyle ( color : Colors.grey[500], fontSize: 18),
+                              ),
+
+                              Text(
+                                '${listaPaquetes[index]['ancho']} cm',
+                                style: TextStyle ( color : Colors.black, fontSize: 18),
+                              ),
+
+                            ],
                           ),
-                          Text(
-                            'Ancho: ${listaPaquetes[index]['ancho']}',
-                            style: TextStyle ( color : Colors.grey[500], fontSize: 20),
-                          ),
-                          Text(
-                            'Largo: ${listaPaquetes[index]['largo']}',
-                            style: TextStyle ( color : Colors.grey[500], fontSize: 20),
+
+                          Row(
+                            children: <Widget>[
+                              Text(
+                                'Largo: ',
+                                style: TextStyle ( color : Colors.grey[500], fontSize: 18),
+                              ),
+
+                              Text(
+                                '${listaPaquetes[index]['largo']} cm',
+                                style: TextStyle ( color : Colors.black, fontSize: 18),
+                              ),
+                            ],
                           ),
                           
+                          
                         ],
-                      ),
                       ),
                     ],
                   ),
@@ -229,73 +353,41 @@ class _PaqueteListViewState extends State<PaqueteListView>{
           },
           separatorBuilder: (BuildContext context, int index) => const Divider(),
         );
-  }
-
-  static StreamBuilder<QuerySnapshot> obtenerStreamBuilderListadoPuntos(
-      Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
-    return Datos.obtenerStreamBuilderCollectionBD('puntos_transportify', builder);
-  }
-
-  static Widget obtenerDropDownCiudadesYListadoPuntos(
-      {Function(String) onCiudadChanged,
-      String puntoSeleccionado,
-      Function(PuntoTransportify) onPuntoChanged}) {
-    return obtenerStreamBuilderListadoPuntos(
-        _obtenerDropDownBuilder(onCiudadChanged, puntoSeleccionado, onPuntoChanged));
-  }
-
-  static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
-      _obtenerDropDownBuilder(Function(String) onCiudadChanged,
-          String puntoSeleccionado, Function(PuntoTransportify) onPuntoChanged) {
-    return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      return _obtenerDropDownCiudadesYListadoPuntos(
-          context, snapshot, onCiudadChanged, puntoSeleccionado, onPuntoChanged);
-    };
-  }
-
-  static Widget _obtenerDropDownCiudadesYListadoPuntos(
-      BuildContext context,
-      AsyncSnapshot<QuerySnapshot> snapshot,
-      Function(String) onCiudadChanged,
-      String puntoSeleccionado,
-      Function(PuntoTransportify) onPuntoChanged) {
-    if (!snapshot.hasData) return const Text('Cargando...');
-
-    List<DropdownMenuItem<String>> items = [];
-        List<DocumentSnapshot> coleccion = snapshot.data.documents;
-
-    
-    for (int i = 0; i<coleccion.length; i++) {
-      if(coleccion[i]['direccion'] != null)
-        items.add(
-          DropdownMenuItem<String>(
-            child: Text(coleccion[i]['ciudad']+', '+coleccion[i]['direccion']),
-            value: coleccion[i].documentID,
-          ),
-        );
-    }
-
-    
-
-    return Column(
-      children: [
-        DropdownButton<String>(
-          isExpanded: false,
-          iconSize: 20,
-          items: items,
-          onChanged: onCiudadChanged,
-          value: puntoSeleccionado,
-          hint: Text('Selecciona un Punto'),
-        ),
-        SizedBox(height: 50)
-      ],
-        
-        
-      
-      
-    );
+      return listaDePaquetes;
   }
 
 
 
+
+}
+
+
+class PuntosDialog extends StatefulWidget {
+  @override
+  _PuntosDialogState createState() => new _PuntosDialogState();
+}
+
+class _PuntosDialogState extends State<PuntosDialog> {
+  String _ciudadSeleccionada;
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+        title: Text("Puntos Transportify"),
+        content: Container(
+            height: 300,
+            width: 300,
+            child: Center(
+              child: PuntoTransportifyBD.obtenerDropDownCiudadesYListadoPuntos(
+                onPuntoChanged: (nuevoPunto) {
+                  Navigator.pop(context, nuevoPunto);
+                },
+                onCiudadChanged: (nuevaCiudad) {
+                  setState(() {
+                    this._ciudadSeleccionada = nuevaCiudad;
+                  });
+                },
+                ciudadValue: _ciudadSeleccionada,
+              ),
+            )));
+  }
 }
