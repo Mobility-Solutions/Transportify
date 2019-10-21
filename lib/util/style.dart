@@ -74,7 +74,7 @@ class TransportifyFormButton extends StatelessWidget {
   final GestureTapCallback onPressed;
   final String text;
 
-  TransportifyFormButton({@required this.onPresed, this.text});
+  TransportifyFormButton({@required this.onPressed, this.text});
 
   @override
   Widget build(BuildContext context) {
