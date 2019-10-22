@@ -145,7 +145,7 @@ class ViajeListViewState extends State<ViajeListView> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                        Text('${listaViajes[0]['fecha'].toDate().hour}', style: TextStyle(fontSize: 15, color: Colors.black54, height: 0.8,),textAlign: TextAlign.center,),
+                        Text('${listaViajes[0]['fecha'].toDate().hour}:${listaViajes[0]['fecha'].toDate().minute}', style: TextStyle(fontSize: 15, color: Colors.black54, height: 0.8,),textAlign: TextAlign.center,),
                         ],
                       ),
                       ],
@@ -169,7 +169,7 @@ class ViajeListViewState extends State<ViajeListView> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                        Text('${listaViajes[0]['fecha'].toDate().hour}', style: TextStyle(fontSize: 15, color: Colors.black54, height: 0.8,),textAlign: TextAlign.center,),
+                        Text('${listaViajes[0]['fecha'].toDate().hour}:${listaViajes[0]['fecha'].toDate().minute}', style: TextStyle(fontSize: 15, color: Colors.black54, height: 0.8,),textAlign: TextAlign.center,),
                         ],
                       ),
                       ],
