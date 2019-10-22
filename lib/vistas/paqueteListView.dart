@@ -138,7 +138,7 @@ class _PaqueteListViewState extends State<PaqueteListView>{
 
                               visibilityList ?
                               textoNPaquetes = new Text(
-                                '${paquetesEncontrados}',
+                                '$paquetesEncontrados',
                                 style: TextStyle ( color : Colors.white, fontSize: 20),
                               ) : new Container(),
                           
