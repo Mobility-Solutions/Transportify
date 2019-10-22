@@ -131,7 +131,7 @@ class ViajeListViewState extends State<ViajeListView> {
                   ),
 
                   Expanded(
-                    flex : 2,
+                    flex : 3,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
@@ -152,29 +152,9 @@ class ViajeListViewState extends State<ViajeListView> {
 
                     ),
                   ),
-
-                  Expanded(
-                    flex : 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          
-                        Text('${getDayName(listaViajes[0]['fecha'].toDate().weekday)} ${listaViajes[0]['fecha'].toDate().day}', style: TextStyle(fontSize: 18, color: Colors.black, height: 2.5),textAlign: TextAlign.center,),
-                        ],
-                      ),
-
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                        Text('${listaViajes[0]['fecha'].toDate().hour}:${listaViajes[0]['fecha'].toDate().minute}', style: TextStyle(fontSize: 15, color: Colors.black54, height: 0.8,),textAlign: TextAlign.center,),
-                        ],
-                      ),
-                      ],
-
-                    ),),]),),
+                  ]
+                  ),
+                  ),
                     onTap: () {print('Has seleccionado un viaje');},
                     );
                            
@@ -319,8 +299,12 @@ Future<Null> getTransportifyPoint(bool origen) async {
                     }
                   },
                 ),
-  
-                Container(
+                SafeArea(
+                  left: true,
+                  right: true,
+                  top: true,
+                  bottom: true,
+                  child: Container(
                   padding: const EdgeInsets.all(32),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -332,13 +316,13 @@ Future<Null> getTransportifyPoint(bool origen) async {
                           Row(
                             children: <Widget>[
                               Text(
-                            'Paquetes encontrados:  ',
+                            'Viajes encontrados:  ',
                             style: TextStyle ( color : Colors.white, fontSize: 20),
                               ),
 
                               visibilityList ?
                               textoNViajes = new Text(
-                                '${viajesEncontrados}',
+                                '$viajesEncontrados',
                                 style: TextStyle ( color : Colors.white, fontSize: 20),
                               ) : new Container(),
                           
@@ -356,8 +340,7 @@ Future<Null> getTransportifyPoint(bool origen) async {
                             color: TransportifyColors.primarySwatch[900],
                           ),
                           
-                          child:
-                          IconButton(
+                          child: IconButton(
                             icon: Icon(Icons.search),
                             color: Colors.white,
                             onPressed: (){
@@ -366,11 +349,11 @@ Future<Null> getTransportifyPoint(bool origen) async {
                              
                             },
                           ),
-                        ),
+                          ),
                         ],
                       ),
                   ),
-            
+                ),
                 visibilityList ? new Expanded(
                   child: listaResultado = new Visibility(
                   visible: visibilityList,
