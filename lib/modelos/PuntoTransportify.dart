@@ -1,11 +1,31 @@
-import 'package:transportify/modelos/PuntoGeografico.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:transportify/middleware/PuntoTransportifyBD.dart';
 
-class Viaje{
+class PuntoTransportify {
+  String id;
   String nombre;
   String direccion;
-  PuntoGeografico localizacion;
+  String ciudad;
+  double latitud, longitud;
 
-  Viaje(this.nombre, this.direccion, this.localizacion);
+  PuntoTransportify(
+      {this.nombre, this.direccion, this.ciudad, this.latitud, this.longitud});
 
+  PuntoTransportify.fromSnapshot(DocumentSnapshot snapshot) {
+    this.id = snapshot.documentID;
+    this.nombre = PuntoTransportifyBD.obtenerNombre(snapshot);
+    this.direccion = PuntoTransportifyBD.obtenerDireccion(snapshot);
+    this.ciudad = PuntoTransportifyBD.obtenerCiudad(snapshot);
+
+    GeoPoint localizacion = PuntoTransportifyBD.obtenerLocalizacion(snapshot);
+    this.latitud = localizacion?.latitude;
+    this.longitud = localizacion?.longitude;
+  }
+
+  @override
+  bool operator ==(o) => o is PuntoTransportify && o.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
 
 }

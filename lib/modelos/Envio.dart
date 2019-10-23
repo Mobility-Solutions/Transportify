@@ -1,12 +1,22 @@
-import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Envio{
+import 'Paquete.dart';
+import 'Viaje.dart';
+import 'enumerados/EstadoPaquete.dart';
+
+class Envio {
   String id;
- EstadoPaquete estado;
- String id_paquete;
- String id_viaje;
+  EstadoPaquete estado;
+  String paqueteId;
+  String viajeId;
 
-  Envio(this.id, this.estado, this.id_paquete, this.id_viaje);
+  Envio({this.estado, this.paqueteId, this.viajeId});
 
+  Envio.fromSnapshot(DocumentSnapshot snapshot) {
+    this.id = snapshot.documentID;
+    this.estado = snapshot['estado'];
+    this.paqueteId = snapshot['id_paquete'];
+    this.viajeId = snapshot['id_viaje'];
+  }
 
 }

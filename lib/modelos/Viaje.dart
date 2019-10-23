@@ -1,10 +1,25 @@
-class Viaje{
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'Usuario.dart';
+import 'PuntoTransportify.dart';
+
+class Viaje {
+  String id;
+  double cargaMaxima;
   DateTime fecha;
-  String id_destino;
-  String id_origen;
-  String id_transportista;
+  String destinoId;
+  String origenId;
+  String transportistaId;
 
-  Viaje(this.fecha, this.id_destino, this.id_origen, this.id_transportista);
+  Viaje({this.cargaMaxima, this.fecha, this.destinoId, this.origenId, this.transportistaId});
 
+  Viaje.fromSnapshot(DocumentSnapshot snapshot) {
+    this.id = snapshot.documentID;
+    this.cargaMaxima = snapshot['carga_maxima'];
+    this.fecha = snapshot['fecha'];
+    this.destinoId = snapshot['id_destino'];
+    this.origenId = snapshot['id_origen'];
+    this.transportistaId = snapshot['id_transportista'];
+  }
 
 }
