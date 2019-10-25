@@ -8,15 +8,13 @@ class PuntoTransportify extends ComponenteBD {
   String ciudad;
   double latitud, longitud;
 
-  PuntoTransportify(
-      {this.nombre, this.direccion, this.ciudad, this.latitud, this.longitud});
-
-  PuntoTransportify.fromSnapshot(DocumentSnapshot snapshot) : super.fromSnapshot(snapshot);
+  PuntoTransportify.fromSnapshot(DocumentSnapshot snapshot)
+      : super.fromSnapshot(snapshot);
 
   @override
   void loadFromSnapshot(DocumentSnapshot snapshot) {
     super.loadFromSnapshot(snapshot);
-    
+
     this.nombre = PuntoTransportifyBD.obtenerNombre(snapshot);
     this.direccion = PuntoTransportifyBD.obtenerDireccion(snapshot);
     this.ciudad = PuntoTransportifyBD.obtenerCiudad(snapshot);
@@ -28,11 +26,11 @@ class PuntoTransportify extends ComponenteBD {
 
   @override
   Map<String, dynamic> toMap() {
-    // PuntoTransportify no necesita toMap, ya que sus instancias deben ser read-only
+    // PuntoTransportify no necesita toMap, ya que sus instancias deben ser inmutables
     return null;
   }
 
   @override
-  Future<void> deleteFromBD() => throw UnsupportedError("Este objeto no se puede borrar de la BD");
-
+  Future<void> deleteFromBD() =>
+      throw UnsupportedError("Este objeto no se puede borrar de la BD");
 }
