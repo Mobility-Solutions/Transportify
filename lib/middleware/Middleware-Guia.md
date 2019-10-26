@@ -200,6 +200,33 @@ void loadFromSnapshot(DocumentSnapshot snapshot) {
 
 Como puedes ver, aprovechamos los métodos creados en el apartado anterior para obtener cada uno de los atributos necesarios para el objeto.
 
+#### Mi objeto tiene referencias a otros objetos. ¿Cómo obtengo sus instancias?
+
+Cuando quieras obtener un objeto de la base de datos, y éste contenga referencias a otros objetos, lo mejor que puedes hacer es utilizar el método estático `tratarReferencias(Map)` de la clase `Datos`.
+
+Le pasas el `snapshot` del objeto del que necesites referencias, y éste obtendrá todos los `snapshots` asociados a las referencias de tu objeto.
+
+>El método `tratarReferencias` es asíncrono, con lo cual deberás asegurarte de que si tu método es síncrono, todo lo que se haga después esté en el `.then(...)` de la llamada, para que espere a que termine. Alternativamente, si tu método también es asíncrono, puedes esperarlo con `await`.
+
+Una vez tratadas las referencias, puedes cargarlo normalmente en tu objeto. Sólo debes tener en cuenta una cosa, y es que tendrás que crear instancias de los objetos a los que referencies.
+
+>Código adaptado del antiguo constructor `fromSnapshot()` de la clase `Viaje`.
+
+```dart
+void loadFromSnapshot(DocumentSnapshot snapshot) {
+    super.loadFromSnapshot(snapshot);
+
+    this.cargaMaxima = snapshot['carga_maxima'];
+    this.fecha = snapshot['fecha'];
+
+    this.destino = PuntoTransportify(snapshot['id_destino']);
+    this.origen = PuntoTransportify(snapshot['id_origen']);
+    this.transportista = Transportista(snapshot['id_transportista']);
+}
+```
+
+>*A tener en cuenta*: Si tienes otras instancias del mismo objeto, estas no se actualizarán simultáneamente en local, pero en cuanto llames a `updateBD` en uno de ellos, sus datos coincidarán con los de la base de datos. Si quieres que otras instancias se actualicen, puedes llamar `revertToBD` en todas ellas para sincronizarse con la base de datos.
+
 ## Crear y modificar documentos
 
 Tanto para crear documentos como para modificar existentes, necesitas un método que te convierta el objeto asociado en un `Map<string, dynamic>`.
