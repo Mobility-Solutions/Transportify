@@ -99,12 +99,12 @@ Una vez tratadas las referencias, puedes cargarlo normalmente en tu objeto. Sól
 void loadFromSnapshot(DocumentSnapshot snapshot) {
     super.loadFromSnapshot(snapshot);
 
-    this.cargaMaxima = snapshot['carga_maxima'];
-    this.fecha = snapshot['fecha'];
+    this.cargaMaxima = snapshot[ViajeBD.atributo_carga_maxima];
+    this.fecha = snapshot[ViajeBD.atributo_fecha];
 
-    this.destino = PuntoTransportify(snapshot['id_destino']);
-    this.origen = PuntoTransportify(snapshot['id_origen']);
-    this.transportista = Transportista(snapshot['id_transportista']);
+    this.destino = PuntoTransportify.fromSnapshot(snapshot[ViajeBD.atributo_destino]);
+    this.origen = PuntoTransportify.fromSnapshot(snapshot[ViajeBD.atributo_origen]);
+    this.transportista = Transportista.fromSnapshot(snapshot[ViajeBD.atributo_transportista]);
 }
 ```
 
