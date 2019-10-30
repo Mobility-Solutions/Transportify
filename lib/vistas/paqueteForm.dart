@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:transportify/middleware/PaqueteTransportifyBD.dart';
-import 'package:transportify/middleware/PuntoTransportifyBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/util/style.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import '../modelos/Paquete.dart';
+import 'PuntosDialog.dart';
 
 class PaqueteForm extends StatefulWidget {
   @override
@@ -32,31 +32,13 @@ class _PaqueteFormState extends State<PaqueteForm> {
 
   final _formKey = GlobalKey<FormState>();
 
-  Future<Null> getTransportifyPoint(bool origen) async {
-    PuntoTransportify returnPunto = await showDialog(
-        context: this.context,
-        builder: (_) {
-          return PuntosDialog();
-        });
-    if (returnPunto != null) {
-      if (origen) {
-        puntoOrigen = returnPunto;
-        origenController.text = puntoOrigen?.nombre;
-      } else if (!origen) {
-        puntoDestino = returnPunto;
-        destinoController.text = puntoDestino?.nombre;
-      }
-    }
-  }
-
-  void add() {
+  void _add() {
     pesoController.text = (peso += 1).toString();
   }
 
-  void remove() {
+  void _remove() {
     if (peso - 1 >= 0.0) pesoController.text = (peso -= 1).toString();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +63,8 @@ class _PaqueteFormState extends State<PaqueteForm> {
                 keyboardType: TextInputType.text,
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
-                decoration: TransportifyMethods.returnTextFormDecoration("Nombre"),
+                decoration:
+                    TransportifyMethods.returnTextFormDecoration("Nombre"),
                 controller: nombreController,
                 validator: (value) {
                   if (value.isEmpty)
@@ -99,7 +82,8 @@ class _PaqueteFormState extends State<PaqueteForm> {
                       keyboardType: TextInputType.number,
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
-                      decoration: TransportifyMethods.returnTextFormDecoration("Peso"),
+                      decoration:
+                          TransportifyMethods.returnTextFormDecoration("Peso"),
                       onChanged: (text) {
                         peso = double.parse(text);
                       },
@@ -121,7 +105,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        add();
+                        _add();
                       },
                     ),
                   ),
@@ -134,7 +118,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        remove();
+                        _remove();
                       },
                     ),
                   ),
@@ -150,7 +134,8 @@ class _PaqueteFormState extends State<PaqueteForm> {
                     keyboardType: TextInputType.number,
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
-                    decoration: TransportifyMethods.returnTextFormDecoration("Alto(cm)"),
+                    decoration: TransportifyMethods.returnTextFormDecoration(
+                        "Alto(cm)"),
                     controller: altoController,
                     validator: (value) {
                       if (value.isEmpty || double.parse(value) <= 0)
@@ -165,7 +150,8 @@ class _PaqueteFormState extends State<PaqueteForm> {
                       keyboardType: TextInputType.number,
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
-                      decoration: TransportifyMethods.returnTextFormDecoration("Ancho(cm)"),
+                      decoration: TransportifyMethods.returnTextFormDecoration(
+                          "Ancho(cm)"),
                       controller: anchoController,
                       validator: (value) {
                         if (value.isEmpty || double.parse(value) <= 0)
@@ -181,7 +167,8 @@ class _PaqueteFormState extends State<PaqueteForm> {
                       keyboardType: TextInputType.number,
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
-                      decoration: TransportifyMethods.returnTextFormDecoration("Largo(cm)"),
+                      decoration: TransportifyMethods.returnTextFormDecoration(
+                          "Largo(cm)"),
                       controller: largoController,
                       validator: (value) {
                         if (value.isEmpty || double.parse(value) <= 0)
@@ -200,11 +187,17 @@ class _PaqueteFormState extends State<PaqueteForm> {
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 controller: origenController,
-                decoration:
-                    TransportifyMethods.returnTextFormDecoration("Punto Transportify de origen"),
-                onTap: () {
+                decoration: TransportifyMethods.returnTextFormDecoration(
+                    "Punto Transportify de origen"),
+                onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
-                  getTransportifyPoint(true);
+                  PuntoTransportify returnPunto =
+                      await PuntosDialog.show(this.context);
+
+                  if (returnPunto != null) {
+                    puntoOrigen = returnPunto;
+                    origenController.text = puntoOrigen?.nombre;
+                  }
                 },
                 validator: (value) {
                   if (puntoOrigen == null || puntoDestino == null)
@@ -221,11 +214,17 @@ class _PaqueteFormState extends State<PaqueteForm> {
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 controller: destinoController,
-                decoration:
-                    TransportifyMethods.returnTextFormDecoration("Punto Transportify de destino"),
-                onTap: () {
+                decoration: TransportifyMethods.returnTextFormDecoration(
+                    "Punto Transportify de destino"),
+                onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
-                  getTransportifyPoint(false);
+                  PuntoTransportify returnPunto =
+                      await PuntosDialog.show(this.context);
+
+                  if (returnPunto != null) {
+                    puntoDestino = returnPunto;
+                    destinoController.text = puntoDestino?.nombre;
+                  }
                 },
                 validator: (value) {
                   if (puntoOrigen == null || puntoDestino == null)
@@ -358,44 +357,13 @@ class _PaqueteFormState extends State<PaqueteForm> {
           if (_formKey.currentState.validate()) {
             Paquete paquete = getPaqueteFromControllers();
             PaqueteTransportifyBD.crearPaqueteEnBD(paquete);
-            TransportifyMethods.doneDialog(context,"Paquete creado",content:"El paquete ha sido creado con éxito");
+            TransportifyMethods.doneDialog(context, "Paquete creado",
+                content: "El paquete ha sido creado con éxito");
           }
         } else {
           Navigator.pop(context);
         }
       },
     );
-  }
-
-  
-}
-
-class PuntosDialog extends StatefulWidget {
-  @override
-  _PuntosDialogState createState() => new _PuntosDialogState();
-}
-
-class _PuntosDialogState extends State<PuntosDialog> {
-  String _ciudadSeleccionada;
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-        title: Text("Puntos Transportify"),
-        content: Container(
-            height: 300,
-            width: 300,
-            child: Center(
-              child: PuntoTransportifyBD.obtenerDropDownCiudadesYListadoPuntos(
-                onPuntoChanged: (nuevoPunto) {
-                  Navigator.pop(context, nuevoPunto);
-                },
-                onCiudadChanged: (nuevaCiudad) {
-                  setState(() {
-                    this._ciudadSeleccionada = nuevaCiudad;
-                  });
-                },
-                ciudadValue: _ciudadSeleccionada,
-              ),
-            )));
   }
 }
