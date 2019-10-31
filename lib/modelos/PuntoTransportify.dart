@@ -3,17 +3,23 @@ import 'package:transportify/middleware/PuntoTransportifyBD.dart';
 
 class PuntoTransportify {
   String id;
-  String nombre;
+  String apodo;
   String direccion;
   String ciudad;
   double latitud, longitud;
 
+  String get nombre => apodo == null || apodo.isEmpty
+      ? direccion == null || direccion.isEmpty
+          ? "<punto-sin-nombre>"
+          : direccion
+      : apodo;
+
   PuntoTransportify(
-      {this.nombre, this.direccion, this.ciudad, this.latitud, this.longitud});
+      {this.apodo, this.direccion, this.ciudad, this.latitud, this.longitud});
 
   PuntoTransportify.fromSnapshot(DocumentSnapshot snapshot) {
     this.id = snapshot.documentID;
-    this.nombre = PuntoTransportifyBD.obtenerNombre(snapshot);
+    this.apodo = PuntoTransportifyBD.obtenerApodo(snapshot);
     this.direccion = PuntoTransportifyBD.obtenerDireccion(snapshot);
     this.ciudad = PuntoTransportifyBD.obtenerCiudad(snapshot);
 
@@ -27,5 +33,4 @@ class PuntoTransportify {
 
   @override
   int get hashCode => id.hashCode;
-
 }

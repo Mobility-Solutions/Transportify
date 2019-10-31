@@ -7,12 +7,12 @@ import 'package:transportify/modelos/PuntoTransportify.dart';
 class PuntoTransportifyBD {
   static const String coleccion_puntos = 'puntos_transportify';
 
-  static const String atributo_nombre = 'nombre';
+  static const String atributo_apodo = 'apodo';
   static const String atributo_direccion = 'direccion';
   static const String atributo_ciudad = 'ciudad';
   static const String atributo_localizacion = 'localizacion';
 
-  static String obtenerNombre(DocumentSnapshot snapshot) => snapshot[atributo_nombre];
+  static String obtenerApodo(DocumentSnapshot snapshot) => snapshot[atributo_apodo];
   static String obtenerDireccion(DocumentSnapshot snapshot) => snapshot[atributo_direccion];
   static String obtenerCiudad(DocumentSnapshot snapshot) => snapshot[atributo_ciudad];
   static GeoPoint obtenerLocalizacion(DocumentSnapshot snapshot) => snapshot[atributo_localizacion];
@@ -108,18 +108,13 @@ class PuntoTransportifyBD {
       DocumentSnapshot snapshot, Function(PuntoTransportify) onSelected) {
     PuntoTransportify punto = PuntoTransportify.fromSnapshot(snapshot);
 
-    String texto = punto?.nombre;
-    if (texto == null || texto.length == 0) {
-      texto = punto?.direccion ?? "<punto-sin-nombre>";
-    }
-
     Function onTap;
     if (onSelected != null) {
       onTap = () => onSelected(punto);
     }
 
     return ListTile(
-      title: Text(texto),
+      title: Text(punto.nombre),
       onTap: onTap,
     );
   }
