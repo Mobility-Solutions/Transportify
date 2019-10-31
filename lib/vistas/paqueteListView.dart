@@ -46,8 +46,8 @@ class _PaqueteListViewState extends State<PaqueteListView> {
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 controller: origenController,
-                decoration:
-                    TransportifyMethods.returnTextFormDecoration("Punto Transportify de origen"),
+                decoration: TransportifyMethods.returnTextFormDecoration(
+                    "Punto Transportify de origen"),
                 onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
                   PuntoTransportify returnPunto =
@@ -68,8 +68,8 @@ class _PaqueteListViewState extends State<PaqueteListView> {
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 controller: destinoController,
-                decoration:
-                    TransportifyMethods.returnTextFormDecoration("Punto Transportify de destino"),
+                decoration: TransportifyMethods.returnTextFormDecoration(
+                    "Punto Transportify de destino"),
                 onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
                   PuntoTransportify returnPunto =
@@ -82,55 +82,9 @@ class _PaqueteListViewState extends State<PaqueteListView> {
                 },
                 validator: (value) => validarPuntos(),
               ),
-              Container(
-                padding: const EdgeInsets.all(32),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                        margin: const EdgeInsets.all(10),
-                        child: Row(
-                          children: <Widget>[
-                            Text(
-                              'Paquetes encontrados:  ',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                            visibilityList
-                                ? textoNPaquetes = new Text(
-                                    '$paquetesEncontrados',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  )
-                                : new Container(),
-                          ],
-                        )),
-                    Container(
-                      decoration: new BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: TransportifyColors.primarySwatch[900],
-                      ),
-                      child: IconButton(
-                        icon: Icon(Icons.search),
-                        color: Colors.white,
-                        onPressed: () {
-                          print('botón pulsado');
-                          _onChangedVisibility(true);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+              Expanded(
+                child: sacarListaPaquetes(),
               ),
-              visibilityList
-                  ? new Expanded(
-                      child: listaResultado = new Visibility(
-                        visible: visibilityList,
-                        child: sacarListaPaquetes(),
-                      ),
-                    )
-                  : new Container(),
             ],
           ),
         ),
@@ -151,12 +105,9 @@ class _PaqueteListViewState extends State<PaqueteListView> {
   }
 
   void _onChangedVisibility(bool visibility) {
-    setState(() {
-      if (_formKey.currentState.validate()) {
-        paquetesEncontrados = listaPaquetes.length;
-        listaPaquetes.clear();
-      }
-    });
+    if (_formKey.currentState.validate()) {
+      setState(() {});
+    }
   }
 
   static StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(
@@ -180,13 +131,68 @@ class _PaqueteListViewState extends State<PaqueteListView> {
     List<DocumentSnapshot> coleccion = snapshot.data.documents;
     listaPaquetes.clear();
     for (int i = 0; i < coleccion.length; i++) {
-      if (coleccion[i]['id_destino'].toString() == puntos.destino.id &&
-          coleccion[i]['id_origen'].toString() == puntos.origen.id) {
+      if (coleccion[i]['id_destino'].toString() == puntos.destino?.id &&
+          coleccion[i]['id_origen'].toString() == puntos.origen?.id) {
         listaPaquetes.add(coleccion[i]);
       }
     }
+
     paquetesEncontrados = listaPaquetes.length;
 
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(32),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Container(
+                  margin: const EdgeInsets.all(10),
+                  child: Row(
+                    children: <Widget>[
+                      Text(
+                        'Paquetes encontrados:  ',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                      visibilityList
+                          ? textoNPaquetes = new Text(
+                              '$paquetesEncontrados',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            )
+                          : new Container(),
+                    ],
+                  )),
+              Container(
+                decoration: new BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: TransportifyColors.primarySwatch[900],
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.search),
+                  color: Colors.white,
+                  onPressed: () {
+                    print('botón pulsado');
+                    _onChangedVisibility(true);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        visibilityList
+            ? new Expanded(
+                child: SizedBox.expand(
+                  child: _buildListaPaquetes(),
+                ),
+              )
+            : new Container(),
+      ],
+    );
+  }
+
+  ListView _buildListaPaquetes() {
     return ListView.separated(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
       itemCount: listaPaquetes.length,
