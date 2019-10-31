@@ -66,7 +66,7 @@ class _PaqueteListViewState extends BusquedaFormPuntosState<PaqueteListView> {
                         style: TextStyle(color: Colors.grey[500], fontSize: 18),
                       ),
                       Text(
-                        '${listaResultados[index]['fragil']}',
+                        listaResultados[index]['fragil'] ? 'Sí' : 'No',
                         textAlign: TextAlign.left,
                         style: TextStyle(color: Colors.black, fontSize: 18),
                       ),
