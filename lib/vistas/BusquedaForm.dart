@@ -25,7 +25,8 @@ abstract class BusquedaFormState<T extends StatefulWidget> extends State<T> {
         appBar: AppBar(
           title: Text(titulo),
           backgroundColor: TransportifyColors.primarySwatch,
-        ),
+elevation: 0.0,
+ ),
         body: Padding(
           padding: EdgeInsets.only(left: 15.0, right: 15.0),
           child: Column(
