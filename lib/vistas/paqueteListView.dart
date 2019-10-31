@@ -38,7 +38,7 @@ class _PaqueteListViewState extends BusquedaFormPuntosState<PaqueteListView> {
                         style: TextStyle(color: Colors.grey[500], fontSize: 18),
                       ),
                       Text(
-                        ' ${listaResultados[index]['Precio']}',
+                        ' ${listaResultados[index]['Precio'] ?? 'No establecido'}',
                         textAlign: TextAlign.right,
                         style: TextStyle(color: Colors.black, fontSize: 18),
                       ),
