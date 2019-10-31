@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:transportify/middleware/PaqueteTransportifyBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
+import 'package:transportify/modelos/Puntos.dart';
 import 'package:transportify/util/style.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
@@ -26,7 +27,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
   double peso = 0.0;
   bool _fragil = false;
 
-  PuntoTransportify puntoOrigen, puntoDestino;
+  final Puntos puntos = Puntos();
 
   DateTime _fechaentrega;
 
@@ -195,18 +196,11 @@ class _PaqueteFormState extends State<PaqueteForm> {
                       await PuntosDialog.show(this.context);
 
                   if (returnPunto != null) {
-                    puntoOrigen = returnPunto;
-                    origenController.text = puntoOrigen?.nombre;
+                    puntos.origen = returnPunto;
+                    origenController.text = puntos.origen?.nombre;
                   }
                 },
-                validator: (value) {
-                  if (puntoOrigen == null || puntoDestino == null)
-                    return 'Introduzca los puntos origen y destino';
-                  else if (puntoDestino.id == puntoOrigen.id)
-                    return 'Los puntos no deben coincidir.';
-                  else
-                    return null;
-                },
+                validator: (value) => puntos.validate(),
               ),
               SizedBox(height: 20.0),
               TextFormField(
@@ -222,18 +216,11 @@ class _PaqueteFormState extends State<PaqueteForm> {
                       await PuntosDialog.show(this.context);
 
                   if (returnPunto != null) {
-                    puntoDestino = returnPunto;
-                    destinoController.text = puntoDestino?.nombre;
+                    puntos.destino = returnPunto;
+                    destinoController.text = puntos.destino?.nombre;
                   }
                 },
-                validator: (value) {
-                  if (puntoOrigen == null || puntoDestino == null)
-                    return 'Introduzca los puntos origen y destino';
-                  else if (puntoDestino.id == puntoOrigen.id)
-                    return 'Los puntos no deben coincidir.';
-                  else
-                    return null;
-                },
+                validator: (value) => puntos.validate(),
               ),
               SizedBox(height: 20.0),
               TextFormField(
@@ -344,8 +331,8 @@ class _PaqueteFormState extends State<PaqueteForm> {
         largo: _largo,
         peso: _peso,
         fragil: _fragil,
-        origenId: puntoOrigen.id,
-        destinoId: puntoDestino.id,
+        origenId: puntos.origen.id,
+        destinoId: puntos.destino.id,
         fechaEntrega: _fechaentrega);
   }
 

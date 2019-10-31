@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:transportify/middleware/ViajeTransportifyBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
+import 'package:transportify/modelos/Puntos.dart';
 import 'package:transportify/util/style.dart';
 
 import '../modelos/Viaje.dart';
@@ -28,7 +29,7 @@ class _MyViajeFormState extends State<MyViajeForm> {
   DateTime choosenDate;
   DateTime choosenTime;
 
-  PuntoTransportify puntoOrigen, puntoDestino;
+  final Puntos puntos = Puntos();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -80,18 +81,11 @@ class _MyViajeFormState extends State<MyViajeForm> {
                             await PuntosDialog.show(this.context);
 
                         if (returnPunto != null) {
-                          puntoOrigen = returnPunto;
-                          origenController.text = puntoOrigen?.nombre;
+                          puntos.origen = returnPunto;
+                          origenController.text = puntos.origen?.nombre;
                         }
                       },
-                      validator: (value) {
-                        if (puntoOrigen == null || puntoDestino == null)
-                          return 'Introduzca los puntos origen y destino';
-                        else if (puntoDestino.id == puntoOrigen.id)
-                          return 'Los puntos no deben coincidir.';
-                        else
-                          return null;
-                      },
+                      validator: (value) => puntos.validate(),
                     ),
                     SizedBox(
                       height: 20.0,
@@ -114,18 +108,11 @@ class _MyViajeFormState extends State<MyViajeForm> {
                             await PuntosDialog.show(this.context);
 
                         if (returnPunto != null) {
-                          puntoDestino = returnPunto;
-                          destinoController.text = puntoDestino?.nombre;
+                          puntos.destino = returnPunto;
+                          destinoController.text = puntos.destino?.nombre;
                         }
                       },
-                      validator: (value) {
-                        if (puntoOrigen == null || puntoDestino == null)
-                          return 'Introduzca los puntos origen y destino';
-                        else if (puntoDestino.id == puntoOrigen.id)
-                          return 'Los puntos no deben coincidir.';
-                        else
-                          return null;
-                      },
+                      validator: (value) => puntos.validate(),
                     ),
                     SizedBox(
                       height: 20.0,
@@ -321,8 +308,8 @@ class _MyViajeFormState extends State<MyViajeForm> {
     return new Viaje(
       cargaMaxima: _peso,
       fecha: fechaViajeElegida,
-      destinoId: puntoDestino.id,
-      origenId: puntoOrigen.id,
+      destinoId: puntos.destino.id,
+      origenId: puntos.origen.id,
     );
   }
 
