@@ -79,8 +79,7 @@ class PuntoTransportifyBD {
           height: 10.0,
         ),
         Expanded(
-          child: SizedBox(
-            height: 200.0,
+          child: SizedBox.expand(
             child: ListView.builder(
               itemExtent: 30.0,
               itemCount: ciudades.length,
