@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:transportify/middleware/ViajeTransportifyBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/modelos/Puntos.dart';
@@ -52,216 +53,212 @@ class _MyViajeFormState extends State<MyViajeForm> {
               elevation: 0.0,
             ),
             backgroundColor: TransportifyColors.primarySwatch,
-            body: Padding(
-              padding: EdgeInsets.only(left: 15.0, right: 15.0),
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  //mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    /** 
+            body: Center(
+              child: ListView(
+                padding: EdgeInsets.only(left: 15.0, right: 15.0),
+                children: <Widget>[
+                  /** 
                  * **************************
                  * SELECTOR DE PUNTO ORIGEN *
                  * **************************
                  * */
-                    SizedBox(
-                      height: 15.0,
-                    ),
-                    TextFormField(
-                      maxLines: 1,
-                      keyboardType: TextInputType.text,
-                      autofocus: false,
-                      style: TextStyle(color: TransportifyColors.primarySwatch),
-                      controller: origenController,
-                      decoration: TransportifyMethods.returnTextFormDecoration(
-                          "Punto Transportify de origen"),
-                      onTap: () async {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                        PuntoTransportify returnPunto =
-                            await PuntosDialog.show(this.context);
+                  SizedBox(
+                    height: 15.0,
+                  ),
+                  TextFormField(
+                    maxLines: 1,
+                    keyboardType: TextInputType.text,
+                    autofocus: false,
+                    style: TextStyle(color: TransportifyColors.primarySwatch),
+                    controller: origenController,
+                    decoration: TransportifyMethods.returnTextFormDecoration(
+                        "Punto Transportify de origen"),
+                    onTap: () async {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      PuntoTransportify returnPunto =
+                          await PuntosDialog.show(this.context);
 
-                        if (returnPunto != null) {
-                          puntos.origen = returnPunto;
-                          origenController.text = puntos.origen?.nombre;
-                        }
-                      },
-                      validator: (value) => puntos.validate(),
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    /** 
+                      if (returnPunto != null) {
+                        puntos.origen = returnPunto;
+                        origenController.text = puntos.origen?.nombre;
+                      }
+                    },
+                    validator: (value) => puntos.validate(),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  /** 
                  * ***************************
                  * SELECTOR DE PUNTO DESTINO *
                  * ***************************
                  * */
-                    TextFormField(
-                      maxLines: 1,
-                      autofocus: false,
-                      style: TextStyle(color: TransportifyColors.primarySwatch),
-                      controller: destinoController,
-                      decoration: TransportifyMethods.returnTextFormDecoration(
-                          "Punto Transportify de destino"),
-                      onTap: () async {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                        PuntoTransportify returnPunto =
-                            await PuntosDialog.show(this.context);
+                  TextFormField(
+                    maxLines: 1,
+                    autofocus: false,
+                    style: TextStyle(color: TransportifyColors.primarySwatch),
+                    controller: destinoController,
+                    decoration: TransportifyMethods.returnTextFormDecoration(
+                        "Punto Transportify de destino"),
+                    onTap: () async {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      PuntoTransportify returnPunto =
+                          await PuntosDialog.show(this.context);
 
-                        if (returnPunto != null) {
-                          puntos.destino = returnPunto;
-                          destinoController.text = puntos.destino?.nombre;
-                        }
-                      },
-                      validator: (value) => puntos.validate(),
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    /** 
+                      if (returnPunto != null) {
+                        puntos.destino = returnPunto;
+                        destinoController.text = puntos.destino?.nombre;
+                      }
+                    },
+                    validator: (value) => puntos.validate(),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  /** 
                  * **************************
                  * SELECTOR DE CARGA MÁXIMA *
                  * **************************
                  * */
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          width: 180,
-                          child: TextFormField(
-                            maxLines: 1,
-                            keyboardType: TextInputType.number,
-                            autofocus: false,
-                            style: TextStyle(
-                                color: TransportifyColors.primarySwatch),
-                            decoration:
-                                TransportifyMethods.returnTextFormDecoration(
-                                    "Carga Máxima (kg.)"),
-                            onChanged: (text) {
-                              peso = double.parse(text);
-                            },
-                            controller: pesoController,
-                            validator: (value) {
-                              if (value.isEmpty || double.parse(value) <= 0)
-                                return 'Introduzca carga máxima.';
-                              else
-                                return null;
-                            },
-                          ),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        width: 180,
+                        child: TextFormField(
+                          maxLines: 1,
+                          keyboardType: TextInputType.number,
+                          autofocus: false,
+                          style: TextStyle(
+                              color: TransportifyColors.primarySwatch),
+                          decoration:
+                              TransportifyMethods.returnTextFormDecoration(
+                                  "Carga Máxima (kg.)"),
+                          onChanged: (text) {
+                            peso = double.parse(text);
+                          },
+                          controller: pesoController,
+                          validator: (value) {
+                            if (value.isEmpty || double.parse(value) <= 0)
+                              return 'Introduzca carga máxima.';
+                            else
+                              return null;
+                          },
                         ),
-                        SizedBox(width: 10.0),
-                        Flexible(
-                          child: RaisedButton(
-                            color: TransportifyColors.primarySwatch[900],
-                            child: Icon(
-                              Icons.keyboard_arrow_up,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              _add();
-                            },
+                      ),
+                      SizedBox(width: 10.0),
+                      Flexible(
+                        child: RaisedButton(
+                          color: TransportifyColors.primarySwatch[900],
+                          child: Icon(
+                            Icons.keyboard_arrow_up,
+                            color: Colors.white,
                           ),
+                          onPressed: () {
+                            _add();
+                          },
                         ),
-                        SizedBox(width: 10),
-                        Flexible(
-                          child: RaisedButton(
-                            color: TransportifyColors.primarySwatch[900],
-                            child: Icon(
-                              Icons.keyboard_arrow_down,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              _remove();
-                            },
+                      ),
+                      SizedBox(width: 10),
+                      Flexible(
+                        child: RaisedButton(
+                          color: TransportifyColors.primarySwatch[900],
+                          child: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Colors.white,
                           ),
+                          onPressed: () {
+                            _remove();
+                          },
                         ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    /** 
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  /** 
                  * *******************
                  * SELECTOR DE FECHA *
                  * *******************
                  * */
-                    TextFormField(
-                      maxLines: 1,
-                      controller: fechaController,
+                  TextFormField(
+                    maxLines: 1,
+                    controller: fechaController,
 
-                      //elevation: 4.0,
-                      onTap: () {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                        DatePicker.showDatePicker(context,
-                            theme: DatePickerTheme(
-                              containerHeight: 200.0,
-                            ),
-                            minTime: new DateTime(DateTime.now().year,
-                                DateTime.now().month, DateTime.now().day + 1),
-                            maxTime: new DateTime(DateTime.now().year + 3),
-                            showTitleActions: true, onConfirm: (date) {
-                          //print('confirm $date');
-                          choosenDate = date;
-                          String _date =
-                              '${date.day} / ${date.month} / ${date.year}';
-                          setState(() {
-                            fechaController.text = _date;
-                          });
-                        }, currentTime: DateTime.now(), locale: LocaleType.es);
-                      },
-                      keyboardType: TextInputType.datetime,
-                      autofocus: false,
-                      style: TextStyle(color: TransportifyColors.primarySwatch),
-                      decoration: TransportifyMethods.returnTextFormDecoration(
-                          "Fecha comienzo del viaje"),
-                      validator: (value) {
-                        if (choosenTime == null) {
-                          return 'Introduzca una fecha.';
-                        } else
-                          return null;
-                      },
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    /** 
+                    //elevation: 4.0,
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      DatePicker.showDatePicker(context,
+                          theme: DatePickerTheme(
+                            containerHeight: 200.0,
+                          ),
+                          minTime: new DateTime(DateTime.now().year,
+                              DateTime.now().month, DateTime.now().day + 1),
+                          maxTime: new DateTime(DateTime.now().year + 3),
+                          showTitleActions: true, onConfirm: (date) {
+                        //print('confirm $date');
+                        choosenDate = date;
+                        String _date =
+                            '${date.day} / ${date.month} / ${date.year}';
+                        setState(() {
+                          fechaController.text = _date;
+                        });
+                      }, currentTime: DateTime.now(), locale: LocaleType.es);
+                    },
+                    keyboardType: TextInputType.datetime,
+                    autofocus: false,
+                    style: TextStyle(color: TransportifyColors.primarySwatch),
+                    decoration: TransportifyMethods.returnTextFormDecoration(
+                        "Fecha comienzo del viaje"),
+                    validator: (value) {
+                      if (choosenTime == null) {
+                        return 'Introduzca una fecha.';
+                      } else
+                        return null;
+                    },
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  /** 
                  * ******************
                  * SELECTOR DE HORA *
                  * ******************
                  * */
-                    TextFormField(
-                      maxLines: 1,
-                      controller: horaController,
-                      //elevation: 4.0,
-                      onTap: () {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                        DatePicker.showTimePicker(context,
-                            theme: DatePickerTheme(
-                              containerHeight: 200.0,
-                            ),
-                            showTitleActions: true, onConfirm: (time) {
-                          print('confirm $time');
-                          choosenTime = time;
-                          String _time = '${time.hour} : ${time.minute}';
-                          setState(() {
-                            horaController.text = _time;
-                          });
-                        }, currentTime: DateTime.now(), locale: LocaleType.es);
-                      },
-                      decoration: TransportifyMethods.returnTextFormDecoration(
-                          "Hora de comienzo del viaje"),
-                      autofocus: false,
-                      style: TextStyle(color: TransportifyColors.primarySwatch),
-                      validator: (value) {
-                        if (choosenTime == null) {
-                          return 'Introduzca una hora.';
-                        } else
-                          return null;
-                      },
-                    ),
-                    SizedBox(
-                      height: 100.0,
-                    ),
-                  ],
-                ),
+                  TextFormField(
+                    maxLines: 1,
+                    controller: horaController,
+                    //elevation: 4.0,
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      DatePicker.showTimePicker(context,
+                          theme: DatePickerTheme(
+                            containerHeight: 200.0,
+                          ),
+                          showTitleActions: true, onConfirm: (time) {
+                        print('confirm $time');
+                        choosenTime = time;
+                        String _time = DateFormat.Hm().format(time);
+                        setState(() {
+                          horaController.text = _time;
+                        });
+                      }, currentTime: DateTime.now(), locale: LocaleType.es);
+                    },
+                    decoration: TransportifyMethods.returnTextFormDecoration(
+                        "Hora de comienzo del viaje"),
+                    autofocus: false,
+                    style: TextStyle(color: TransportifyColors.primarySwatch),
+                    validator: (value) {
+                      if (choosenTime == null) {
+                        return 'Introduzca una hora.';
+                      } else
+                        return null;
+                    },
+                  ),
+                  SizedBox(
+                    height: 100.0,
+                  ),
+                ],
               ),
             ),
             bottomNavigationBar: new Stack(
