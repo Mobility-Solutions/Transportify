@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:transportify/middleware/ViajeTransportifyBD.dart';
 import 'package:transportify/middleware/PuntoTransportifyBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/util/style.dart';
@@ -138,14 +137,14 @@ class ViajeListViewState extends State<ViajeListView> {
                         Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                        Text('${getDayName(listaViajes[0]['fecha'].toDate().weekday)} ${listaViajes[0]['fecha'].toDate().day}', style: TextStyle(fontSize: 18, color: Colors.black, height: 2.5),textAlign: TextAlign.center,),
+                        Text(DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY,"es_ES").format(listaViajes[0]['fecha'].toDate()), style: TextStyle(fontSize: 18, color: Colors.black, height: 2.5),textAlign: TextAlign.center,),
                         ],
                       ),
 
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                        Text('${listaViajes[0]['fecha'].toDate().hour}:${listaViajes[0]['fecha'].toDate().minute}', style: TextStyle(fontSize: 15, color: Colors.black54, height: 0.8,),textAlign: TextAlign.center,),
+                        Text(DateFormat.Hm().format(listaViajes[0]['fecha'].toDate()), style: TextStyle(fontSize: 15, color: Colors.black54, height: 0.8,),textAlign: TextAlign.center,),
                         ],
                       ),
                       ],
@@ -160,40 +159,6 @@ class ViajeListViewState extends State<ViajeListView> {
                            
   } );
   }
-
-    String getDayName(int day) {
-      String res = '';
-      switch(day) {
-        case 1:
-          res = 'LUN';
-        break;
-
-        case 2:
-          res = 'MAR';
-        break;
-
-        case 3:
-          res = 'MIE';
-        break;
-
-        case 4:
-          res = 'JUE';
-        break;
-
-        case 5:
-          res = 'VIE';
-        break;
-
-        case 6:
-          res = 'SAB';
-        break;
-
-        case 7:
-          res = 'DOM';
-        break;
-      }
-      return res;
-    }
 
 Future<Null> getTransportifyPoint(bool origen) async {
     PuntoTransportify returnPunto = await showDialog(
