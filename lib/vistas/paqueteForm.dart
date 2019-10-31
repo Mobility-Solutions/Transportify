@@ -84,7 +84,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
                       decoration:
-                          TransportifyMethods.returnTextFormDecoration("Peso"),
+                          TransportifyMethods.returnTextFormDecoration("Peso(kg)"),
                       onChanged: (text) {
                         peso = double.parse(text);
                       },
