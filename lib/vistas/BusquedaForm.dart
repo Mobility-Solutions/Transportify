@@ -6,10 +6,10 @@ import 'package:transportify/middleware/Datos.dart';
 
 abstract class BusquedaFormState<T extends StatefulWidget> extends State<T> {
   final String titulo;
-  final String atributoBD;
+  final String coleccionBD;
   final String textoResultados;
 
-  BusquedaFormState({this.titulo, this.atributoBD, this.textoResultados});
+  BusquedaFormState({this.titulo, this.coleccionBD, this.textoResultados});
 
   int get resultados => listaResultados.length;
   List<DocumentSnapshot> listaResultados = List<DocumentSnapshot>();
@@ -49,7 +49,7 @@ elevation: 0.0,
 
   StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(
       Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
-    return Datos.obtenerStreamBuilderCollectionBD(atributoBD, builder);
+    return Datos.obtenerStreamBuilderCollectionBD(coleccionBD, builder);
   }
 
   Widget obtenerListaResultados() {

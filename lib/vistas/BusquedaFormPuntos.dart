@@ -15,10 +15,10 @@ abstract class BusquedaFormPuntosState<T extends StatefulWidget>
 
   final Puntos puntos = Puntos();
 
-  BusquedaFormPuntosState({titulo, atributoBD, textoResultados})
+  BusquedaFormPuntosState({titulo, coleccionBD, textoResultados})
       : super(
             titulo: titulo,
-            atributoBD: atributoBD,
+            coleccionBD: coleccionBD,
             textoResultados: textoResultados);
 
   @override

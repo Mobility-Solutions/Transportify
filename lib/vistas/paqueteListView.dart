@@ -12,7 +12,7 @@ class _PaqueteListViewState extends BusquedaFormPuntosState<PaqueteListView> {
   _PaqueteListViewState()
       : super(
             titulo: "Buscar Paquete",
-            atributoBD: "paquetes",
+            coleccionBD: "paquetes",
             textoResultados: "Paquetes encontrados");
 
   @override

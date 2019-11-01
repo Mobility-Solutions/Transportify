@@ -16,7 +16,7 @@ class _ViajeListViewState extends BusquedaFormPuntosState<ViajeListView> {
   _ViajeListViewState()
       : super(
             titulo: "Buscar Viaje",
-            atributoBD: "viajes",
+            coleccionBD: "viajes",
             textoResultados: "Viajes encontrados");
 
   @override
