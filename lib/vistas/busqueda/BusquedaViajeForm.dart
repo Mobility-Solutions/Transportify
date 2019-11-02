@@ -4,16 +4,16 @@ import 'package:intl/intl.dart';
 
 import 'BusquedaFormPuntos.dart';
 
-class ViajeListView extends StatefulWidget {
-  ViajeListView({Key key, this.title}) : super(key: key);
+class BusquedaViajeForm extends StatefulWidget {
+  BusquedaViajeForm({Key key, this.title}) : super(key: key);
   @override
-  _ViajeListViewState createState() => _ViajeListViewState();
+  _BusquedaViajeFormState createState() => _BusquedaViajeFormState();
 
   final String title;
 }
 
-class _ViajeListViewState extends BusquedaFormPuntosState<ViajeListView> {
-  _ViajeListViewState()
+class _BusquedaViajeFormState extends BusquedaFormPuntosState<BusquedaViajeForm> {
+  _BusquedaViajeFormState()
       : super(
             titulo: "Buscar Viaje",
             coleccionBD: "viajes",

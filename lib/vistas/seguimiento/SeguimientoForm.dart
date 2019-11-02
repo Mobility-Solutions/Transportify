@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:transportify/middleware/EnviosBD.dart';
-import 'package:transportify/widgets/customStepper.dart';
+
+
+import 'customStepper.dart';
 
 int estado = -1;
-class ListaPaquetesSeguimientoView extends StatefulWidget {
+class SeguimientoForm extends StatefulWidget {
   @override
-  _ListaPaquetesViewState createState() => new _ListaPaquetesViewState();  
+  _SeguimientoFormState createState() => new _SeguimientoFormState();  
 }
 
-class _ListaPaquetesViewState extends State<ListaPaquetesSeguimientoView>{
+class _SeguimientoFormState extends State<SeguimientoForm>{
  @override
   Widget build(BuildContext context) {
     return new Scaffold(

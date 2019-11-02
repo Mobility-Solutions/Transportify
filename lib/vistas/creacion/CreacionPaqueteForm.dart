@@ -2,18 +2,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/modelos/Puntos.dart';
+import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/util/style.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
-import '../modelos/Paquete.dart';
-import 'PuntosDialog.dart';
 
-class PaqueteForm extends StatefulWidget {
+import '../PuntosDialog.dart';
+
+class CreacionPaqueteForm extends StatefulWidget {
   @override
-  _PaqueteFormState createState() => _PaqueteFormState();
+  _CreacionPaqueteFormState createState() => _CreacionPaqueteFormState();
 }
 
-class _PaqueteFormState extends State<PaqueteForm> {
+class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   final nombreController = TextEditingController();
   final pesoController = TextEditingController();
   final origenController = TextEditingController();

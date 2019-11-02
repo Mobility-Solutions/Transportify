@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'PuntosBD.dart';
 
-class ViajeTransportifyBD {
+class ViajeBD {
   static const String coleccion_viajes = 'viajes';
   static const String atributo_destino = PuntosBD.atributo_destino;
   static const String atributo_origen = PuntosBD.atributo_origen;

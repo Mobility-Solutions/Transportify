@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:transportify/middleware/ComponenteBD.dart';
-import 'package:transportify/middleware/ViajeTransportifyBD.dart';
+import 'package:transportify/middleware/ViajeBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 
 import 'Usuario.dart';
@@ -17,7 +17,7 @@ class Viaje extends ComponenteBD {
       this.fecha,
       this.destino,
       this.origen,
-      this.transportista}) : super(coleccion: ViajeTransportifyBD.coleccion_viajes);
+      this.transportista}) : super(coleccion: ViajeBD.coleccion_viajes);
 
   Viaje.fromReference(DocumentReference reference, {bool init = true})
       : super.fromReference(reference, init: init);
@@ -27,11 +27,11 @@ class Viaje extends ComponenteBD {
   @override
   Future<void> loadFromSnapshot(DocumentSnapshot snapshot) async {
     super.loadFromSnapshot(snapshot);
-    this.cargaMaxima = ViajeTransportifyBD.obtenerCargaMaxima(snapshot);
-    this.fecha = ViajeTransportifyBD.obtenerFecha(snapshot).toDate();
-    this.destino = PuntoTransportify.fromReference(ViajeTransportifyBD.obtenerDestino(snapshot));
-    this.origen = PuntoTransportify.fromReference(ViajeTransportifyBD.obtenerOrigen(snapshot));
-    this.transportista = Usuario.fromReference(ViajeTransportifyBD.obtenerTransportista(snapshot));
+    this.cargaMaxima = ViajeBD.obtenerCargaMaxima(snapshot);
+    this.fecha = ViajeBD.obtenerFecha(snapshot).toDate();
+    this.destino = PuntoTransportify.fromReference(ViajeBD.obtenerDestino(snapshot));
+    this.origen = PuntoTransportify.fromReference(ViajeBD.obtenerOrigen(snapshot));
+    this.transportista = Usuario.fromReference(ViajeBD.obtenerTransportista(snapshot));
 
     await Future.wait([this.destino.waitForInit(), this.origen.waitForInit(), this.transportista.waitForInit()]);
   }
@@ -39,11 +39,11 @@ class Viaje extends ComponenteBD {
   @override
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = Map<String, dynamic>();
-    map[ViajeTransportifyBD.atributo_destino] = this.destino?.reference;
-    map[ViajeTransportifyBD.atributo_origen] = this.origen?.reference;
-    map[ViajeTransportifyBD.atributo_transportista] = this.transportista?.reference;
-    map[ViajeTransportifyBD.atributo_carga_maxima] = this.cargaMaxima;
-    map[ViajeTransportifyBD.atributo_fecha] = this.fecha;
+    map[ViajeBD.atributo_destino] = this.destino?.reference;
+    map[ViajeBD.atributo_origen] = this.origen?.reference;
+    map[ViajeBD.atributo_transportista] = this.transportista?.reference;
+    map[ViajeBD.atributo_carga_maxima] = this.cargaMaxima;
+    map[ViajeBD.atributo_fecha] = this.fecha;
     return map;
   }
 }

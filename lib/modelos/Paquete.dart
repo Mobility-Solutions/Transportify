@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:transportify/middleware/ComponenteBD.dart';
-import 'package:transportify/middleware/PaqueteTransportifyBD.dart';
+import 'package:transportify/middleware/PaqueteBD.dart';
 
 import 'PuntoTransportify.dart';
 import 'Usuario.dart';
@@ -27,7 +27,7 @@ class Paquete extends ComponenteBD {
       this.origen,
       this.remitente,
       this.precio,
-      this.fechaEntrega}) : super(coleccion: PaqueteTransportifyBD.coleccion_paquetes);
+      this.fechaEntrega}) : super(coleccion: PaqueteBD.coleccion_paquetes);
 
   Paquete.fromReference(DocumentReference reference, {bool init = true})
       : super.fromReference(reference, init: init);
@@ -38,17 +38,17 @@ class Paquete extends ComponenteBD {
   @override
   Future<void> loadFromSnapshot(DocumentSnapshot snapshot) async {
     super.loadFromSnapshot(snapshot);
-    this.nombre = PaqueteTransportifyBD.obtenerNombre(snapshot);
-    this.largo = PaqueteTransportifyBD.obtenerLargo(snapshot);
-    this.ancho = PaqueteTransportifyBD.obtenerAncho(snapshot);
-    this.alto = PaqueteTransportifyBD.obtenerAlto(snapshot);
-    this.peso = PaqueteTransportifyBD.obtenerPeso(snapshot);
-    this.fragil = PaqueteTransportifyBD.obtenerFragil(snapshot);
-    this.precio = PaqueteTransportifyBD.obtenerPrecio(snapshot);
-    this.fechaEntrega = PaqueteTransportifyBD.obtenerFechaEntrega(snapshot).toDate();
-    this.destino = PuntoTransportify.fromReference(PaqueteTransportifyBD.obtenerDestino(snapshot));
-    this.origen = PuntoTransportify.fromReference(PaqueteTransportifyBD.obtenerOrigen(snapshot));
-    this.remitente = Usuario.fromReference(PaqueteTransportifyBD.obtenerRemitente(snapshot));
+    this.nombre = PaqueteBD.obtenerNombre(snapshot);
+    this.largo = PaqueteBD.obtenerLargo(snapshot);
+    this.ancho = PaqueteBD.obtenerAncho(snapshot);
+    this.alto = PaqueteBD.obtenerAlto(snapshot);
+    this.peso = PaqueteBD.obtenerPeso(snapshot);
+    this.fragil = PaqueteBD.obtenerFragil(snapshot);
+    this.precio = PaqueteBD.obtenerPrecio(snapshot);
+    this.fechaEntrega = PaqueteBD.obtenerFechaEntrega(snapshot).toDate();
+    this.destino = PuntoTransportify.fromReference(PaqueteBD.obtenerDestino(snapshot));
+    this.origen = PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
+    this.remitente = Usuario.fromReference(PaqueteBD.obtenerRemitente(snapshot));
     
     await Future.wait([this.destino.waitForInit(), this.origen.waitForInit(), this.remitente.waitForInit()]);
   }
@@ -56,17 +56,17 @@ class Paquete extends ComponenteBD {
   @override
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = Map<String, dynamic>();
-    map[PaqueteTransportifyBD.atributo_nombre] = this.nombre;
-    map[PaqueteTransportifyBD.atributo_alto] = this.alto;
-    map[PaqueteTransportifyBD.atributo_ancho] = this.ancho;
-    map[PaqueteTransportifyBD.atributo_fragil] = this.fragil;
-    map[PaqueteTransportifyBD.atributo_destino] = this.destino?.reference;
-    map[PaqueteTransportifyBD.atributo_origen] = this.origen?.reference;
-    map[PaqueteTransportifyBD.atributo_remitente] = this.remitente?.reference;
-    map[PaqueteTransportifyBD.atributo_largo] = this.largo;
-    map[PaqueteTransportifyBD.atributo_peso] = this.peso;
-    map[PaqueteTransportifyBD.atributo_precio] = this.precio;
-    map[PaqueteTransportifyBD.atributo_fecha_entrega] = this.fechaEntrega;
+    map[PaqueteBD.atributo_nombre] = this.nombre;
+    map[PaqueteBD.atributo_alto] = this.alto;
+    map[PaqueteBD.atributo_ancho] = this.ancho;
+    map[PaqueteBD.atributo_fragil] = this.fragil;
+    map[PaqueteBD.atributo_destino] = this.destino?.reference;
+    map[PaqueteBD.atributo_origen] = this.origen?.reference;
+    map[PaqueteBD.atributo_remitente] = this.remitente?.reference;
+    map[PaqueteBD.atributo_largo] = this.largo;
+    map[PaqueteBD.atributo_peso] = this.peso;
+    map[PaqueteBD.atributo_precio] = this.precio;
+    map[PaqueteBD.atributo_fecha_entrega] = this.fechaEntrega;
     return map;
   }
 }

@@ -2,23 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:transportify/middleware/ViajeTransportifyBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/modelos/Puntos.dart';
+import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
 
-import '../modelos/Viaje.dart';
-import 'PuntosDialog.dart';
+import '../PuntosDialog.dart';
 
-class MyViajeForm extends StatefulWidget {
-  MyViajeForm({Key key, this.title}) : super(key: key);
+class CreacionViajeForm extends StatefulWidget {
+  CreacionViajeForm({Key key, this.title}) : super(key: key);
   @override
-  _MyViajeFormState createState() => _MyViajeFormState();
+  _CreacionViajeFormState createState() => _CreacionViajeFormState();
 
   final String title;
 }
 
-class _MyViajeFormState extends State<MyViajeForm> {
+class _CreacionViajeFormState extends State<CreacionViajeForm> {
   final horaController = TextEditingController();
   final origenController = TextEditingController();
   final destinoController = TextEditingController();

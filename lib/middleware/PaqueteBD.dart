@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'PuntosBD.dart';
 
-class PaqueteTransportifyBD {
+class PaqueteBD {
   static const String coleccion_paquetes = 'paquetes';
 
   static const String atributo_nombre="nombre";

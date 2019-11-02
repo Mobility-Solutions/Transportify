@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 
 import 'BusquedaFormPuntos.dart';
 
-class PaqueteListView extends StatefulWidget {
+class BusquedaPaqueteForm extends StatefulWidget {
   @override
-  _PaqueteListViewState createState() => _PaqueteListViewState();
+  _BusquedaPaqueteFormState createState() => _BusquedaPaqueteFormState();
 }
 
-class _PaqueteListViewState extends BusquedaFormPuntosState<PaqueteListView> {
-  _PaqueteListViewState()
+class _BusquedaPaqueteFormState extends BusquedaFormPuntosState<BusquedaPaqueteForm> {
+  _BusquedaPaqueteFormState()
       : super(
             titulo: "Buscar Paquete",
             coleccionBD: "paquetes",
