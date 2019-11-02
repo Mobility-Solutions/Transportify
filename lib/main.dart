@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:transportify/vistas/paqueteForm.dart';
 import 'package:transportify/vistas/paqueteListView.dart';
 import 'package:transportify/vistas/listaPaquetesSeguimientoView.dart';
@@ -7,7 +8,7 @@ import 'package:transportify/vistas/viajeListView.dart';
 
 import 'middleware/PuntoTransportifyBD.dart';
 
-void main() => runApp(MyApp());
+void main() async => await initializeDateFormatting("es_ES", null).then((_) => runApp(MyApp()));
 
 class MyApp extends StatelessWidget {
   static const String title = 'Transportify';

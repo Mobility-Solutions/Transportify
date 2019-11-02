@@ -3,10 +3,16 @@ import 'package:transportify/middleware/ComponenteBD.dart';
 import 'package:transportify/middleware/PuntoTransportifyBD.dart';
 
 class PuntoTransportify extends ComponenteBD {
-  String nombre;
+  String apodo;
   String direccion;
   String ciudad;
   double latitud, longitud;
+
+  String get nombre => apodo == null || apodo.isEmpty
+      ? direccion == null || direccion.isEmpty
+          ? "<punto-sin-nombre>"
+          : direccion
+      : apodo;
 
   PuntoTransportify.fromReference(DocumentReference reference)
       : super.fromReference(reference);
@@ -17,8 +23,7 @@ class PuntoTransportify extends ComponenteBD {
   @override
   Future<void> loadFromSnapshot(DocumentSnapshot snapshot) async {
     super.loadFromSnapshot(snapshot);
-
-    this.nombre = PuntoTransportifyBD.obtenerNombre(snapshot);
+    this.apodo = PuntoTransportifyBD.obtenerApodo(snapshot);
     this.direccion = PuntoTransportifyBD.obtenerDireccion(snapshot);
     this.ciudad = PuntoTransportifyBD.obtenerCiudad(snapshot);
 
