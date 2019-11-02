@@ -38,7 +38,7 @@ class EnviosBD {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return ListTile(
-                  title: Text("Nombre paquete: " + envio.paquete.nombre),
+                  title: Text(envio.paquete.nombre),
                   onTap: () => onTapMethod(envio.estado.index),
                 );
               } else {

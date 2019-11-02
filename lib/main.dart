@@ -127,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.add), title: Text('Paquete')),
           BottomNavigationBarItem(icon: Icon(Icons.add), title: Text('Viaje')),
           BottomNavigationBarItem(
-              icon: Icon(Icons.add), title: Text('Seguimiento')),
+              icon: Icon(Icons.time_to_leave), title: Text('Seguimiento')),
           BottomNavigationBarItem(
               icon: Icon(Icons.search), title: Text('Paquete')),
           BottomNavigationBarItem(
