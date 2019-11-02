@@ -41,7 +41,14 @@ PuntoTransportify.fromSnapshot(DocumentSnapshot snapshot) {
 
 Ahora, hay un par de cambios:
 
-1. Además de el constructor, hay un método `loadFromSnapshot(DocumentSnapshot snapshot)`, proveniente de `ComponenteBD` el cual se debe sobrecargar. Todo lo del constructor `fromSnapshot` debería ser movido a este nuevo método. Esto se necesita para la nueva función de revertir `revertFromBD()`.
+1. Además de el constructor, hay un método `loadFromSnapshot(DocumentSnapshot snapshot)`, proveniente de `ComponenteBD` el cual se debe sobrecargar. Todo lo del constructor `fromSnapshot` debería ser movido a este nuevo método.
+
+    Este método es `async`. Para objetos sin referencias, esto no influye, ya que mientras no uses ningún `await`, el método se ejecuta de forma síncrona. Sin embargo, si por algún motivo necesitas realizar alguna llamada asíncrona y la debes esperar, puedes usar `await` para ello.
+
+    Eso sí, si debes hacer esto, recuerda que en realidad el constructor no espera a las llamadas asíncronas. De hecho, como *Dart* es un lenguaje *single-threaded*, estas no se ejecutan hasta que alguien haga un await de otra cosa, momento en el que realmente se empiezan a ejecutar estas llamadas.
+
+    Para ello, `ComponenteBD` (y con ello, todos sus hijos) dispone del método `waitForInit()`, que te devuelve un `Future<void>`, al que puedes hacerle `await` desde fuera para esperar a que termine toda la inicialización antes de intentar acceder a sus atributos.
+
 2. Como de las id (como de todo lo de la BD) se encarga la clase `ComponenteBD`, en lugar de hacer la llamada siguiente: `this.id = snapshot.documentID;` llamamos al método padre para que se encargue de todo: `super.loadFromSnapshot(snapshot);`
 
     Del mismo modo, si tu clase tenía algún atributo para la `id`, ya puedes quitarlo. `ComponenteBD` ya tiene el suyo propio, y lo heredas junto a lo demás.
@@ -85,26 +92,33 @@ Map<String, dynamic> toMap() {
 
 ### Ya lo tengo en la base de datos. Ahora necesito extraer el objeto de su referencia.
 
-Cuando quieras obtener un objeto de la base de datos, y éste contenga referencias a otros objetos, lo mejor que puedes hacer es utilizar el método estático `tratarReferencias(Map)` de la clase `Datos`.
+Cuando quieras obtener un objeto de la base de datos, y éste contenga referencias a otros objetos, lo mejor que puedes hacer es utilizar el constructor `fromReference(...)` de la clase `ComponenteBD`.
 
-Le pasas el `snapshot` del objeto del que necesites referencias, y éste obtendrá todos los `snapshots` asociados a las referencias de tu objeto.
+Para usarlo, debes heredarlo en tu clase de esta forma:
 
->El método `tratarReferencias` es asíncrono, con lo cual deberás asegurarte de que si tu método es síncrono, todo lo que se haga después esté en el `.then(...)` de la llamada, para que espere a que termine. Alternativamente, si tu método también es asíncrono, puedes esperarlo con `await`.
+```dart
+PuntoTransportify.fromReference(DocumentReference reference, {bool init = true})
+    : super.fromReference(reference, init: init);
+```
+
+>El atributo `init` sirve para decidir si necesitas inicializar los atributos con sus contrapartes de la base de datos. Por defecto value `true`, pero en casos en los que no necesites que se inicialicen (por ejemplo, porque solo necesitas la referencia, o porque lo harás más tarde), puedes hacerlo llamándolo así: `PuntoTransportify.fromReference(reference, init: false)`.
 
 Una vez tratadas las referencias, puedes cargarlo normalmente en tu objeto. Sólo debes tener en cuenta una cosa, y es que tendrás que crear instancias de los objetos a los que referencies.
 
 >Código adaptado del antiguo constructor `fromSnapshot()` de la clase `Viaje`.
 
 ```dart
-void loadFromSnapshot(DocumentSnapshot snapshot) {
+@override
+Future<void> loadFromSnapshot(DocumentSnapshot snapshot) async {
     super.loadFromSnapshot(snapshot);
+    this.cargaMaxima = ViajeTransportifyBD.obtenerCargaMaxima(snapshot);
+    this.fecha = ViajeTransportifyBD.obtenerFecha(snapshot).toDate();
+    this.destino = PuntoTransportify.fromReference(ViajeTransportifyBD.obtenerDestino(snapshot));
+    this.origen = PuntoTransportify.fromReference(ViajeTransportifyBD.obtenerOrigen(snapshot));
+    this.transportista = Usuario.fromReference(ViajeTransportifyBD.obtenerTransportista(snapshot));
 
-    this.cargaMaxima = snapshot[ViajeBD.atributo_carga_maxima];
-    this.fecha = snapshot[ViajeBD.atributo_fecha];
-
-    this.destino = PuntoTransportify.fromSnapshot(snapshot[ViajeBD.atributo_destino]);
-    this.origen = PuntoTransportify.fromSnapshot(snapshot[ViajeBD.atributo_origen]);
-    this.transportista = Transportista.fromSnapshot(snapshot[ViajeBD.atributo_transportista]);
+    // Cuando obtienes un objeto a partir de una referencia y quieres obtener los datos de la misma, debes esperar a que estos se extraigan de la base de datos.
+    await Future.wait([this.destino.waitForInit(), this.origen.waitForInit(), this.transportista.waitForInit()]); 
 }
 ```
 
