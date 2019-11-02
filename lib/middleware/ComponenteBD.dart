@@ -4,21 +4,23 @@ abstract class ComponenteBD {
   final CollectionReference coleccion;
 
   DocumentReference _reference;
-
   DocumentReference get reference => _reference;
-  
   String get id => reference?.documentID;
+
+  Future<void> _init;
 
   ComponenteBD({String coleccion})
   : this.coleccion = Firestore.instance.collection(coleccion);
 
-  ComponenteBD.fromReference({DocumentReference reference}) :
+  ComponenteBD.fromReference(DocumentReference reference) :
     this._reference = reference,
-    this.coleccion = reference.parent();
+    this.coleccion = reference.parent() {
+      this._init = revertToBD();
+    }
 
   ComponenteBD.fromSnapshot(DocumentSnapshot snapshot)
   : this.coleccion = snapshot.reference.parent() {
-    this.loadFromSnapshot(snapshot);
+    _init = this.loadFromSnapshot(snapshot);
   }
 
   @override
@@ -27,8 +29,12 @@ abstract class ComponenteBD {
   @override
   int get hashCode => id.hashCode;
 
-  void loadFromSnapshot(DocumentSnapshot snapshot) {
+  Future<void> loadFromSnapshot(DocumentSnapshot snapshot) async {
     this._reference = snapshot.reference;
+  }
+
+  Future<void> waitForInit() async {
+    await _init;
   }
 
   Map<String, dynamic> toMap();
