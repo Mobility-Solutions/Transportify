@@ -305,8 +305,8 @@ class _MyViajeFormState extends State<MyViajeForm> {
     return new Viaje(
       cargaMaxima: _peso,
       fecha: fechaViajeElegida,
-      destinoId: puntos.destino,
-      origenId: puntos.origen,
+      destino: puntos.destino,
+      origen: puntos.origen,
     );
   }
 

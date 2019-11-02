@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:transportify/middleware/PaqueteTransportifyBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/modelos/Puntos.dart';
 import 'package:transportify/util/style.dart';
@@ -331,8 +330,8 @@ class _PaqueteFormState extends State<PaqueteForm> {
         largo: _largo,
         peso: _peso,
         fragil: _fragil,
-        origen: puntoOrigen,
-        destino: puntoDestino,
+        origen: puntos.origen,
+        destino: puntos.destino,
         fechaEntrega: _fechaentrega);
   }
 
