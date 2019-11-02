@@ -7,8 +7,6 @@ int estado = -1;
 class ListaPaquetesSeguimientoView extends StatefulWidget {
   @override
   _ListaPaquetesViewState createState() => new _ListaPaquetesViewState();  
-
-
 }
 
 class _ListaPaquetesViewState extends State<ListaPaquetesSeguimientoView>{

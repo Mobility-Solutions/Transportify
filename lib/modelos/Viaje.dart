@@ -27,11 +27,11 @@ class Viaje extends ComponenteBD {
   @override
   Future<void> loadFromSnapshot(DocumentSnapshot snapshot) async {
     super.loadFromSnapshot(snapshot);
-    this.cargaMaxima = snapshot[ViajeTransportifyBD.atributo_carga_maxima];
-    this.fecha = snapshot[ViajeTransportifyBD.atributo_fecha];
-    this.destino = PuntoTransportify.fromReference(snapshot[ViajeTransportifyBD.atributo_destino]);
-    this.origen = PuntoTransportify.fromReference(snapshot[ViajeTransportifyBD.atributo_origen]);
-    this.transportista = Usuario.fromReference(snapshot[ViajeTransportifyBD.atributo_transportista]);
+    this.cargaMaxima = ViajeTransportifyBD.obtenerCargaMaxima(snapshot);
+    this.fecha = ViajeTransportifyBD.obtenerFecha(snapshot).toDate();
+    this.destino = PuntoTransportify.fromReference(ViajeTransportifyBD.obtenerDestino(snapshot));
+    this.origen = PuntoTransportify.fromReference(ViajeTransportifyBD.obtenerOrigen(snapshot));
+    this.transportista = Usuario.fromReference(ViajeTransportifyBD.obtenerTransportista(snapshot));
 
     await Future.wait([this.destino.waitForInit(), this.origen.waitForInit(), this.transportista.waitForInit()]);
   }

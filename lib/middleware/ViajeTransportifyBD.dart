@@ -16,6 +16,6 @@ class ViajeTransportifyBD {
       snapshot[atributo_transportista];
   static double obtenerCargaMaxima(DocumentSnapshot snapshot) =>
       snapshot[atributo_carga_maxima];
-  static DateTime obtenerFecha(DocumentSnapshot snapshot) =>
+  static Timestamp obtenerFecha(DocumentSnapshot snapshot) =>
       snapshot[atributo_fecha];
 }
