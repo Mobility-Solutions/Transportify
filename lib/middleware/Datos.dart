@@ -23,14 +23,4 @@ class Datos {
   static Future<DocumentReference> crearDocument(String collectionPath, Map<String, dynamic> data) {
     return Firestore.instance.collection(collectionPath).add(data);
   }
-  
-  static Future<void> tratarReferencias(
-      Map<String, dynamic> map) async {
-
-    map.forEach((key, value) async {
-      if (value is DocumentReference) {
-        map[key] = await value.get();
-      }
-    });
-  }
 }
