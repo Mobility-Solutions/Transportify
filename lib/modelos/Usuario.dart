@@ -2,11 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:transportify/middleware/ComponenteBD.dart';
 
 class Usuario extends ComponenteBD {
+  static const String coleccion_usuarios = 'usuarios';
   static const String atributo_nombre = 'nombre';
 
   String nombre;
 
-  Usuario({this.nombre});
+  Usuario({this.nombre}) : super(coleccion: coleccion_usuarios);
 
   Usuario.fromReference(DocumentReference reference)
       : super.fromReference(reference);

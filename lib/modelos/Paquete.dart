@@ -27,7 +27,7 @@ class Paquete extends ComponenteBD {
       this.origen,
       this.remitente,
       this.precio,
-      this.fechaEntrega});
+      this.fechaEntrega}) : super(coleccion: PaqueteTransportifyBD.coleccion_paquetes);
 
   Paquete.fromReference(DocumentReference reference)
       : super.fromReference(reference);
@@ -60,9 +60,9 @@ class Paquete extends ComponenteBD {
     map[PaqueteTransportifyBD.atributo_alto] = this.alto;
     map[PaqueteTransportifyBD.atributo_ancho] = this.ancho;
     map[PaqueteTransportifyBD.atributo_fragil] = this.fragil;
-    map[PaqueteTransportifyBD.atributo_destino] = this.destino;
-    map[PaqueteTransportifyBD.atributo_origen] = this.origen;
-    map[PaqueteTransportifyBD.atributo_remitente] = this.remitente;
+    map[PaqueteTransportifyBD.atributo_destino] = this.destino?.reference;
+    map[PaqueteTransportifyBD.atributo_origen] = this.origen?.reference;
+    map[PaqueteTransportifyBD.atributo_remitente] = this.remitente?.reference;
     map[PaqueteTransportifyBD.atributo_largo] = this.largo;
     map[PaqueteTransportifyBD.atributo_peso] = this.peso;
     map[PaqueteTransportifyBD.atributo_precio] = this.precio;

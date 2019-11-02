@@ -17,7 +17,7 @@ class Viaje extends ComponenteBD {
       this.fecha,
       this.destino,
       this.origen,
-      this.transportista});
+      this.transportista}) : super(coleccion: ViajeTransportifyBD.coleccion_viajes);
 
   Viaje.fromReference(DocumentReference reference)
       : super.fromReference(reference);
@@ -39,9 +39,9 @@ class Viaje extends ComponenteBD {
   @override
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = Map<String, dynamic>();
-    map[ViajeTransportifyBD.atributo_destino] = this.destino;
-    map[ViajeTransportifyBD.atributo_origen] = this.origen;
-    map[ViajeTransportifyBD.atributo_transportista] = this.transportista;
+    map[ViajeTransportifyBD.atributo_destino] = this.destino?.reference;
+    map[ViajeTransportifyBD.atributo_origen] = this.origen?.reference;
+    map[ViajeTransportifyBD.atributo_transportista] = this.transportista?.reference;
     map[ViajeTransportifyBD.atributo_carga_maxima] = this.cargaMaxima;
     map[ViajeTransportifyBD.atributo_fecha] = this.fecha;
     return map;

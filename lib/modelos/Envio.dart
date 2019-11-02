@@ -11,7 +11,7 @@ class Envio extends ComponenteBD {
   Paquete paquete;
   Viaje viaje;
 
-  Envio({this.estado, this.paquete, this.viaje});
+  Envio({this.estado, this.paquete, this.viaje}) : super(coleccion: EnviosBD.coleccion_envios);
 
   Envio.fromSnapshot(DocumentSnapshot snapshot) : super.fromSnapshot(snapshot);
 
@@ -29,8 +29,8 @@ class Envio extends ComponenteBD {
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = Map<String, dynamic>();
     map[EnviosBD.atributo_estado] = this.estado;
-    map[EnviosBD.atributo_paquete] = this.paquete.reference;
-    map[EnviosBD.atributo_viaje] = this.viaje.reference;
+    map[EnviosBD.atributo_paquete] = this.paquete?.reference;
+    map[EnviosBD.atributo_viaje] = this.viaje?.reference;
     return map;
   }
 }
