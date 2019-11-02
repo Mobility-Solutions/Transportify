@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:transportify/middleware/ComponenteBD.dart';
 import 'package:transportify/middleware/PuntoTransportifyBD.dart';
 
-class PuntoTransportify {
-  String id;
+class PuntoTransportify extends ComponenteBD {
   String apodo;
   String direccion;
   String ciudad;
@@ -14,11 +14,15 @@ class PuntoTransportify {
           : direccion
       : apodo;
 
-  PuntoTransportify(
-      {this.apodo, this.direccion, this.ciudad, this.latitud, this.longitud});
+  PuntoTransportify.fromReference(DocumentReference reference, {bool init = true})
+      : super.fromReference(reference, init: init);
 
-  PuntoTransportify.fromSnapshot(DocumentSnapshot snapshot) {
-    this.id = snapshot.documentID;
+  PuntoTransportify.fromSnapshot(DocumentSnapshot snapshot)
+      : super.fromSnapshot(snapshot);
+
+  @override
+  Future<void> loadFromSnapshot(DocumentSnapshot snapshot) async {
+    super.loadFromSnapshot(snapshot);
     this.apodo = PuntoTransportifyBD.obtenerApodo(snapshot);
     this.direccion = PuntoTransportifyBD.obtenerDireccion(snapshot);
     this.ciudad = PuntoTransportifyBD.obtenerCiudad(snapshot);
@@ -29,8 +33,12 @@ class PuntoTransportify {
   }
 
   @override
-  bool operator ==(o) => o is PuntoTransportify && o.id == id;
+  Map<String, dynamic> toMap() {
+    // PuntoTransportify no necesita toMap, ya que sus instancias deben ser inmutables
+    return null;
+  }
 
   @override
-  int get hashCode => id.hashCode;
+  Future<void> deleteFromBD() =>
+      throw UnsupportedError("Este objeto no se puede borrar de la BD");
 }

@@ -1,25 +1,49 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:transportify/middleware/ComponenteBD.dart';
+import 'package:transportify/middleware/ViajeBD.dart';
+import 'package:transportify/modelos/PuntoTransportify.dart';
 
 import 'Usuario.dart';
-import 'PuntoTransportify.dart';
 
-class Viaje {
-  String id;
+class Viaje extends ComponenteBD {
   double cargaMaxima;
   DateTime fecha;
-  String destinoId;
-  String origenId;
-  String transportistaId;
+  PuntoTransportify destino;
+  PuntoTransportify origen;
+  Usuario transportista;
 
-  Viaje({this.cargaMaxima, this.fecha, this.destinoId, this.origenId, this.transportistaId});
+  Viaje(
+      {this.cargaMaxima,
+      this.fecha,
+      this.destino,
+      this.origen,
+      this.transportista}) : super(coleccion: ViajeBD.coleccion_viajes);
 
-  Viaje.fromSnapshot(DocumentSnapshot snapshot) {
-    this.id = snapshot.documentID;
-    this.cargaMaxima = snapshot['carga_maxima'];
-    this.fecha = snapshot['fecha'];
-    this.destinoId = snapshot['id_destino'];
-    this.origenId = snapshot['id_origen'];
-    this.transportistaId = snapshot['id_transportista'];
+  Viaje.fromReference(DocumentReference reference, {bool init = true})
+      : super.fromReference(reference, init: init);
+
+  Viaje.fromSnapshot(DocumentSnapshot snapshot) : super.fromSnapshot(snapshot);
+
+  @override
+  Future<void> loadFromSnapshot(DocumentSnapshot snapshot) async {
+    super.loadFromSnapshot(snapshot);
+    this.cargaMaxima = ViajeBD.obtenerCargaMaxima(snapshot);
+    this.fecha = ViajeBD.obtenerFecha(snapshot).toDate();
+    this.destino = PuntoTransportify.fromReference(ViajeBD.obtenerDestino(snapshot));
+    this.origen = PuntoTransportify.fromReference(ViajeBD.obtenerOrigen(snapshot));
+    this.transportista = Usuario.fromReference(ViajeBD.obtenerTransportista(snapshot));
+
+    await Future.wait([this.destino.waitForInit(), this.origen.waitForInit(), this.transportista.waitForInit()]);
   }
 
+  @override
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = Map<String, dynamic>();
+    map[ViajeBD.atributo_destino] = this.destino?.reference;
+    map[ViajeBD.atributo_origen] = this.origen?.reference;
+    map[ViajeBD.atributo_transportista] = this.transportista?.reference;
+    map[ViajeBD.atributo_carga_maxima] = this.cargaMaxima;
+    map[ViajeBD.atributo_fecha] = this.fecha;
+    return map;
+  }
 }

@@ -13,7 +13,7 @@ abstract class BusquedaFormState<T extends StatefulWidget> extends State<T> {
 
   int get resultados => listaResultados.length;
   List<DocumentSnapshot> listaResultados = List<DocumentSnapshot>();
-  bool listaVisible = false;
+  bool validada = false;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -25,8 +25,8 @@ abstract class BusquedaFormState<T extends StatefulWidget> extends State<T> {
         appBar: AppBar(
           title: Text(titulo),
           backgroundColor: TransportifyColors.primarySwatch,
-elevation: 0.0,
- ),
+          elevation: 0.0,
+        ),
         body: Padding(
           padding: EdgeInsets.only(left: 15.0, right: 15.0),
           child: Column(
@@ -59,8 +59,10 @@ elevation: 0.0,
   Widget Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
       obtenerListaBuilder() {
     return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      bool hasData = buscar(context, snapshot);
-      if (!hasData) listaVisible = false;
+      bool hasData = false;
+      if (validada) {
+        hasData = buscar(context, snapshot);
+      }
       return _buildContainerBusqueda(hasData);
     };
   }
@@ -84,7 +86,7 @@ elevation: 0.0,
                         '$textoResultados:  ',
                         style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
-                      listaVisible
+                      validada
                           ? Text(
                               '$resultados',
                               style:
@@ -103,7 +105,7 @@ elevation: 0.0,
                   color: Colors.white,
                   onPressed: () {
                     setState(() {
-                      listaVisible = _formKey.currentState.validate();
+                      validada = _formKey.currentState.validate();
                     });
                   },
                 ),
@@ -111,7 +113,7 @@ elevation: 0.0,
             ],
           ),
         ),
-        listaVisible
+        validada
             ? Expanded(
                 child: hasData
                     ? SizedBox.expand(

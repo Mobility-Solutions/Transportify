@@ -2,23 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:transportify/middleware/ViajeTransportifyBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/modelos/Puntos.dart';
+import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
 
-import '../modelos/Viaje.dart';
-import 'PuntosDialog.dart';
+import '../PuntosDialog.dart';
 
-class MyViajeForm extends StatefulWidget {
-  MyViajeForm({Key key, this.title}) : super(key: key);
+class CreacionViajeForm extends StatefulWidget {
+  CreacionViajeForm({Key key, this.title}) : super(key: key);
   @override
-  _MyViajeFormState createState() => _MyViajeFormState();
+  _CreacionViajeFormState createState() => _CreacionViajeFormState();
 
   final String title;
 }
 
-class _MyViajeFormState extends State<MyViajeForm> {
+class _CreacionViajeFormState extends State<CreacionViajeForm> {
   final horaController = TextEditingController();
   final origenController = TextEditingController();
   final destinoController = TextEditingController();
@@ -305,8 +304,8 @@ class _MyViajeFormState extends State<MyViajeForm> {
     return new Viaje(
       cargaMaxima: _peso,
       fecha: fechaViajeElegida,
-      destinoId: puntos.destino.id,
-      origenId: puntos.origen.id,
+      destino: puntos.destino,
+      origen: puntos.origen,
     );
   }
 
@@ -317,7 +316,7 @@ class _MyViajeFormState extends State<MyViajeForm> {
         if (hintText == "ACEPTAR") {
           if (_formKey.currentState.validate()) {
             Viaje viaje = getViajeFromControllers();
-            ViajeTransportifyBD.crearViajeEnBD(viaje);
+            viaje.crearEnBD();
             TransportifyMethods.doneDialog(context, "Viaje creado",
                 content: "El viaje ha sido creado con éxito");
           }

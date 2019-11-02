@@ -5,6 +5,12 @@ class Puntos {
 
   Puntos({this.origen, this.destino});
 
+  @override
+  bool operator ==(o) => o is Puntos && origen == o?.origen && destino == o?.destino;
+
+  @override
+  int get hashCode => origen.hashCode - destino.hashCode;
+
   String validate() {
     if (origen == null || destino == null)
       return 'Introduzca los puntos origen y destino';

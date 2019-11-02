@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:transportify/vistas/paqueteForm.dart';
-import 'package:transportify/vistas/paqueteListView.dart';
-import 'package:transportify/vistas/listaPaquetesSeguimientoView.dart';
-import 'package:transportify/vistas/viajeForm.dart';
-import 'package:transportify/vistas/viajeListView.dart';
+import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
+import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
+import 'package:transportify/vistas/seguimiento/SeguimientoForm.dart';
+import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
+import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';
 
 import 'middleware/PuntoTransportifyBD.dart';
 
-void main() async => await initializeDateFormatting("es_ES", null).then((_) => runApp(MyApp()));
+void main() async =>
+    await initializeDateFormatting("es_ES", null).then((_) => runApp(MyApp()));
 
 class MyApp extends StatelessWidget {
   static const String title = 'Transportify';
@@ -61,31 +62,31 @@ class _MyHomePageState extends State<MyHomePage> {
       case 0:
         Navigator.of(context)
             .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-          return new PaqueteForm();
+          return new CreacionPaqueteForm();
         }));
         break;
       case 1:
         Navigator.of(context)
             .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-          return new MyViajeForm();
+          return new CreacionViajeForm();
         }));
         break;
       case 2:
         Navigator.of(context)
             .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-          return new ListaPaquetesSeguimientoView();
+          return new SeguimientoForm();
         }));
         break;
       case 3:
         Navigator.of(context)
             .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-          return new PaqueteListView();
+          return new BusquedaPaqueteForm();
         }));
         break;
       case 4:
         Navigator.of(context)
             .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-          return new ViajeListView();
+          return new BusquedaViajeForm();
         }));
         break;
       default:
@@ -126,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.add), title: Text('Paquete')),
           BottomNavigationBarItem(icon: Icon(Icons.add), title: Text('Viaje')),
           BottomNavigationBarItem(
-              icon: Icon(Icons.add), title: Text('Seguimiento')),
+              icon: Icon(Icons.time_to_leave), title: Text('Seguimiento')),
           BottomNavigationBarItem(
               icon: Icon(Icons.search), title: Text('Paquete')),
           BottomNavigationBarItem(
