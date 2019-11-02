@@ -84,8 +84,14 @@ abstract class BusquedaFormPuntosState<T extends StatefulWidget>
 
     for (DocumentSnapshot document in coleccion) {
       Puntos puntosDocument = Puntos(
-        destino: document[PuntosBD.atributo_destino],
-        origen: document[PuntosBD.atributo_origen],
+        destino: PuntoTransportify.fromReference(
+          document[PuntosBD.atributo_destino],
+          init: false,
+        ),
+        origen: PuntoTransportify.fromReference(
+          document[PuntosBD.atributo_origen],
+          init: false,
+        ),
       );
       if (puntosDocument == puntos) {
         listaResultados.add(document);
