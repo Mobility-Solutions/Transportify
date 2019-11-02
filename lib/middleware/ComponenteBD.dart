@@ -8,6 +8,7 @@ abstract class ComponenteBD {
   String get id => reference?.documentID;
 
   Future<void> _init;
+  Future<void> waitForInit() => _init;
 
   ComponenteBD({String coleccion})
   : this.coleccion = coleccion == null ? null : Firestore.instance.collection(coleccion);
@@ -31,10 +32,6 @@ abstract class ComponenteBD {
 
   Future<void> loadFromSnapshot(DocumentSnapshot snapshot) async {
     this._reference = snapshot.reference;
-  }
-
-  Future<void> waitForInit() async {
-    await _init;
   }
 
   Map<String, dynamic> toMap();
@@ -63,7 +60,13 @@ abstract class ComponenteBD {
     }
   }
 
-  Future<void> revertToBD() => reference?.get()?.then((snapshot) => loadFromSnapshot(snapshot));
+  Future<void> revertToBD() => reference?.get()?.then((snapshot) {
+    if (snapshot.exists) {
+      return loadFromSnapshot(snapshot);
+    } else {
+      throw StateError("Este objeto no existe en la base de datos");
+    }
+  });
 
   Future<void> deleteFromBD() => reference?.delete();
 }
