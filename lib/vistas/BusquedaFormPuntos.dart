@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:transportify/middleware/PuntosBD.dart';
 import 'package:transportify/modelos/Puntos.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
@@ -81,10 +82,13 @@ abstract class BusquedaFormPuntosState<T extends StatefulWidget>
     List<DocumentSnapshot> coleccion = snapshot.data.documents;
     listaResultados.clear();
 
-    for (int i = 0; i < coleccion.length; i++) {
-      if (coleccion[i]['id_destino'].toString() == puntos.destino?.id &&
-          coleccion[i]['id_origen'].toString() == puntos.origen?.id) {
-        listaResultados.add(coleccion[i]);
+    for (DocumentSnapshot document in coleccion) {
+      Puntos puntosDocument = Puntos(
+        destino: document[PuntosBD.atributo_destino],
+        origen: document[PuntosBD.atributo_origen],
+      );
+      if (puntosDocument == puntos) {
+        listaResultados.add(document);
       }
     }
 

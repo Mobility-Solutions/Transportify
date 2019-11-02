@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'PuntosBD.dart';
+
 class PaqueteTransportifyBD {
   static const String coleccion_paquetes = 'paquetes';
 
@@ -7,8 +9,8 @@ class PaqueteTransportifyBD {
   static const String atributo_alto="alto";
   static const String atributo_ancho= "ancho";
   static const String atributo_fragil = "fragil";
-  static const String atributo_destino = "destino";
-  static const String atributo_origen = "origen";
+  static const String atributo_destino = PuntosBD.atributo_destino;
+  static const String atributo_origen = PuntosBD.atributo_origen;
   static const String atributo_remitente = "remitente";
   static const String atributo_largo = "largo";
   static const String atributo_peso = "peso";
@@ -19,8 +21,8 @@ class PaqueteTransportifyBD {
   static double obtenerAlto(DocumentSnapshot snapshot) => snapshot[atributo_alto];
   static double obtenerAncho(DocumentSnapshot snapshot) => snapshot[atributo_ancho];
   static bool obtenerFragil(DocumentSnapshot snapshot) => snapshot[atributo_fragil];
-  static DocumentReference obtenerDestino(DocumentSnapshot snapshot) => snapshot[atributo_destino];
-  static DocumentReference obtenerOrigen(DocumentSnapshot snapshot) => snapshot[atributo_origen];
+  static DocumentReference obtenerDestino(DocumentSnapshot snapshot) => PuntosBD.obtenerDestino(snapshot);
+  static DocumentReference obtenerOrigen(DocumentSnapshot snapshot) => PuntosBD.obtenerOrigen(snapshot);
   static DocumentReference obtenerRemitente(DocumentSnapshot snapshot) => snapshot[atributo_remitente];
   static double obtenerLargo(DocumentSnapshot snapshot) => snapshot[atributo_largo];
   static double obtenerPeso(DocumentSnapshot snapshot) => snapshot[atributo_peso];
