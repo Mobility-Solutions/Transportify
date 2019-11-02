@@ -13,10 +13,10 @@ abstract class ComponenteBD {
   ComponenteBD({String coleccion})
   : this.coleccion = coleccion == null ? null : Firestore.instance.collection(coleccion);
 
-  ComponenteBD.fromReference(DocumentReference reference) :
+  ComponenteBD.fromReference(DocumentReference reference, {bool init = true}) :
     this._reference = reference,
     this.coleccion = reference.parent() {
-      this._init = revertToBD();
+      if (init) this._init = revertToBD();
     }
 
   ComponenteBD.fromSnapshot(DocumentSnapshot snapshot)

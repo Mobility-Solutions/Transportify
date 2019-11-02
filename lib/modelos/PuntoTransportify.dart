@@ -14,8 +14,8 @@ class PuntoTransportify extends ComponenteBD {
           : direccion
       : apodo;
 
-  PuntoTransportify.fromReference(DocumentReference reference)
-      : super.fromReference(reference);
+  PuntoTransportify.fromReference(DocumentReference reference, {bool init = true})
+      : super.fromReference(reference, init: init);
 
   PuntoTransportify.fromSnapshot(DocumentSnapshot snapshot)
       : super.fromSnapshot(snapshot);

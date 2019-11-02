@@ -19,8 +19,8 @@ class Viaje extends ComponenteBD {
       this.origen,
       this.transportista}) : super(coleccion: ViajeTransportifyBD.coleccion_viajes);
 
-  Viaje.fromReference(DocumentReference reference)
-      : super.fromReference(reference);
+  Viaje.fromReference(DocumentReference reference, {bool init = true})
+      : super.fromReference(reference, init: init);
 
   Viaje.fromSnapshot(DocumentSnapshot snapshot) : super.fromSnapshot(snapshot);
 

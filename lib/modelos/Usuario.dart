@@ -9,8 +9,8 @@ class Usuario extends ComponenteBD {
 
   Usuario({this.nombre}) : super(coleccion: coleccion_usuarios);
 
-  Usuario.fromReference(DocumentReference reference)
-      : super.fromReference(reference);
+  Usuario.fromReference(DocumentReference reference, {bool init = true})
+      : super.fromReference(reference, init: init);
 
   Usuario.fromSnapshot(DocumentSnapshot snapshot)
       : super.fromSnapshot(snapshot);

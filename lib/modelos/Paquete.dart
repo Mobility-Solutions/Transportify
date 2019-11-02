@@ -29,8 +29,8 @@ class Paquete extends ComponenteBD {
       this.precio,
       this.fechaEntrega}) : super(coleccion: PaqueteTransportifyBD.coleccion_paquetes);
 
-  Paquete.fromReference(DocumentReference reference)
-      : super.fromReference(reference);
+  Paquete.fromReference(DocumentReference reference, {bool init = true})
+      : super.fromReference(reference, init: init);
 
   Paquete.fromSnapshot(DocumentSnapshot snapshot)
       : super.fromSnapshot(snapshot);
