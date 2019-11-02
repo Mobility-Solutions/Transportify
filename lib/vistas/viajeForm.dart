@@ -352,10 +352,9 @@ Future<Null> getTransportifyPoint(bool origen) async {
     return new Viaje(
         cargaMaxima: _peso,
         fecha: fechaViajeElegida,
-        destinoId: puntoDestino.id,
-        origenId: puntoOrigen.id,
-
-);
+        destino: puntoDestino,
+        origen: puntoOrigen,
+    );
   }
 
   Widget buildButtonContainer(String hintText) {
@@ -364,7 +363,7 @@ Future<Null> getTransportifyPoint(bool origen) async {
           if (hintText == "ACEPTAR") {
             if (_formKey.currentState.validate()) {
               Viaje viaje = getViajeFromControllers();
-              ViajeTransportifyBD.crearViajeEnBD(viaje);
+              viaje.crearEnBD();
               doneDialog();
             }
           } else {

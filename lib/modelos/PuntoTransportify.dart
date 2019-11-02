@@ -8,11 +8,14 @@ class PuntoTransportify extends ComponenteBD {
   String ciudad;
   double latitud, longitud;
 
+  PuntoTransportify.fromReference(DocumentReference reference)
+      : super.fromReference(reference);
+
   PuntoTransportify.fromSnapshot(DocumentSnapshot snapshot)
       : super.fromSnapshot(snapshot);
 
   @override
-  void loadFromSnapshot(DocumentSnapshot snapshot) {
+  Future<void> loadFromSnapshot(DocumentSnapshot snapshot) async {
     super.loadFromSnapshot(snapshot);
 
     this.nombre = PuntoTransportifyBD.obtenerNombre(snapshot);

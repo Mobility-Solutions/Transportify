@@ -345,8 +345,8 @@ class _PaqueteFormState extends State<PaqueteForm> {
         largo: _largo,
         peso: _peso,
         fragil: _fragil,
-        origenId: puntoOrigen.id,
-        destinoId: puntoDestino.id,
+        origen: puntoOrigen,
+        destino: puntoDestino,
         fechaEntrega: _fechaentrega);
   }
 
@@ -357,7 +357,7 @@ class _PaqueteFormState extends State<PaqueteForm> {
         if (hintText == "ACEPTAR") {
           if (_formKey.currentState.validate()) {
             Paquete paquete = getPaqueteFromControllers();
-            PaqueteTransportifyBD.crearPaqueteEnBD(paquete);
+            paquete.crearEnBD();
             TransportifyMethods.doneDialog(context,"Paquete creado",content:"El paquete ha sido creado con éxito");
           }
         } else {
