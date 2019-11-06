@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:transportify/middleware/EnviosBD.dart';
 
 
-import 'customStepper.dart';
+import 'CustomStepper.dart';
 
 int estado = -1;
 class SeguimientoForm extends StatefulWidget {
