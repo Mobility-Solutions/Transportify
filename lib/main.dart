@@ -37,7 +37,8 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: TransportifyColors.homeBackgroundSwatch,
       body: Column(
         children: <Widget>[
-            TopPart()
+            TopPart(),
+            CrearPaquetePart()
         ]
       )
     );
@@ -96,7 +97,8 @@ class TopPart extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Icon(
-                          Icons.trending_up,
+                          Icons.all_inclusive,
+                          color: TransportifyColors.primarySwatch[500],
                           size: 28.0,
                         ),
                       ),
@@ -105,9 +107,9 @@ class TopPart extends StatelessWidget {
                       height: 8.0,
                     ),
                     Text(
-                      "PAQUETES/VIAJES",
+                      "ACTIVIDAD",
                       style: TextStyle(
-                          fontWeight: FontWeight.w500, fontSize: 12.0),
+                          fontWeight: FontWeight.w500, fontSize: 12.0, color: TransportifyColors.primarySwatch[500]),
                     )
                   ],
                 ),
@@ -140,6 +142,66 @@ class TopPart extends StatelessWidget {
                 )
               ],
             )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CrearPaquetePart extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 180.0,
+      width: MediaQuery.of(context).size.width,
+      color: TransportifyColors.primarySwatch[500],
+      child: Material(
+        color: TransportifyColors.primarySwatch[50],
+        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(60.0)),
+        child: Row(
+          children: <Widget>[
+            SizedBox(
+              width: 30.0,
+            ),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(height: 25.0),
+                  Text(
+                    "¿Quieres enviar un paquete?",
+                    style: TextStyle(
+                        fontSize: 24.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10.0),
+                  Row(
+                    children: <Widget>[
+                      Icon(Icons.control_point_duplicate, size: 30,color: Colors.white30,),
+                      SizedBox(width: 10),
+                      Text(
+                        "Publica un paquete",
+                        style: TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.white70
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 40.0),
+                  
+                  Text(
+                    "10 paquetes enviados.",
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.white70,
+                        ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
