@@ -15,7 +15,7 @@ abstract class ComponenteBD {
 
   ComponenteBD.fromReference(DocumentReference reference, {bool init = true}) :
     this._reference = reference,
-    this.coleccion = reference.parent() {
+    this.coleccion = reference?.parent() {
       if (init) this._init = revertToBD();
     }
 
