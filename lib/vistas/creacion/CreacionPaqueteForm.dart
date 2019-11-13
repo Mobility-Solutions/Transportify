@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/modelos/Puntos.dart';
 import 'package:transportify/modelos/Paquete.dart';
@@ -23,6 +24,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   final altoController = TextEditingController();
   final anchoController = TextEditingController();
   final largoController = TextEditingController();
+  final horaController = TextEditingController();
 
   double peso = 0.0;
   bool _fragil = false;
@@ -30,6 +32,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   final Puntos puntos = Puntos();
 
   DateTime _fechaentrega;
+  DateTime _horaEntrega;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -257,6 +260,37 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                     return null;
                 },
               ),
+              SizedBox(height: 20.0),
+              TextFormField(
+                    maxLines: 1,
+                    controller: horaController,
+                    //elevation: 4.0,
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      DatePicker.showTimePicker(context,
+                          theme: DatePickerTheme(
+                            containerHeight: 200.0,
+                          ),
+                          showTitleActions: true, onConfirm: (time) {
+                        print('confirm $time');
+                        _horaEntrega = time;
+                        String _time = DateFormat.Hm().format(time);
+                        setState(() {
+                          horaController.text = _time;
+                        });
+                      }, currentTime: DateTime.now(), locale: LocaleType.es);
+                    },
+                    decoration: TransportifyMethods.returnTextFormDecoration(
+                        "Hora de comienzo del viaje"),
+                    autofocus: false,
+                    style: TextStyle(color: TransportifyColors.primarySwatch),
+                    validator: (value) {
+                      if (_horaEntrega == null) {
+                        return 'Introduzca una hora.';
+                      } else
+                        return null;
+                    },
+                  ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
@@ -322,6 +356,14 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
     double _largo = double.parse(largoController.text);
     double _peso = double.parse(pesoController.text);
     String _nombre = nombreController.text;
+    DateTime fechaPaqueteElegida = new DateTime(
+        _fechaentrega.year,
+        _fechaentrega.month,
+        _fechaentrega.day,
+        _horaEntrega.hour,
+        _horaEntrega.minute,
+        0);
+
     print(_nombre);
 
     return new Paquete(
@@ -333,7 +375,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
         fragil: _fragil,
         origen: puntos.origen,
         destino: puntos.destino,
-        fechaEntrega: _fechaentrega);
+        fechaEntrega: fechaPaqueteElegida);
   }
 
   Widget buildButtonContainer(String hintText) {
