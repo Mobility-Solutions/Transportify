@@ -28,9 +28,12 @@ class PuntoTransportifyBD {
   }
 
   static Widget obtenerSelectorCiudades(
-      {Function(String) onSelectionChanged, Function(String) onSelected, Function onCanceled, String ciudadValue}) {
-    return obtenerStreamBuilderListado(
-        _obtenerSelectorCiudadesBuilder(onSelectionChanged, onSelected, onCanceled, ciudadValue));
+      {Function(String) onSelectionChanged,
+      Function(String) onSelected,
+      Function onCanceled,
+      String ciudadValue}) {
+    return obtenerStreamBuilderListado(_obtenerSelectorCiudadesBuilder(
+        onSelectionChanged, onSelected, onCanceled, ciudadValue));
   }
 
   static Widget obtenerDropDownCiudadesYListadoPuntos(
@@ -43,11 +46,14 @@ class PuntoTransportifyBD {
   }
 
   static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
-      _obtenerSelectorCiudadesBuilder(Function(String) onSelectionChanged, Function(String) onSelected,
-          Function onCanceled, String ciudadValue) {
+      _obtenerSelectorCiudadesBuilder(
+          Function(String) onSelectionChanged,
+          Function(String) onSelected,
+          Function onCanceled,
+          String ciudadValue) {
     return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      return _obtenerSelectorCiudades(
-          context, snapshot, onSelectionChanged, onSelected, onCanceled, ciudadValue);
+      return _obtenerSelectorCiudades(context, snapshot, onSelectionChanged,
+          onSelected, onCanceled, ciudadValue);
     };
   }
 
@@ -71,24 +77,25 @@ class PuntoTransportifyBD {
       String ciudadSeleccionada) {
     if (!snapshot.hasData) return const Text('Cargando...');
 
-    List<ListTile> items = [];
     var ciudades =
         snapshot.data.documents.map((doc) => doc[atributo_ciudad]).toSet();
 
-    for (String ciudad in ciudades) {
-      if (ciudad != null && ciudad.length > 0) {
-        items.add(_obtenerListViewItemCiudad(ciudad, ciudad == ciudadSeleccionada, onSelectionChanged));
-      }
-    }
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
             child: SizedBox.expand(
-              child: ListView(
-                itemExtent: 30.0,
-                children: items,
+              child: ListView.builder(
+                itemBuilder: (context, index) {
+                  if (index >= 0 && index < ciudades.length) {
+                    String ciudad = ciudades.elementAt(index);
+                    return _obtenerListViewItemCiudad(ciudad,
+                        ciudad == ciudadSeleccionada, onSelectionChanged);
+                  } else {
+                    return null;
+                  }
+                },
               ),
             ),
           ),
@@ -102,7 +109,7 @@ class PuntoTransportifyBD {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               IconButton(
-                icon: Icon(Icons.map),
+                icon: Icon(Icons.map, color: TransportifyColors.primarySwatch[900]),
                 onPressed: () {}, // TODO: onPressed del boton del mapa
               ),
               Expanded(
@@ -191,7 +198,7 @@ class PuntoTransportifyBD {
     return puntos.where((punto) => punto[atributo_ciudad] == ciudad);
   }
 
-  static ListTile _obtenerListViewItemCiudad(String ciudad,
+  static Widget _obtenerListViewItemCiudad(String ciudad,
           [bool seleccionada = false, Function(String) onSelected]) =>
       _obtenerListViewItem(
           item: ciudad,
@@ -209,7 +216,7 @@ class PuntoTransportifyBD {
     );
   }
 
-  static ListTile _obtenerListViewItem<T>(
+  static Widget _obtenerListViewItem<T>(
       {T item,
       String displayName,
       bool selected = false,
@@ -219,12 +226,17 @@ class PuntoTransportifyBD {
       onTap = () => onSelected(item);
     }
 
-    return ListTile(
-      title: Container(
-        color: selected ? TransportifyColors.primarySwatch : null,
-        child: Text(displayName, style: TextStyle(color: selected ? Colors.white : Colors.black,),),
+    return Container(
+      color: selected ? TransportifyColors.primarySwatch : null,
+      child: ListTile(
+        title: Text(
+          displayName,
+          style: TextStyle(
+            color: selected ? Colors.white : Colors.black,
+          ),
+        ),
+        onTap: onTap,
       ),
-      onTap: onTap,
     );
   }
 }

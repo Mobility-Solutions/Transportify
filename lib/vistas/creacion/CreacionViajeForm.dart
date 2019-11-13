@@ -26,10 +26,10 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
   double peso = 0.0;
 
-  DateTime choosenDate;
-  DateTime choosenTime;
+  DateTime choosenDate, choosenTime;
 
-  final Puntos puntos = Puntos();
+  // Ciudades origen y destino
+  String origen, destino;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -74,15 +74,22 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                         "Punto Transportify de origen"),
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
-                      PuntoTransportify returnPunto =
+                      String returnCiudad =
                           await CiudadDialog.show(this.context);
 
-                      if (returnPunto != null) {
-                        puntos.origen = returnPunto;
-                        origenController.text = puntos.origen?.nombre;
+                      if (returnCiudad != null) {
+                        origen = returnCiudad;
+                        origenController.text = origen;
                       }
                     },
-                    validator: (value) => puntos.validate(),
+                    validator: (value) {
+                      if (origen == null || destino == null)
+                        return 'Introduzca los puntos origen y destino';
+                      else if (origen == destino)
+                        return 'Los puntos no deben coincidir.';
+                      else
+                        return null;
+                    },
                   ),
                   SizedBox(
                     height: 20.0,
@@ -101,15 +108,22 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                         "Punto Transportify de destino"),
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
-                      PuntoTransportify returnPunto =
+                      String returnCiudad =
                           await CiudadDialog.show(this.context);
 
-                      if (returnPunto != null) {
-                        puntos.destino = returnPunto;
-                        destinoController.text = puntos.destino?.nombre;
+                      if (returnCiudad != null) {
+                        destino = returnCiudad;
+                        destinoController.text = destino;
                       }
                     },
-                    validator: (value) => puntos.validate(),
+                    validator: (value) {
+                      if (origen == null || destino == null)
+                        return 'Introduzca los puntos origen y destino';
+                      else if (origen == destino)
+                        return 'Los puntos no deben coincidir.';
+                      else
+                        return null;
+                    },
                   ),
                   SizedBox(
                     height: 20.0,
@@ -304,8 +318,8 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
     return new Viaje(
       cargaMaxima: _peso,
       fecha: fechaViajeElegida,
-      destino: puntos.destino,
-      origen: puntos.origen,
+      destino: destino,
+      origen: origen,
     );
   }
 

@@ -6,7 +6,7 @@ class CiudadDialog extends StatefulWidget {
   @override
   _CiudadDialogState createState() => new _CiudadDialogState();
 
-  static Future<PuntoTransportify> show(BuildContext context) async =>
+  static Future<String> show(BuildContext context) async =>
       await showDialog(
           context: context,
           builder: (_) {
