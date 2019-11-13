@@ -10,11 +10,16 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import '../PuntosDialog.dart';
 
 class CreacionPaqueteForm extends StatefulWidget {
+  CreacionPaqueteForm(this.miPaquete) : super();
+
+  final Paquete miPaquete;
+
   @override
   _CreacionPaqueteFormState createState() => _CreacionPaqueteFormState();
 }
 
 class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
+
   final nombreController = TextEditingController();
   final pesoController = TextEditingController();
   final origenController = TextEditingController();
@@ -29,7 +34,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
   final Puntos puntos = Puntos();
 
-  static Paquete miPaquete;
+  //static Paquete miPaquete;
 
   DateTime _fechaentrega;
 
@@ -44,15 +49,14 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   }
 
   @override
-  Widget build(BuildContext context, [Paquete paquete]) {
-    miPaquete = paquete;
+  Widget build(BuildContext context) {
     return Form(
       key: _formKey,
       child: Scaffold(
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: (miPaquete == null) ? Text(TransportifyLabels.nuevoPaquete) : Text("Modificar paquete"),
+          title: (widget.miPaquete == null) ? Text(TransportifyLabels.nuevoPaquete) : Text("Modificar paquete"),
           backgroundColor: TransportifyColors.primarySwatch,
           elevation: 0.0,
         ),
@@ -68,7 +72,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 decoration:
-                    (miPaquete == null) ? TransportifyMethods.returnTextFormDecoration("Nombre") : nombreController.text = miPaquete.nombre,
+                    (widget.miPaquete == null) ? TransportifyMethods.returnTextFormDecoration("Nombre") : TransportifyMethods.returnTextFormDecoration(widget.miPaquete.nombre),
                 controller: nombreController,
                 validator: (value) {
                   if (value.isEmpty)
@@ -87,7 +91,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
                       decoration:
-                          (miPaquete == null) ? TransportifyMethods.returnTextFormDecoration("Peso(kg)") : miPaquete.peso,
+                          (widget.miPaquete == null) ? TransportifyMethods.returnTextFormDecoration("Peso(kg)") : TransportifyMethods.returnTextFormDecoration(widget.miPaquete.peso.toString()),
                       onChanged: (text) {
                         peso = double.parse(text);
                       },
@@ -138,8 +142,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                     keyboardType: TextInputType.number,
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
-                    decoration: (miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
-                        "Alto(cm)") : miPaquete.alto.toString(),
+                    decoration: (widget.miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
+                        "Alto(cm)") : TransportifyMethods.returnTextFormDecoration(widget.miPaquete.alto.toString()),
                     controller: altoController,
                     validator: (value) {
                       if (value.isEmpty || double.parse(value) <= 0)
@@ -154,8 +158,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                       keyboardType: TextInputType.number,
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
-                      decoration: (miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
-                          "Ancho(cm)") : miPaquete.ancho.toString(),
+                      decoration: (widget.miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
+                          "Ancho(cm)") : TransportifyMethods.returnTextFormDecoration(widget.miPaquete.ancho.toString()),
                       controller: anchoController,
                       validator: (value) {
                         if (value.isEmpty || double.parse(value) <= 0)
@@ -171,8 +175,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                       keyboardType: TextInputType.number,
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
-                      decoration: (miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
-                          "Largo(cm)") : miPaquete.largo.toString() ,
+                      decoration: (widget.miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
+                          "Largo(cm)") : TransportifyMethods.returnTextFormDecoration(widget.miPaquete.largo.toString()) ,
                       controller: largoController,
                       validator: (value) {
                         if (value.isEmpty || double.parse(value) <= 0)
@@ -191,8 +195,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 controller: origenController,
-                decoration: (miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
-                    "Punto Transportify de origen") : miPaquete.origen.toString(),
+                decoration: (widget.miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
+                    "Punto Transportify de origen") : TransportifyMethods.returnTextFormDecoration(widget.miPaquete.origen.toString()),
                 onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
                   PuntoTransportify returnPunto =
@@ -211,8 +215,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 controller: destinoController,
-                decoration: (miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
-                    "Punto Transportify de destino") : miPaquete.destino.toString(),
+                decoration: (widget.miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
+                    "Punto Transportify de destino") : TransportifyMethods.returnTextFormDecoration(widget.miPaquete.destino.toString()),
                 onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
                   PuntoTransportify returnPunto =
@@ -301,7 +305,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                   width: 15,
                 ),
                 Expanded(
-                  child: buildButtonContainer("ACEPTAR", miPaquete),
+                  child: buildButtonContainer("ACEPTAR", widget.miPaquete),
                 ),
                 SizedBox(
                   width: 20,
@@ -343,22 +347,22 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   @override
   void initState() {
     super.initState();
-    if(miPaquete != null) {
-    nombreController.text = miPaquete.nombre;
-    pesoController.text = miPaquete.peso.toString();
-    origenController.text = miPaquete.origen.toString();
-    destinoController.text = miPaquete.destino.toString();
-    fechaController.text = miPaquete.fechaEntrega.toString();
-    altoController.text = miPaquete.alto.toString();
-    anchoController.text = miPaquete.ancho.toString();
-    largoController.text = miPaquete.largo.toString();
-    _fragil = miPaquete.fragil;
+    if(widget.miPaquete != null) {
+    nombreController.text = widget.miPaquete.nombre;
+    pesoController.text = widget.miPaquete.peso.toString();
+    origenController.text = widget.miPaquete.origen.toString();
+    destinoController.text = widget.miPaquete.destino.toString();
+    fechaController.text = widget.miPaquete.fechaEntrega.toString();
+    altoController.text = widget.miPaquete.alto.toString();
+    anchoController.text = widget.miPaquete.ancho.toString();
+    largoController.text = widget.miPaquete.largo.toString();
+    _fragil = widget.miPaquete.fragil;
     }
   }
 
   @override
   void dispose() {
-    if(miPaquete != null) {
+    if(widget.miPaquete != null) {
     nombreController.dispose();
     pesoController.dispose();
     origenController.dispose();
@@ -375,15 +379,15 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
     return TransportifyFormButton(
       text: hintText,
       onPressed: () {
-        if (hintText == "ACEPTAR" && miPaquete == null) {
+        if (hintText == "ACEPTAR" && widget.miPaquete == null) {
           if (_formKey.currentState.validate()) {
             Paquete paquete = getPaqueteFromControllers();
             paquete.crearEnBD();
             TransportifyMethods.doneDialog(context, "Paquete creado",
                 content: "El paquete ha sido creado con éxito");
           }
-        else if(hintText == "ACEPTAR" && miPaquete != null) {
-          miPaquete.updateBD();
+        else if(hintText == "ACEPTAR" && widget.miPaquete != null) {
+          widget.miPaquete.updateBD();
         }else {
           Navigator.pop(context);
         }

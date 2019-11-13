@@ -63,9 +63,9 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (index) {
       case 0:
         Navigator.of(context)
-            .push(MaterialPageRoute<Null>(builder: (BuildContext context, [Paquete paquete]) {
-             paquete = Paquete(nombre: "sff", alto: 30, ancho: 30, largo: 30, peso: 30, fragil: true, destino: null, remitente: null, precio: 50, origen: null, fechaEntrega: null);
-          return new CreacionPaqueteForm();
+            .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+             Paquete paquete = Paquete(nombre: "sff", alto: 30, ancho: 30, largo: 30, peso: 30, fragil: true, destino: null, remitente: null, precio: 50, origen: null, fechaEntrega: null);
+          return new CreacionPaqueteForm(paquete);
         }));
         break;
       case 1:
