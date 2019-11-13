@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
+import 'package:transportify/vistas/perfilUsuarioView.dart';
 import 'package:transportify/vistas/seguimiento/SeguimientoForm.dart';
 import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';
@@ -62,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 0:
         Navigator.of(context)
             .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-          return new CreacionPaqueteForm();
+          return new /*CreacionPaqueteForm()*/ PerfilUsuarioView();
         }));
         break;
       case 1:
