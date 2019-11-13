@@ -7,7 +7,7 @@ import 'package:transportify/modelos/Puntos.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
 
-import '../PuntosDialog.dart';
+import '../CiudadDialog.dart';
 
 class CreacionViajeForm extends StatefulWidget {
   CreacionViajeForm({Key key, this.title}) : super(key: key);
@@ -75,7 +75,7 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
                       PuntoTransportify returnPunto =
-                          await PuntosDialog.show(this.context);
+                          await CiudadDialog.show(this.context);
 
                       if (returnPunto != null) {
                         puntos.origen = returnPunto;
@@ -102,7 +102,7 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
                       PuntoTransportify returnPunto =
-                          await PuntosDialog.show(this.context);
+                          await CiudadDialog.show(this.context);
 
                       if (returnPunto != null) {
                         puntos.destino = returnPunto;
