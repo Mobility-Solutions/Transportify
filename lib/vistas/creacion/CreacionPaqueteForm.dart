@@ -6,7 +6,7 @@ import 'package:transportify/modelos/Puntos.dart';
 import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/util/style.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-
+import 'package:flutter/src/material/slider.dart';
 
 import '../PuntosDialog.dart';
 
@@ -28,6 +28,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
   double peso = 0.0;
   bool _fragil = false;
+  double _sliderValue = 0.0;
+  double diasMargen = 0.0;
 
   final Puntos puntos = Puntos();
 
@@ -86,8 +88,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                       keyboardType: TextInputType.number,
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
-                      decoration:
-                          TransportifyMethods.returnTextFormDecoration("Peso(kg)"),
+                      decoration: TransportifyMethods.returnTextFormDecoration(
+                          "Peso(kg)"),
                       onChanged: (text) {
                         peso = double.parse(text);
                       },
@@ -262,35 +264,35 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
               ),
               SizedBox(height: 20.0),
               TextFormField(
-                    maxLines: 1,
-                    controller: horaController,
-                    //elevation: 4.0,
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      DatePicker.showTimePicker(context,
-                          theme: DatePickerTheme(
-                            containerHeight: 200.0,
-                          ),
-                          showTitleActions: true, onConfirm: (time) {
-                        print('confirm $time');
-                        _horaEntrega = time;
-                        String _time = DateFormat.Hm().format(time);
-                        setState(() {
-                          horaController.text = _time;
-                        });
-                      }, currentTime: DateTime.now(), locale: LocaleType.es);
-                    },
-                    decoration: TransportifyMethods.returnTextFormDecoration(
-                        "Hora de comienzo del viaje"),
-                    autofocus: false,
-                    style: TextStyle(color: TransportifyColors.primarySwatch),
-                    validator: (value) {
-                      if (_horaEntrega == null) {
-                        return 'Introduzca una hora.';
-                      } else
-                        return null;
-                    },
-                  ),
+                maxLines: 1,
+                controller: horaController,
+                //elevation: 4.0,
+                onTap: () {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  DatePicker.showTimePicker(context,
+                      theme: DatePickerTheme(
+                        containerHeight: 200.0,
+                      ),
+                      showTitleActions: true, onConfirm: (time) {
+                    print('confirm $time');
+                    _horaEntrega = time;
+                    String _time = DateFormat.Hm().format(time);
+                    setState(() {
+                      horaController.text = _time;
+                    });
+                  }, currentTime: DateTime.now(), locale: LocaleType.es);
+                },
+                decoration: TransportifyMethods.returnTextFormDecoration(
+                    "Hora de comienzo del viaje"),
+                autofocus: false,
+                style: TextStyle(color: TransportifyColors.primarySwatch),
+                validator: (value) {
+                  if (_horaEntrega == null) {
+                    return 'Introduzca una hora.';
+                  } else
+                    return null;
+                },
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
@@ -316,6 +318,32 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                   ),
                 ],
               ),
+              SizedBox(height: 10.0),
+              Row(
+                children: <Widget>[
+                  Slider(
+                      activeColor: TransportifyColors.primarySwatch[900],
+                      divisions: 7,
+                      //label: _sliderValue.toString(),
+                      min: 0.0,
+                      max: 7.0,
+                      onChanged: (newRating) {
+                        setState(() => _sliderValue = newRating);
+                        diasMargen = _sliderValue;
+                      },
+                      value: _sliderValue),
+                  Container(
+                    width: 130.0,
+                    alignment: Alignment.center,
+                    child: Text('${_sliderValue.toInt()} días de margen',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.0
+                        ),
+                    ),
+                  )
+                ],
+              )
             ],
           ),
         ),
@@ -324,7 +352,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
           alignment: new FractionalOffset(5, 0.5),
           children: [
             new Container(
-                height: 80.0, color: TransportifyColors.primarySwatch),
+                height: 70.0, color: TransportifyColors.primarySwatch),
             new Row(
               children: <Widget>[
                 SizedBox(
@@ -355,6 +383,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
     double _ancho = double.parse(anchoController.text);
     double _largo = double.parse(largoController.text);
     double _peso = double.parse(pesoController.text);
+    int diasMargenFinal = diasMargen.toInt();
     String _nombre = nombreController.text;
     DateTime fechaPaqueteElegida = new DateTime(
         _fechaentrega.year,
@@ -375,7 +404,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
         fragil: _fragil,
         origen: puntos.origen,
         destino: puntos.destino,
-        fechaEntrega: fechaPaqueteElegida);
+        fechaEntrega: fechaPaqueteElegida,
+        diasMargen: diasMargenFinal);
   }
 
   Widget buildButtonContainer(String hintText) {

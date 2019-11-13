@@ -16,6 +16,7 @@ class PaqueteBD {
   static const String atributo_peso = "peso";
   static const String atributo_precio = "precio";
   static const String atributo_fecha_entrega = "fecha_entrega";
+  static const String atributo_dias_margen = "dias_margen";
 
   static String obtenerNombre(DocumentSnapshot snapshot) => snapshot[atributo_nombre];
   static double obtenerAlto(DocumentSnapshot snapshot) => snapshot[atributo_alto];
@@ -28,4 +29,5 @@ class PaqueteBD {
   static double obtenerPeso(DocumentSnapshot snapshot) => snapshot[atributo_peso];
   static double obtenerPrecio(DocumentSnapshot snapshot) => snapshot[atributo_precio];
   static Timestamp obtenerFechaEntrega(DocumentSnapshot snapshot) => snapshot[atributo_fecha_entrega];
+  static int obtenerDiasMargen(DocumentSnapshot snapshot) => snapshot[atributo_dias_margen];
 }
