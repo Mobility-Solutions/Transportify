@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:transportify/modelos/Paquete.dart';
+import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
 import 'package:transportify/vistas/seguimiento/SeguimientoForm.dart';
@@ -61,7 +63,8 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (index) {
       case 0:
         Navigator.of(context)
-            .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+            .push(MaterialPageRoute<Null>(builder: (BuildContext context, [Paquete paquete]) {
+             paquete = Paquete(nombre: "sff", alto: 30, ancho: 30, largo: 30, peso: 30, fragil: true, destino: null, remitente: null, precio: 50, origen: null, fechaEntrega: null);
           return new CreacionPaqueteForm();
         }));
         break;
