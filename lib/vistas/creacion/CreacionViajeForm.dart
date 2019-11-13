@@ -71,7 +71,7 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     controller: origenController,
                     decoration: TransportifyMethods.returnTextFormDecoration(
-                        "Punto Transportify de origen"),
+                        "Ciudad de origen"),
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
                       String returnCiudad =
@@ -84,9 +84,9 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                     },
                     validator: (value) {
                       if (origen == null || destino == null)
-                        return 'Introduzca los puntos origen y destino';
+                        return 'Introduzca las ciudades origen y destino';
                       else if (origen == destino)
-                        return 'Los puntos no deben coincidir.';
+                        return 'Las ciudades no deben coincidir.';
                       else
                         return null;
                     },
@@ -105,7 +105,7 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     controller: destinoController,
                     decoration: TransportifyMethods.returnTextFormDecoration(
-                        "Punto Transportify de destino"),
+                        "Ciudad de destino"),
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
                       String returnCiudad =
@@ -118,9 +118,9 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                     },
                     validator: (value) {
                       if (origen == null || destino == null)
-                        return 'Introduzca los puntos origen y destino';
+                        return 'Introduzca las ciudades origen y destino';
                       else if (origen == destino)
-                        return 'Los puntos no deben coincidir.';
+                        return 'Las ciudades no deben coincidir.';
                       else
                         return null;
                     },
