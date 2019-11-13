@@ -10,7 +10,7 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import '../PuntosDialog.dart';
 
 class CreacionPaqueteForm extends StatefulWidget {
-  CreacionPaqueteForm(this.miPaquete) : super();
+  CreacionPaqueteForm([this.miPaquete]) : super();
 
   final Paquete miPaquete;
 
@@ -388,6 +388,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
           }
         else if(hintText == "ACEPTAR" && widget.miPaquete != null) {
           widget.miPaquete.updateBD();
+          TransportifyMethods.doneDialog(context, "Paquete modificado",
+                content: "El paquete ha sido modificado con éxito");
         }else {
           Navigator.pop(context);
         }
