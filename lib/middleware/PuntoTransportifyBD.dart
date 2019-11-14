@@ -44,7 +44,12 @@ class PuntoTransportifyBD {
       Function(PuntoTransportify) onSelected,
       Function onCanceled}) {
     return obtenerStreamBuilderListado(_obtenerSelectorCiudadesYPuntosBuilder(
-        onCiudadChanged, ciudadValue, puntoValue, onPuntoChanged, onSelected, onCanceled));
+        onCiudadChanged,
+        ciudadValue,
+        puntoValue,
+        onPuntoChanged,
+        onSelected,
+        onCanceled));
   }
 
   static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
@@ -83,14 +88,28 @@ class PuntoTransportifyBD {
       Function(PuntoTransportify) onSelected,
       Function onCanceled) {
     return _obtenerSelector(
-        ciudadSeleccionada == null
+        antesDelListado: ciudadSeleccionada == null
+            ? const SizedBox()
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () {
+                      onPuntoChanged(null);
+                      onCiudadChanged(null);
+                    },
+                  ),
+                ],
+              ),
+        listado: ciudadSeleccionada == null
             ? _obtenerListadoCiudades(
                 snapshot, ciudadSeleccionada, onCiudadChanged)
-            : _obtenerListadoPuntos(
-                snapshot, ciudadSeleccionada, puntoSeleccionado, onPuntoChanged),
-        onSelected,
-        onCanceled,
-        puntoSeleccionado);
+            : _obtenerListadoPuntos(snapshot, ciudadSeleccionada,
+                puntoSeleccionado, onPuntoChanged),
+        onSelected: onSelected,
+        onCanceled: onCanceled,
+        itemSeleccionado: puntoSeleccionado);
   }
 
   static Widget _obtenerSelectorCiudades(
@@ -101,24 +120,31 @@ class PuntoTransportifyBD {
       Function onCanceled,
       String ciudadSeleccionada) {
     return _obtenerSelector(
-        _obtenerListadoCiudades(
+        listado: _obtenerListadoCiudades(
             snapshot, ciudadSeleccionada, onSelectionChanged),
-        onSelected,
-        onCanceled,
-        ciudadSeleccionada);
+        onSelected: onSelected,
+        onCanceled: onCanceled,
+        itemSeleccionado: ciudadSeleccionada);
   }
 
-  static Widget _obtenerSelector<T>(Widget listado, Function(T) onSelected,
-      Function onCanceled, T itemSeleccionado) {
+  static Widget _obtenerSelector<T>(
+      {Widget antesDelListado = const SizedBox(),
+      Widget listado,
+      Widget despuesDelListado = const SizedBox(),
+      Function(T) onSelected,
+      Function onCanceled,
+      T itemSeleccionado}) {
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          antesDelListado,
           Expanded(
             child: SizedBox.expand(
               child: listado,
             ),
           ),
+          despuesDelListado,
         ],
       ),
       bottomNavigationBar: new Stack(
@@ -176,8 +202,11 @@ class PuntoTransportifyBD {
     );
   }
 
-  static Widget _obtenerListadoPuntos(AsyncSnapshot<QuerySnapshot> snapshot,
-      String ciudadSeleccionada, PuntoTransportify puntoSeleccionado, Function(PuntoTransportify) onPuntoChanged) {
+  static Widget _obtenerListadoPuntos(
+      AsyncSnapshot<QuerySnapshot> snapshot,
+      String ciudadSeleccionada,
+      PuntoTransportify puntoSeleccionado,
+      Function(PuntoTransportify) onPuntoChanged) {
     var puntosDeLaCiudad = _obtenerPuntosDeLaCiudad(
       puntos: snapshot.data.documents,
       ciudad: ciudadSeleccionada,
@@ -187,7 +216,8 @@ class PuntoTransportifyBD {
       itemBuilder: (context, index) {
         if (index >= 0 && index < puntosDeLaCiudad.length) {
           var punto = puntosDeLaCiudad.elementAt(index);
-          return _obtenerListViewItemPunto(punto, onPuntoChanged, puntoSeleccionado);
+          return _obtenerListViewItemPunto(
+              punto, onPuntoChanged, puntoSeleccionado);
         } else {
           return null;
         }
@@ -209,7 +239,9 @@ class PuntoTransportifyBD {
           onSelected: onSelected);
 
   static Widget _obtenerListViewItemPunto(
-      DocumentSnapshot snapshot, Function(PuntoTransportify) onSelected, PuntoTransportify puntoSeleccionado) {
+      DocumentSnapshot snapshot,
+      Function(PuntoTransportify) onSelected,
+      PuntoTransportify puntoSeleccionado) {
     PuntoTransportify punto = PuntoTransportify.fromSnapshot(snapshot);
     return _obtenerListViewItem(
       item: punto,
