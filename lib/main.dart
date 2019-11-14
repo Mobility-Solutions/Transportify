@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
 import 'package:transportify/vistas/perfilUsuarioView.dart';
@@ -63,7 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
       case 0:
         Navigator.of(context)
             .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-          return new /*CreacionPaqueteForm()*/ PerfilUsuarioView();
+              Usuario usuario = new Usuario(ciudad: "sdfg", correo: "werdfg", edad: 45, nickname: "dsfgsdfg", nombre: "fdgsdfg", password: "asdfasdf");
+          return new /*CreacionPaqueteForm()*/ PerfilUsuarioView(usuario);
         }));
         break;
       case 1:

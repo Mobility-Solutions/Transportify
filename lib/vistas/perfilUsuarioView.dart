@@ -8,6 +8,11 @@ import '../middleware/ComponenteBD.dart';
 class PerfilUsuarioView extends StatefulWidget {
   @override
   PerfilUsuarioViewState createState() => PerfilUsuarioViewState();
+
+  PerfilUsuarioView(this.usuario) : super();
+
+  final Usuario usuario;
+
 }
 
 class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
@@ -24,11 +29,6 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
   var correoText = TextEditingController();
   var ciudadText = TextEditingController();
   var edadText = TextEditingController();
-
-  static String nombreApellidos;
-  static String correo;
-  static String ciudad;
-  static String edad;
 
   @override
   Widget build(BuildContext context) {
@@ -197,10 +197,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                         if(_formKey.currentState.validate()) {
                           if(editable) {
                             cambiarColorEditable();
-                            nombreApellidos = nombreApellidosText.text;
-                            correo = correoText.text;
-                            ciudad = ciudadText.text;
-                            edad = edadText.text;
+                            guardarCambios();
                             editable = false;
                           }
                         }
@@ -284,13 +281,6 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
     }
   }
 
-  Usuario getUsuarioFromControllers() {
-    int _edad = int.parse(edadText.text);
-    String _nombre = nombreApellidosText.text;
-    String _correo = correoText.text;
-    String _ciudad = ciudadText.text;
-  }
-
   void showDialogBorrarPerfil() {
     showDialog(
       context: context,
@@ -313,8 +303,8 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
               onPressed: () {
                 Navigator.of(context).pop();
                 print("Perfil eliminado");
-                /*usuario.deleteFromBD();*/
-                /*ir a la pantalla de login*/
+                widget.usuario.deleteFromBD();
+                Navigator.of(context).pop();
               },
             ),
 
@@ -336,13 +326,22 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
     );
   }
 
+  void guardarCambios() {
+    widget.usuario.nombre = nombreApellidosText.text;
+    widget.usuario.correo = correoText.text;
+    widget.usuario.ciudad = ciudadText.text;
+    widget.usuario.edad = int.parse(edadText.text);
+    widget.usuario.updateBD();
+    print(widget.usuario.edad);
+  }
+
   @override
   void initState() {
     super.initState();
-    nombreApellidosText.text = nombreApellidos;
-    correoText.text = correo;
-    ciudadText.text = ciudad;
-    edadText.text = edad;
+    nombreApellidosText.text = widget.usuario.nombre;
+    correoText.text = widget.usuario.correo;
+    ciudadText.text = widget.usuario.ciudad;
+    edadText.text = widget.usuario.edad.toString();
   }
 
   @override
