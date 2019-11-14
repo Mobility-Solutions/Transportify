@@ -232,7 +232,7 @@ class PuntoTransportifyBD {
 
   static Widget _obtenerListViewItemCiudad(String ciudad,
           [bool seleccionada = false, Function(String) onSelected]) =>
-      _obtenerListViewItem(
+      Datos.obtenerListViewItem(
           item: ciudad,
           displayName: ciudad,
           selected: seleccionada,
@@ -243,35 +243,11 @@ class PuntoTransportifyBD {
       Function(PuntoTransportify) onSelected,
       PuntoTransportify puntoSeleccionado) {
     PuntoTransportify punto = PuntoTransportify.fromSnapshot(snapshot);
-    return _obtenerListViewItem(
+    return Datos.obtenerListViewItem(
       item: punto,
       displayName: punto.nombre,
       onSelected: onSelected,
       selected: punto == puntoSeleccionado,
-    );
-  }
-
-  static Widget _obtenerListViewItem<T>(
-      {T item,
-      String displayName,
-      bool selected = false,
-      Function(T) onSelected}) {
-    Function onTap;
-    if (onSelected != null) {
-      onTap = () => onSelected(item);
-    }
-
-    return Container(
-      color: selected ? TransportifyColors.primarySwatch : null,
-      child: ListTile(
-        title: Text(
-          displayName,
-          style: TextStyle(
-            color: selected ? Colors.white : Colors.black,
-          ),
-        ),
-        onTap: onTap,
-      ),
     );
   }
 }
