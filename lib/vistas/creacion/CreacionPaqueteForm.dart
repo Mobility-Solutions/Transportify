@@ -41,11 +41,19 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   final _formKey = GlobalKey<FormState>();
 
   void _add() {
-    pesoController.text = (peso += 1).toString();
+    if(widget.miPaquete == null) {
+      pesoController.text = (peso += 1).toString();
+    } else {
+      pesoController.text = (widget.miPaquete.peso += 1).toString();
+    }
   }
 
   void _remove() {
-    if (peso - 1 >= 0.0) pesoController.text = (peso -= 1).toString();
+    if(widget.miPaquete == null) {
+      if (peso - 1 >= 0.0) pesoController.text = (peso -= 1).toString();
+    } else {
+      if (widget.miPaquete.peso - 1 >= 0.0) pesoController.text = (widget.miPaquete.peso -= 1).toString();
+    }
   }
 
   @override
@@ -305,7 +313,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                   width: 15,
                 ),
                 Expanded(
-                  child: buildButtonContainer("ACEPTAR", widget.miPaquete),
+                  child: buildButtonContainer("ACEPTAR"),
                 ),
                 SizedBox(
                   width: 20,
@@ -375,21 +383,36 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
     }
   }
 
-  Widget buildButtonContainer(String hintText, [Paquete paquete]) {
+  Widget buildButtonContainer(String hintText) {
     return TransportifyFormButton(
       text: hintText,
       onPressed: () {
         if (hintText == "ACEPTAR" && widget.miPaquete == null) {
           if (_formKey.currentState.validate()) {
+
             Paquete paquete = getPaqueteFromControllers();
             paquete.crearEnBD();
             TransportifyMethods.doneDialog(context, "Paquete creado",
                 content: "El paquete ha sido creado con éxito");
+
           }
         else if(hintText == "ACEPTAR" && widget.miPaquete != null) {
-          widget.miPaquete.updateBD();
-          TransportifyMethods.doneDialog(context, "Paquete modificado",
-                content: "El paquete ha sido modificado con éxito");
+          if (_formKey.currentState.validate()) {
+
+            widget.miPaquete.alto = double.parse(altoController.text);
+            widget.miPaquete.ancho = double.parse(anchoController.text);
+            widget.miPaquete.largo = double.parse(largoController.text);
+            widget.miPaquete.peso = double.parse(pesoController.text);
+            widget.miPaquete.origen = puntos.origen;
+            widget.miPaquete.destino = puntos.destino;
+            widget.miPaquete.nombre = nombreController.text;
+            widget.miPaquete.fragil = _fragil;
+            widget.miPaquete.fechaEntrega = _fechaentrega;
+
+            widget.miPaquete.updateBD();
+            TransportifyMethods.doneDialog(context, "Paquete modificado",
+                  content: "El paquete ha sido modificado con éxito");
+          }
         }else {
           Navigator.pop(context);
         }
