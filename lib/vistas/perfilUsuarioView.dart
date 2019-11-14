@@ -332,7 +332,6 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
     widget.usuario.ciudad = ciudadText.text;
     widget.usuario.edad = int.parse(edadText.text);
     widget.usuario.updateBD();
-    print(widget.usuario.edad);
   }
 
   @override
