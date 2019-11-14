@@ -36,13 +36,15 @@ class PuntoTransportifyBD {
         onSelectionChanged, onSelected, onCanceled, ciudadValue));
   }
 
-  static Widget obtenerDropDownCiudadesYListadoPuntos(
+  static Widget obtenerSelectorCiudadesYPuntos(
       {Function(String) onCiudadChanged,
       String ciudadValue,
-      Function(PuntoTransportify) onPuntoChanged}) {
-    return obtenerStreamBuilderListado(
-        _obtenerDropDownCiudadesYListadoPuntosBuilder(
-            onCiudadChanged, ciudadValue, onPuntoChanged));
+      PuntoTransportify puntoValue,
+      Function(PuntoTransportify) onPuntoChanged,
+      Function(PuntoTransportify) onSelected,
+      Function onCanceled}) {
+    return obtenerStreamBuilderListado(_obtenerSelectorCiudadesYPuntosBuilder(
+        onCiudadChanged, ciudadValue, puntoValue, onPuntoChanged, onSelected, onCanceled));
   }
 
   static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
@@ -58,14 +60,37 @@ class PuntoTransportifyBD {
   }
 
   static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
-      _obtenerDropDownCiudadesYListadoPuntosBuilder(
+      _obtenerSelectorCiudadesYPuntosBuilder(
           Function(String) onCiudadChanged,
           String ciudadValue,
-          Function(PuntoTransportify) onPuntoChanged) {
+          PuntoTransportify puntoValue,
+          Function(PuntoTransportify) onPuntoChanged,
+          Function(PuntoTransportify) onSelected,
+          onCanceled) {
     return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      return _obtenerDropDownCiudadesYListadoPuntos(
-          context, snapshot, onCiudadChanged, ciudadValue, onPuntoChanged);
+      return _obtenerSelectorCiudadesYPuntos(context, snapshot, onCiudadChanged,
+          ciudadValue, puntoValue, onPuntoChanged, onSelected, onCanceled);
     };
+  }
+
+  static Widget _obtenerSelectorCiudadesYPuntos(
+      BuildContext context,
+      AsyncSnapshot<QuerySnapshot> snapshot,
+      Function(String) onCiudadChanged,
+      String ciudadSeleccionada,
+      PuntoTransportify puntoSeleccionado,
+      Function(PuntoTransportify) onPuntoChanged,
+      Function(PuntoTransportify) onSelected,
+      Function onCanceled) {
+    return _obtenerSelector(
+        ciudadSeleccionada == null
+            ? _obtenerListadoCiudades(
+                snapshot, ciudadSeleccionada, onCiudadChanged)
+            : _obtenerListadoPuntos(
+                snapshot, ciudadSeleccionada, puntoSeleccionado, onPuntoChanged),
+        onSelected,
+        onCanceled,
+        puntoSeleccionado);
   }
 
   static Widget _obtenerSelectorCiudades(
@@ -75,28 +100,23 @@ class PuntoTransportifyBD {
       Function(String) onSelected,
       Function onCanceled,
       String ciudadSeleccionada) {
-    if (!snapshot.hasData) return const Text('Cargando...');
+    return _obtenerSelector(
+        _obtenerListadoCiudades(
+            snapshot, ciudadSeleccionada, onSelectionChanged),
+        onSelected,
+        onCanceled,
+        ciudadSeleccionada);
+  }
 
-    var ciudades =
-        snapshot.data.documents.map((doc) => doc[atributo_ciudad]).toSet();
-
+  static Widget _obtenerSelector<T>(Widget listado, Function(T) onSelected,
+      Function onCanceled, T itemSeleccionado) {
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
             child: SizedBox.expand(
-              child: ListView.builder(
-                itemBuilder: (context, index) {
-                  if (index >= 0 && index < ciudades.length) {
-                    String ciudad = ciudades.elementAt(index);
-                    return _obtenerListViewItemCiudad(ciudad,
-                        ciudad == ciudadSeleccionada, onSelectionChanged);
-                  } else {
-                    return null;
-                  }
-                },
-              ),
+              child: listado,
             ),
           ),
         ],
@@ -109,7 +129,8 @@ class PuntoTransportifyBD {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               IconButton(
-                icon: Icon(Icons.map, color: TransportifyColors.primarySwatch[900]),
+                icon: Icon(Icons.map,
+                    color: TransportifyColors.primarySwatch[900]),
                 onPressed: () {}, // TODO: onPressed del boton del mapa
               ),
               Expanded(
@@ -124,7 +145,7 @@ class PuntoTransportifyBD {
               Expanded(
                 child: TransportifyFormButton(
                   text: "OK",
-                  onPressed: () => onSelected(ciudadSeleccionada),
+                  onPressed: () => onSelected(itemSeleccionado),
                 ),
               ),
             ],
@@ -134,62 +155,43 @@ class PuntoTransportifyBD {
     );
   }
 
-  static Widget _obtenerDropDownCiudadesYListadoPuntos(
-      BuildContext context,
-      AsyncSnapshot<QuerySnapshot> snapshot,
-      Function(String) onCiudadChanged,
-      String ciudadSeleccionada,
-      Function(PuntoTransportify) onPuntoChanged) {
+  static Widget _obtenerListadoCiudades(AsyncSnapshot<QuerySnapshot> snapshot,
+      String ciudadSeleccionada, Function(String) onSelectionChanged) {
     if (!snapshot.hasData) return const Text('Cargando...');
 
-    List<DropdownMenuItem<String>> items = [];
-    var ciudades =
-        snapshot.data.documents.map((doc) => doc[atributo_ciudad]).toSet();
+    Set<String> ciudades = snapshot.data.documents
+        .map<String>((doc) => doc[atributo_ciudad])
+        .toSet();
 
-    for (String ciudad in ciudades) {
-      if (ciudad != null && ciudad.length > 0) {
-        items.add(
-          DropdownMenuItem<String>(
-            child: Text(ciudad),
-            value: ciudad,
-          ),
-        );
-      }
-    }
+    return ListView.builder(
+      itemBuilder: (context, index) {
+        if (index >= 0 && index < ciudades.length) {
+          String ciudad = ciudades.elementAt(index);
+          return _obtenerListViewItemCiudad(
+              ciudad, ciudad == ciudadSeleccionada, onSelectionChanged);
+        } else {
+          return null;
+        }
+      },
+    );
+  }
 
+  static Widget _obtenerListadoPuntos(AsyncSnapshot<QuerySnapshot> snapshot,
+      String ciudadSeleccionada, PuntoTransportify puntoSeleccionado, Function(PuntoTransportify) onPuntoChanged) {
     var puntosDeLaCiudad = _obtenerPuntosDeLaCiudad(
       puntos: snapshot.data.documents,
       ciudad: ciudadSeleccionada,
     );
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        DropdownButton<String>(
-          items: items,
-          onChanged: onCiudadChanged,
-          value: ciudadSeleccionada,
-        ),
-        SizedBox(
-          height: 10.0,
-        ),
-        Expanded(
-          child: SizedBox.expand(
-            child: ListView.builder(
-              itemExtent: 30.0,
-              itemCount: ciudades.length,
-              itemBuilder: (context, index) {
-                if (index >= 0 && index < puntosDeLaCiudad.length) {
-                  var punto = puntosDeLaCiudad.elementAt(index);
-                  return _obtenerListViewItemPunto(punto, onPuntoChanged);
-                } else {
-                  return null;
-                }
-              },
-            ),
-          ),
-        ),
-      ],
+    return ListView.builder(
+      itemBuilder: (context, index) {
+        if (index >= 0 && index < puntosDeLaCiudad.length) {
+          var punto = puntosDeLaCiudad.elementAt(index);
+          return _obtenerListViewItemPunto(punto, onPuntoChanged, puntoSeleccionado);
+        } else {
+          return null;
+        }
+      },
     );
   }
 
@@ -207,12 +209,13 @@ class PuntoTransportifyBD {
           onSelected: onSelected);
 
   static Widget _obtenerListViewItemPunto(
-      DocumentSnapshot snapshot, Function(PuntoTransportify) onSelected) {
+      DocumentSnapshot snapshot, Function(PuntoTransportify) onSelected, PuntoTransportify puntoSeleccionado) {
     PuntoTransportify punto = PuntoTransportify.fromSnapshot(snapshot);
     return _obtenerListViewItem(
       item: punto,
       displayName: punto.nombre,
       onSelected: onSelected,
+      selected: punto == puntoSeleccionado,
     );
   }
 
