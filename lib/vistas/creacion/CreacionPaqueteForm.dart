@@ -34,8 +34,6 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
   final Puntos puntos = Puntos();
 
-  //static Paquete miPaquete;
-
   DateTime _fechaentrega;
 
   final _formKey = GlobalKey<FormState>();
@@ -387,7 +385,9 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
     return TransportifyFormButton(
       text: hintText,
       onPressed: () {
+
         if (hintText == "ACEPTAR" && widget.miPaquete == null) {
+          
           if (_formKey.currentState.validate()) {
 
             Paquete paquete = getPaqueteFromControllers();
@@ -396,7 +396,9 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 content: "El paquete ha sido creado con éxito");
 
           }
-        else if(hintText == "ACEPTAR" && widget.miPaquete != null) {
+
+        } else if(hintText == "ACEPTAR" && widget.miPaquete != null) {
+
           if (_formKey.currentState.validate()) {
 
             widget.miPaquete.alto = double.parse(altoController.text);
@@ -412,11 +414,11 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
             widget.miPaquete.updateBD();
             TransportifyMethods.doneDialog(context, "Paquete modificado",
                   content: "El paquete ha sido modificado con éxito");
+
           }
-        }else {
+        } else {
           Navigator.pop(context);
         }
-      }
       },
     );
   }
