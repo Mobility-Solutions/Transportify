@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:transportify/util/style.dart';
 
 import '../modelos/Usuario.dart';
-import '../middleware/ComponenteBD.dart';
 
 class PerfilUsuarioView extends StatefulWidget {
   @override
@@ -286,7 +285,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: new Text("¿Estas seguro que quieres borrar tú perfil?"),
+          title: new Text("¿Estas seguro que quieres borrar tu perfil?"),
           content: new Text("Esto borrará tu perfil de forma permanente"),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0)),

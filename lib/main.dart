@@ -9,6 +9,7 @@ import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';
 
 import 'middleware/PuntoTransportifyBD.dart';
+import 'vistas/UsuariosDialog.dart';
 
 void main() async =>
     await initializeDateFormatting("es_ES", null).then((_) => runApp(MyApp()));
@@ -59,14 +60,21 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _ciudadSeleccionada;
 
-  void _onItemTapped(int index) {
+  void _onItemTapped(int index) async {
     switch (index) {
       case 0:
-        Navigator.of(context)
-            .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              Usuario usuario = new Usuario(ciudad: "sdfg", correo: "werdfg", edad: 45, nickname: "dsfgsdfg", nombre: "fdgsdfg", password: "asdfasdf");
-          return new /*CreacionPaqueteForm()*/ PerfilUsuarioView(usuario);
-        }));
+      // TODO(Ignacio): Cuando la ventana de inicio esté terminada, meter esto con el botón adecuado, y restaurar (descomentar) el de CreacionPaqueteForm
+        Usuario usuario = await UsuariosDialog.show(context);
+        if (usuario != null) {
+          Navigator.of(context)
+              .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+            return PerfilUsuarioView(usuario);
+          }));
+        }
+        // Navigator.of(context)
+        //       .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+        //     return CreacionPaqueteForm();
+        //   }));
         break;
       case 1:
         Navigator.of(context)
