@@ -20,7 +20,7 @@ class _PuntosDialogState extends State<PuntosDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-        title: Text("Puntos Transportify"),
+        title: Text(_ciudadSeleccionada == null ? "Seleccione una ciudad:" : "Seleccione un Punto Transportify:"),
         content: Container(
             height: 300,
             width: 300,

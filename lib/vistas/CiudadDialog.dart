@@ -19,7 +19,7 @@ class _CiudadDialogState extends State<CiudadDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-        title: Text("Selecciona una ciudad"),
+        title: Text("Seleccione una ciudad:"),
         content: Container(
             height: 300,
             width: 300,
