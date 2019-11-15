@@ -41,13 +41,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: TransportifyColors.homeBackgroundSwatch,
-        body: Center(
-            child: ListView( children: <Widget>[
+        body: ListView(children: <Widget>[
           TopPart(),
           CrearPaquetePart(),
           CrearViajePart(),
           BuscarPart()
-        ])));
+        ]));
     // This trailing comma makes auto-formatting nicer for build methods.
   }
 }
@@ -56,7 +55,7 @@ class TopPart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 140.0,
+        height: 150.0,
         color: TransportifyColors.primarySwatch[50],
         child: Material(
           borderRadius: BorderRadius.only(
@@ -64,7 +63,16 @@ class TopPart extends StatelessWidget {
           ),
           child: Column(
             children: <Widget>[
-              SizedBox(height: 35.0),
+              Row(mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  IconButton(
+                      icon: Icon(Icons.settings,color: TransportifyColors.appBackground,),
+                      onPressed: () {
+                        /*!TODO llevar a la pantalla de preferencias.*/
+                      }),
+                      SizedBox(width: 5,)
+                ],
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -474,7 +482,7 @@ class BuscarPart extends StatelessWidget {
                       ),
                       Datos.obtenerStreamBuilderCollectionBD(
                           ViajeBD.coleccion_viajes, getNumDocuments),
-                          Text(
+                      Text(
                         " viajes disponibles",
                         style: TextStyle(
                           fontSize: 18.0,
