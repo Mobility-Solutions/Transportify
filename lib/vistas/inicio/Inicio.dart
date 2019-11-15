@@ -182,10 +182,27 @@ class TopPart extends StatelessWidget {
   }
 }
 
-class CrearPaquetePart extends StatelessWidget {
+class CrearPaquetePart extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => CrearPaquetePartState();
+}
+
+abstract class UserDependantPartState<T extends StatefulWidget> extends State<T> {
+  Usuario usuarioActual;
+
+  UserDependantPartState() {
+    usuarioActual = DatosUsuarioActual.instance.usuario;
+    DatosUsuarioActual.instance.usuarioStream.listen((nuevoUsuario) {
+      setState(() {
+        usuarioActual = nuevoUsuario;
+      });
+    });
+  }
+}
+
+class CrearPaquetePartState extends UserDependantPartState<CrearPaquetePart> {
   @override
   Widget build(BuildContext context) {
-    Usuario usuarioActual = DatosUsuarioActual.instance.usuario;
     return GestureDetector(
         onTap: () {
           Navigator.of(context)
@@ -276,10 +293,14 @@ class CrearPaquetePart extends StatelessWidget {
   }
 }
 
-class CrearViajePart extends StatelessWidget {
+class CrearViajePart extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => CrearViajePartState();
+}
+
+class CrearViajePartState extends UserDependantPartState<CrearViajePart> {
   @override
   Widget build(BuildContext context) {
-    Usuario usuarioActual = DatosUsuarioActual.instance.usuario;
     return GestureDetector(
         onTap: () {
           Navigator.of(context)
