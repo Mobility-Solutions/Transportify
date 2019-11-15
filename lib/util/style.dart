@@ -4,10 +4,14 @@ class TransportifyColors {
   static const String primaryValueString = "#3C6997";
   static const String primaryLightValueString = "#6D97C8";
   static const String primaryDarkValueString = "#2A4D70";
+  static const String primaryHomeValueString = "#9192b5";
 
   static const int primaryValue = 0xff3C6997;
   static const int primaryLightValue = 0xff6D97C8;
   static const int primaryDarkValue = 0xff2a4d70;
+  static const int primaryHomeValue = 0xff9192b5;
+
+  static Color homeBackgroundSwatch = Color(primaryHomeValue);
 
   /*  
    * Color application palette.
