@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:transportify/modelos/DatosUsuarioActual.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/modelos/Puntos.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
 
@@ -317,6 +319,9 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
           if (_formKey.currentState.validate()) {
             Viaje viaje = getViajeFromControllers();
             viaje.crearEnBD();
+            Usuario usuarioActual = DatosUsuarioActual.instance.usuario;
+            usuarioActual?.viajesCreados++;
+            usuarioActual?.updateBD();
             TransportifyMethods.doneDialog(context, "Viaje creado",
                 content: "El viaje ha sido creado con éxito");
           }
