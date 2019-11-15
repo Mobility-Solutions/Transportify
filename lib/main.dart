@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:transportify/modelos/DatosUsuarioActual.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
@@ -66,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // TODO(Ignacio): Cuando la ventana de inicio esté terminada, meter esto con el botón adecuado, y restaurar (descomentar) el de CreacionPaqueteForm
         Usuario usuario = await UsuariosDialog.show(context);
         if (usuario != null) {
+          DatosUsuarioActual.instance.usuario = usuario;
           Navigator.of(context)
               .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
             return PerfilUsuarioView(usuario);
