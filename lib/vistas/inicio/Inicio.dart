@@ -64,7 +64,7 @@ class TopPart extends StatelessWidget {
           ),
           child: Column(
             children: <Widget>[
-              SizedBox(height: 40.0),
+              SizedBox(height: 35.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -462,16 +462,10 @@ class BuscarPart extends StatelessWidget {
                   SizedBox(height: 25.0),
                   Row(
                     children: <Widget>[
-                      Text("Paquetes totales: ",
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.white70,
-                          )),
                       Datos.obtenerStreamBuilderCollectionBD(
                           PaqueteBD.coleccion_paquetes, getNumDocuments),
                       Text(
-                        " y viajes: ",
+                        " paquetes y ",
                         style: TextStyle(
                           fontSize: 18.0,
                           fontStyle: FontStyle.italic,
@@ -480,6 +474,14 @@ class BuscarPart extends StatelessWidget {
                       ),
                       Datos.obtenerStreamBuilderCollectionBD(
                           ViajeBD.coleccion_viajes, getNumDocuments),
+                          Text(
+                        " viajes disponibles",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white70,
+                        ),
+                      ),
                     ],
                   ),
                 ],
