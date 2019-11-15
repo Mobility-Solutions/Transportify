@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:transportify/middleware/Datos.dart';
+import 'package:transportify/middleware/PaqueteBD.dart';
+import 'package:transportify/middleware/ViajeBD.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
@@ -28,8 +32,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String numPaquetesYViajes;
   @override
   Widget build(BuildContext context) {
+     
     return Scaffold(
         backgroundColor: TransportifyColors.homeBackgroundSwatch,
         body: Column(children: <Widget>[
@@ -177,7 +183,7 @@ class CrearPaquetePart extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(height: 25.0),
+                      SizedBox(height: 15.0),
                       Text(
                         "¿Quieres enviar un paquete?",
                         style: TextStyle(
@@ -247,7 +253,7 @@ class CrearViajePart extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(height: 20.0),
+                      SizedBox(height: 10.0),
                       Text(
                         "¿Quieres transportar un paquete?",
                         style: TextStyle(
@@ -265,13 +271,13 @@ class CrearViajePart extends StatelessWidget {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            "Crea un viaje con el que puedas\n enviar paquetes entre \n diferentes puntos Transportify",
+                            "Crea un viaje con el que puedas\n transportar paquetes entre \n diferentes puntos Transportify",
                             style: TextStyle(
                                 fontSize: 20.0, color: Colors.white70),
                           ),
                         ],
                       ),
-                      SizedBox(height: 5.0),
+                      SizedBox(height: 10.0),
                       Text(
                         "10 viajes realizados.",
                         style: TextStyle(
@@ -291,6 +297,23 @@ class CrearViajePart extends StatelessWidget {
 }
 
 class BuscarPart extends StatelessWidget {
+
+  Widget getNumDocuments(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+    if (!snapshot.hasData) {
+      return const Text("Cargando...",style: TextStyle(
+                      fontSize: 18.0,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.white70,
+                    ),);
+    }
+    return Text(snapshot.data.documents.length.toString(),
+    style: TextStyle(
+                      fontSize: 18.0,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.white70,
+                    ),);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -309,7 +332,7 @@ class BuscarPart extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  SizedBox(height: 20.0),
+                  SizedBox(height: 10.0),
                   Text(
                     "Busca Paquetes y Viajes",
                     style: TextStyle(
@@ -322,7 +345,7 @@ class BuscarPart extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute<Null>(
                           builder: (BuildContext context) {
-                        return new BusquedaPaqueteForm();
+                        return new BusquedaViajeForm();
                       }));
                     },
                     child: Row(
@@ -346,7 +369,7 @@ class BuscarPart extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute<Null>(
                           builder: (BuildContext context) {
-                        return new BusquedaViajeForm();
+                        return new BusquedaPaqueteForm();
                       }));
                     },
                     child: Row(
@@ -366,14 +389,20 @@ class BuscarPart extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 25.0),
-                  Text(
-                    "154 viajes y 400 paquetes.",
-                    style: TextStyle(
+                  Row(children: <Widget>[
+                    Text("Paquetes totales: ",style: TextStyle(
                       fontSize: 18.0,
                       fontStyle: FontStyle.italic,
                       color: Colors.white70,
-                    ),
-                  ),
+                    )),
+                    Datos.obtenerStreamBuilderCollectionBD(PaqueteBD.coleccion_paquetes,getNumDocuments),
+                    Text(" y viajes: ",style: TextStyle(
+                      fontSize: 18.0,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.white70,
+                    ),),
+                    Datos.obtenerStreamBuilderCollectionBD(ViajeBD.coleccion_viajes,getNumDocuments),
+                  ],),
                 ],
               ),
             ),
