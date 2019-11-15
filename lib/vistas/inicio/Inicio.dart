@@ -41,12 +41,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: TransportifyColors.homeBackgroundSwatch,
-        body: Column(children: <Widget>[
+        body: Center(
+            child: ListView( children: <Widget>[
           TopPart(),
           CrearPaquetePart(),
           CrearViajePart(),
           BuscarPart()
-        ]));
+        ])));
     // This trailing comma makes auto-formatting nicer for build methods.
   }
 }
@@ -55,7 +56,7 @@ class TopPart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 160.0,
+        height: 140.0,
         color: TransportifyColors.primarySwatch[50],
         child: Material(
           borderRadius: BorderRadius.only(
@@ -63,7 +64,7 @@ class TopPart extends StatelessWidget {
           ),
           child: Column(
             children: <Widget>[
-              SizedBox(height: 60.0),
+              SizedBox(height: 40.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -229,8 +230,11 @@ class CrearPaquetePart extends StatelessWidget {
                       Row(
                         children: [
                           usuarioActual == null
-                              ? const Text("-",style: TextStyle(
-                                fontSize: 20.0, color: Colors.white70),)
+                              ? const Text(
+                                  "-",
+                                  style: TextStyle(
+                                      fontSize: 20.0, color: Colors.white70),
+                                )
                               : Datos
                                   .obtenerStreamBuilderDocumentBDFromReference(
                                       usuarioActual.reference,
@@ -309,7 +313,7 @@ class CrearViajePart extends StatelessWidget {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            "Crea un viaje con el que puedas\n transportar paquetes entre \n diferentes puntos Transportify",
+                            "Crea un viaje para\ntransportar paquetes entre\nnuestros puntos Transportify",
                             style: TextStyle(
                                 fontSize: 20.0, color: Colors.white70),
                           ),
@@ -319,8 +323,11 @@ class CrearViajePart extends StatelessWidget {
                       Row(
                         children: [
                           usuarioActual == null
-                              ? const Text("-",style: TextStyle(
-                                fontSize: 20.0, color: Colors.white70),)
+                              ? const Text(
+                                  "-",
+                                  style: TextStyle(
+                                      fontSize: 20.0, color: Colors.white70),
+                                )
                               : Datos
                                   .obtenerStreamBuilderDocumentBDFromReference(
                                       usuarioActual.reference,
@@ -330,8 +337,10 @@ class CrearViajePart extends StatelessWidget {
 
                                   usuarioActual.loadFromSnapshot(snapshot.data);
                                   return Text(
-                                      usuarioActual.viajesCreados.toString(),style: TextStyle(
-                                fontSize: 20.0, color: Colors.white70),);
+                                    usuarioActual.viajesCreados.toString(),
+                                    style: TextStyle(
+                                        fontSize: 20.0, color: Colors.white70),
+                                  );
                                 }),
                           Text(
                             " viajes realizados.",
