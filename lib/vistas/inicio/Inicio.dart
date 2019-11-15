@@ -4,9 +4,13 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:transportify/middleware/Datos.dart';
 import 'package:transportify/middleware/PaqueteBD.dart';
 import 'package:transportify/middleware/ViajeBD.dart';
+import 'package:transportify/modelos/DatosUsuarioActual.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
+import 'package:transportify/vistas/UsuariosDialog.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
+import 'package:transportify/vistas/perfilUsuarioView.dart';
 import 'package:transportify/vistas/seguimiento/SeguimientoForm.dart';
 import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';
@@ -35,7 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String numPaquetesYViajes;
   @override
   Widget build(BuildContext context) {
-     
     return Scaffold(
         backgroundColor: TransportifyColors.homeBackgroundSwatch,
         body: Column(children: <Widget>[
@@ -66,17 +69,30 @@ class TopPart extends StatelessWidget {
                 children: <Widget>[
                   Column(
                     children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                                color: TransportifyColors.primarySwatch[900])),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.account_circle,
-                            color: TransportifyColors.primarySwatch[900],
-                            size: 30.0,
+                      GestureDetector(
+                        onTap: () async {
+                          Usuario usuario = await UsuariosDialog.show(context);
+                          if (usuario != null) {
+                            DatosUsuarioActual.instance.usuario = usuario;
+                            Navigator.of(context).push(MaterialPageRoute<Null>(
+                                builder: (BuildContext context) {
+                              return PerfilUsuarioView(usuario);
+                            }));
+                          }
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color:
+                                      TransportifyColors.primarySwatch[900])),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.account_circle,
+                              color: TransportifyColors.primarySwatch[900],
+                              size: 30.0,
+                            ),
                           ),
                         ),
                       ),
@@ -160,6 +176,7 @@ class TopPart extends StatelessWidget {
 class CrearPaquetePart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Usuario usuarioActual = DatosUsuarioActual.instance.usuario;
     return GestureDetector(
         onTap: () {
           Navigator.of(context)
@@ -209,13 +226,29 @@ class CrearPaquetePart extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: 23.0),
-                      Text(
-                        "10 paquetes enviados.",
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontStyle: FontStyle.italic,
-                          color: Colors.white70,
-                        ),
+                      Row(
+                        children: [
+                          usuarioActual == null
+                              ? const Text("-")
+                              : Datos
+                                  .obtenerStreamBuilderDocumentBDFromReference(
+                                      usuarioActual.reference,
+                                      (context, snapshot) {
+                                  if (!snapshot.hasData)
+                                    return const Text("Cargando...");
+                                  usuarioActual.loadFromSnapshot(snapshot.data);
+                                  return Text(
+                                      usuarioActual.paquetesCreados.toString());
+                                }),
+                          Text(
+                            " paquetes enviados.",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontStyle: FontStyle.italic,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -230,6 +263,7 @@ class CrearPaquetePart extends StatelessWidget {
 class CrearViajePart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Usuario usuarioActual = DatosUsuarioActual.instance.usuario;
     return GestureDetector(
         onTap: () {
           Navigator.of(context)
@@ -278,13 +312,30 @@ class CrearViajePart extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: 10.0),
-                      Text(
-                        "10 viajes realizados.",
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontStyle: FontStyle.italic,
-                          color: Colors.white70,
-                        ),
+                      Row(
+                        children: [
+                          usuarioActual == null
+                              ? const Text("-")
+                              : Datos
+                                  .obtenerStreamBuilderDocumentBDFromReference(
+                                      usuarioActual.reference,
+                                      (context, snapshot) {
+                                  if (!snapshot.hasData)
+                                    return const Text("Cargando...");
+
+                                  usuarioActual.loadFromSnapshot(snapshot.data);
+                                  return Text(
+                                      usuarioActual.viajesCreados.toString());
+                                }),
+                          Text(
+                            " viajes realizados.",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontStyle: FontStyle.italic,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -297,21 +348,26 @@ class CrearViajePart extends StatelessWidget {
 }
 
 class BuscarPart extends StatelessWidget {
-
-  Widget getNumDocuments(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+  Widget getNumDocuments(
+      BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
     if (!snapshot.hasData) {
-      return const Text("Cargando...",style: TextStyle(
-                      fontSize: 18.0,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.white70,
-                    ),);
+      return const Text(
+        "Cargando...",
+        style: TextStyle(
+          fontSize: 18.0,
+          fontStyle: FontStyle.italic,
+          color: Colors.white70,
+        ),
+      );
     }
-    return Text(snapshot.data.documents.length.toString(),
-    style: TextStyle(
-                      fontSize: 18.0,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.white70,
-                    ),);
+    return Text(
+      snapshot.data.documents.length.toString(),
+      style: TextStyle(
+        fontSize: 18.0,
+        fontStyle: FontStyle.italic,
+        color: Colors.white70,
+      ),
+    );
   }
 
   @override
@@ -389,20 +445,28 @@ class BuscarPart extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 25.0),
-                  Row(children: <Widget>[
-                    Text("Paquetes totales: ",style: TextStyle(
-                      fontSize: 18.0,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.white70,
-                    )),
-                    Datos.obtenerStreamBuilderCollectionBD(PaqueteBD.coleccion_paquetes,getNumDocuments),
-                    Text(" y viajes: ",style: TextStyle(
-                      fontSize: 18.0,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.white70,
-                    ),),
-                    Datos.obtenerStreamBuilderCollectionBD(ViajeBD.coleccion_viajes,getNumDocuments),
-                  ],),
+                  Row(
+                    children: <Widget>[
+                      Text("Paquetes totales: ",
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.white70,
+                          )),
+                      Datos.obtenerStreamBuilderCollectionBD(
+                          PaqueteBD.coleccion_paquetes, getNumDocuments),
+                      Text(
+                        " y viajes: ",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white70,
+                        ),
+                      ),
+                      Datos.obtenerStreamBuilderCollectionBD(
+                          ViajeBD.coleccion_viajes, getNumDocuments),
+                    ],
+                  ),
                 ],
               ),
             ),

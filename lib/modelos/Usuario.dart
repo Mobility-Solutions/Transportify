@@ -6,6 +6,8 @@ class Usuario extends ComponenteBD {
   String nombre, nickname, password, correo, ciudad;
   int edad;
 
+  int paquetesCreados, viajesCreados;
+
   Usuario({this.nombre, 
           this.nickname, 
           this.password, 
@@ -28,6 +30,8 @@ class Usuario extends ComponenteBD {
     this.correo = UsuarioBD.obtenerCorreo(snapshot);
     this.ciudad = UsuarioBD.obtenerCiudad(snapshot);
     this.edad = UsuarioBD.obtenerEdad(snapshot);
+    this.paquetesCreados = UsuarioBD.obtenerPaquetesCreados(snapshot);
+    this.viajesCreados = UsuarioBD.obtenerViajesCreados(snapshot);
   }
 
   @override
@@ -39,6 +43,8 @@ class Usuario extends ComponenteBD {
     map[UsuarioBD.atributo_correo] = this.correo;
     map[UsuarioBD.atributo_ciudad] = this.ciudad;
     map[UsuarioBD.atributo_edad] = this.edad;
+    map[UsuarioBD.atributo_paquetes_creados] = this.paquetesCreados;
+    map[UsuarioBD.atributo_viajes_creados] = this.viajesCreados;
     return map;
   }
 }

@@ -13,6 +13,8 @@ class UsuarioBD {
   static const String atributo_correo = 'correo';
   static const String atributo_ciudad = 'ciudad';
   static const String atributo_edad = 'edad';
+  static const String atributo_paquetes_creados = 'paquetes_creados';
+  static const String atributo_viajes_creados = 'viajes_creados';
 
   static String obtenerNombre(DocumentSnapshot snapshot) =>
       snapshot[atributo_nombre];
@@ -25,6 +27,10 @@ class UsuarioBD {
   static String obtenerCiudad(DocumentSnapshot snapshot) =>
       snapshot[atributo_ciudad];
   static int obtenerEdad(DocumentSnapshot snapshot) => snapshot[atributo_edad];
+  static int obtenerPaquetesCreados(DocumentSnapshot snapshot) =>
+      snapshot[atributo_paquetes_creados];
+  static int obtenerViajesCreados(DocumentSnapshot snapshot) =>
+      snapshot[atributo_viajes_creados];
 
   static StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(
       Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
