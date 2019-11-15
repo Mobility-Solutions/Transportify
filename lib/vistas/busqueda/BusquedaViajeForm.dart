@@ -3,10 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transportify/middleware/ViajeBD.dart';
-import 'package:transportify/util/style.dart';
-import 'package:transportify/vistas/CiudadDialog.dart';
 
-import 'BusquedaForm.dart';
+import 'BusquedaFormCiudades.dart';
 
 class BusquedaViajeForm extends StatefulWidget {
   BusquedaViajeForm({Key key, this.title}) : super(key: key);
@@ -16,7 +14,7 @@ class BusquedaViajeForm extends StatefulWidget {
   final String title;
 }
 
-class _BusquedaViajeFormState extends BusquedaFormState<BusquedaViajeForm> {
+class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeForm> {
   final origenController = TextEditingController();
   final destinoController = TextEditingController();
 
@@ -29,72 +27,7 @@ class _BusquedaViajeFormState extends BusquedaFormState<BusquedaViajeForm> {
             textoResultados: "Viajes encontrados");
 
   @override
-  Widget buildSelectorBusqueda(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 20.0,
-        ),
-        TextFormField(
-          maxLines: 1,
-          keyboardType: TextInputType.text,
-          autofocus: false,
-          style: TextStyle(color: TransportifyColors.primarySwatch),
-          controller: origenController,
-          decoration: TransportifyMethods.returnTextFormDecoration(
-              "Punto Transportify de origen"),
-          onTap: () async {
-            FocusScope.of(context).requestFocus(FocusNode());
-            String returnCiudad = await CiudadDialog.show(this.context);
-
-            if (returnCiudad != null) {
-              origen = returnCiudad;
-              origenController.text = origen;
-            }
-          },
-          validator: (value) {
-            if (origen == null || destino == null)
-              return 'Introduzca las ciudades origen y destino';
-            else if (origen == destino)
-              return 'Las ciudades no deben coincidir.';
-            else
-              return null;
-          },
-        ),
-        SizedBox(
-          height: 20.0,
-        ),
-        TextFormField(
-          maxLines: 1,
-          autofocus: false,
-          style: TextStyle(color: TransportifyColors.primarySwatch),
-          controller: destinoController,
-          decoration: TransportifyMethods.returnTextFormDecoration(
-              "Punto Transportify de destino"),
-          onTap: () async {
-            FocusScope.of(context).requestFocus(FocusNode());
-            String returnCiudad = await CiudadDialog.show(this.context);
-
-            if (returnCiudad != null) {
-              destino = returnCiudad;
-              destinoController.text = destino;
-            }
-          },
-          validator: (value) {
-            if (origen == null || destino == null)
-              return 'Introduzca las ciudades origen y destino';
-            else if (origen == destino)
-              return 'Las ciudades no deben coincidir.';
-            else
-              return null;
-          },
-        ),
-      ],
-    );
-  }
-
-  @override
-  bool buscar(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+  Future<bool> buscar(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) async {
     if (!snapshot.hasData) return false;
 
     List<DocumentSnapshot> coleccion = snapshot.data.documents;
