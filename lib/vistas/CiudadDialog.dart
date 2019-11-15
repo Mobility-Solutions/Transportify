@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:transportify/middleware/PuntoTransportifyBD.dart';
-import 'package:transportify/modelos/PuntoTransportify.dart';
 
 class CiudadDialog extends StatefulWidget {
   @override
