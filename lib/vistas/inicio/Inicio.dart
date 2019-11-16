@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: TransportifyColors.homeBackgroundSwatch,
-        body: Column(children: <Widget>[
+        body: ListView(children: <Widget>[
           TopPart(),
           CrearPaquetePart(),
           CrearViajePart(),
@@ -55,7 +55,7 @@ class TopPart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 160.0,
+        height: 150.0,
         color: TransportifyColors.primarySwatch[50],
         child: Material(
           borderRadius: BorderRadius.only(
@@ -63,7 +63,16 @@ class TopPart extends StatelessWidget {
           ),
           child: Column(
             children: <Widget>[
-              SizedBox(height: 60.0),
+              Row(mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  IconButton(
+                      icon: Icon(Icons.settings,color: TransportifyColors.appBackground,),
+                      onPressed: () {
+                        /*!TODO llevar a la pantalla de preferencias.*/
+                      }),
+                      SizedBox(width: 5,)
+                ],
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -173,10 +182,27 @@ class TopPart extends StatelessWidget {
   }
 }
 
-class CrearPaquetePart extends StatelessWidget {
+class CrearPaquetePart extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => CrearPaquetePartState();
+}
+
+abstract class UserDependantPartState<T extends StatefulWidget> extends State<T> {
+  Usuario usuarioActual;
+
+  UserDependantPartState() {
+    usuarioActual = DatosUsuarioActual.instance.usuario;
+    DatosUsuarioActual.instance.usuarioStream.listen((nuevoUsuario) {
+      setState(() {
+        usuarioActual = nuevoUsuario;
+      });
+    });
+  }
+}
+
+class CrearPaquetePartState extends UserDependantPartState<CrearPaquetePart> {
   @override
   Widget build(BuildContext context) {
-    Usuario usuarioActual = DatosUsuarioActual.instance.usuario;
     return GestureDetector(
         onTap: () {
           Navigator.of(context)
@@ -229,7 +255,11 @@ class CrearPaquetePart extends StatelessWidget {
                       Row(
                         children: [
                           usuarioActual == null
-                              ? const Text("-")
+                              ? const Text(
+                                  "-",
+                                  style: TextStyle(
+                                      fontSize: 20.0, color: Colors.white70),
+                                )
                               : Datos
                                   .obtenerStreamBuilderDocumentBDFromReference(
                                       usuarioActual.reference,
@@ -238,7 +268,10 @@ class CrearPaquetePart extends StatelessWidget {
                                     return const Text("Cargando...");
                                   usuarioActual.loadFromSnapshot(snapshot.data);
                                   return Text(
-                                      usuarioActual.paquetesCreados.toString());
+                                    usuarioActual.paquetesCreados.toString(),
+                                    style: TextStyle(
+                                        fontSize: 20.0, color: Colors.white70),
+                                  );
                                 }),
                           Text(
                             " paquetes enviados.",
@@ -260,10 +293,14 @@ class CrearPaquetePart extends StatelessWidget {
   }
 }
 
-class CrearViajePart extends StatelessWidget {
+class CrearViajePart extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => CrearViajePartState();
+}
+
+class CrearViajePartState extends UserDependantPartState<CrearViajePart> {
   @override
   Widget build(BuildContext context) {
-    Usuario usuarioActual = DatosUsuarioActual.instance.usuario;
     return GestureDetector(
         onTap: () {
           Navigator.of(context)
@@ -305,7 +342,7 @@ class CrearViajePart extends StatelessWidget {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            "Crea un viaje con el que puedas\n transportar paquetes entre \n diferentes puntos Transportify",
+                            "Crea un viaje para\ntransportar paquetes entre\nnuestros puntos Transportify",
                             style: TextStyle(
                                 fontSize: 20.0, color: Colors.white70),
                           ),
@@ -315,7 +352,11 @@ class CrearViajePart extends StatelessWidget {
                       Row(
                         children: [
                           usuarioActual == null
-                              ? const Text("-")
+                              ? const Text(
+                                  "-",
+                                  style: TextStyle(
+                                      fontSize: 20.0, color: Colors.white70),
+                                )
                               : Datos
                                   .obtenerStreamBuilderDocumentBDFromReference(
                                       usuarioActual.reference,
@@ -325,7 +366,10 @@ class CrearViajePart extends StatelessWidget {
 
                                   usuarioActual.loadFromSnapshot(snapshot.data);
                                   return Text(
-                                      usuarioActual.viajesCreados.toString());
+                                    usuarioActual.viajesCreados.toString(),
+                                    style: TextStyle(
+                                        fontSize: 20.0, color: Colors.white70),
+                                  );
                                 }),
                           Text(
                             " viajes realizados.",
@@ -447,16 +491,10 @@ class BuscarPart extends StatelessWidget {
                   SizedBox(height: 25.0),
                   Row(
                     children: <Widget>[
-                      Text("Paquetes totales: ",
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.white70,
-                          )),
                       Datos.obtenerStreamBuilderCollectionBD(
                           PaqueteBD.coleccion_paquetes, getNumDocuments),
                       Text(
-                        " y viajes: ",
+                        " paquetes y ",
                         style: TextStyle(
                           fontSize: 18.0,
                           fontStyle: FontStyle.italic,
@@ -465,6 +503,14 @@ class BuscarPart extends StatelessWidget {
                       ),
                       Datos.obtenerStreamBuilderCollectionBD(
                           ViajeBD.coleccion_viajes, getNumDocuments),
+                      Text(
+                        " viajes disponibles",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white70,
+                        ),
+                      ),
                     ],
                   ),
                 ],

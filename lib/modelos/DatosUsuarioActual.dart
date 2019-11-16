@@ -1,9 +1,19 @@
+import 'dart:async';
+
 import 'Usuario.dart';
 
 class DatosUsuarioActual {
   static DatosUsuarioActual _instance;
   
-  Usuario usuario;
+  Usuario _usuario;
+  Usuario get usuario => _usuario;
+  set usuario(Usuario nuevoUsuario) {
+    _usuario = nuevoUsuario;
+    usuarioController.add(nuevoUsuario);
+  }
+  
+  StreamController usuarioController = StreamController.broadcast();
+  Stream get usuarioStream => usuarioController.stream;
 
   DatosUsuarioActual._private();
 
