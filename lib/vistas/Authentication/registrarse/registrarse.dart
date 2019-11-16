@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/Authentication/Autenticacion.dart';
 
+import '../../CiudadDialog.dart';
+
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class Registrarse extends StatefulWidget {
@@ -23,6 +25,7 @@ class RegistrarseState extends State<Registrarse> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
+  String _ciudad;
   bool _success;
   String _userEmail;
 
@@ -44,6 +47,13 @@ class RegistrarseState extends State<Registrarse> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  Center(
+                    child: Icon(
+                      Icons.directions_car,
+                      color: TransportifyColors.primarySwatch,
+                      size: 120,
+                    ),
+                  ),
                   TextFormField(
                     controller: _nicknameController,
                     maxLines: 1,
@@ -110,9 +120,13 @@ class RegistrarseState extends State<Registrarse> {
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     maxLength: 50,
+
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
+                      }
+                      if(value.length < 6){
+                        return 'La contraseña debe tener mas de 6 carácteres';
                       }
                       return null;
                     },
@@ -130,6 +144,17 @@ class RegistrarseState extends State<Registrarse> {
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     maxLength: 50,
+                      enableInteractiveSelection: false,
+                      onTap: () async {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        String returnCiudad = await CiudadDialog.show(
+                            this.context);
+
+                        if (returnCiudad != null) {
+                          _ciudad = returnCiudad;
+                          _cityController.text = _ciudad;
+                        }
+                      },
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
@@ -235,8 +260,8 @@ class RegistrarseState extends State<Registrarse> {
 
   void _addUserParameters(String userId) async {
     String nameAndSurname = _nameAndSurnameController.text;
-    String city = _cityController.text;
-    String age = _cityController.text;
+    String city = _ciudad;
+    String age = _ageController.text;
     String nickname = _nicknameController.text;
 
     await Firestore.instance.collection('usuarios').document(userId).setData(({
