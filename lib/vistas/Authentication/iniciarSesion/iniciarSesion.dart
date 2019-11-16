@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:transportify/main.dart';
 import 'package:transportify/util/style.dart';
-import 'package:transportify/vistas/Authentication/Autenticacion.dart';
 import 'package:transportify/vistas/Authentication/registrarse/registrarse.dart';
 
 import 'EmailAndPassword.dart';
-import 'Google.dart';
 
 class IniciarSesionMain extends StatelessWidget {
   static const String title = 'Transportify';

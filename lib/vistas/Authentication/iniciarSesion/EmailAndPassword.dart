@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/Authentication/Autenticacion.dart';
 

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:transportify/vistas/Authentication/iniciarSesi%C3%B3n/iniciarSesion.dart';
+import 'package:transportify/vistas/Authentication/iniciarSesion/iniciarSesion.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
-import 'package:transportify/vistas/seguimiento/SeguimientoForm.dart';
 import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';
 
-import 'middleware/PuntoTransportifyBD.dart';
 
 void main() async =>
     await initializeDateFormatting("es_ES", null).then((_) => runApp(MyApp()));
