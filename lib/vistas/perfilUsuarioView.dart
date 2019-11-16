@@ -60,21 +60,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
               child: SingleChildScrollView(
                 child: Column(
                 children: <Widget> [
-                  /*
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      
-                      Icon(
-                        Icons.supervised_user_circle,
-                        size: 120,
-                        color: TransportifyColors.primarySwatch,
-                      ),
 
-                      
-                    ],
-                  ),
-                  */
                   SizedBox(
                   height: 20.0,
                   ),
@@ -138,6 +124,17 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     maxLength: 50,
+                    //Al clickar saldra la lista de ciudades
+                    /*onTap: () async {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      PuntoTransportify returnPunto =
+                          await PuntosDialog.show(this.context);
+
+                      if (returnPunto != null) {
+                        puntos.origen = returnPunto;
+                        origenController.text = puntos.origen?.nombre;
+                      }
+                    },*/
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
@@ -290,6 +287,8 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                 Navigator.of(context).pop();
                 print("Perfil eliminado");
                 widget.usuario.deleteFromBD();
+                //Debe llevarte denuevo a registrar usuario
+                //Debería eliminar todos tus paquetes y viajes publicados 
                 Navigator.of(context).pop();
               },
             ),
