@@ -10,12 +10,14 @@ import 'package:transportify/util/style.dart';
 import '../PuntosDialog.dart';
 
 class CreacionViajeForm extends StatefulWidget {
-  CreacionViajeForm({Key key, this.title, this.viajeModificando}) : super(key: key);
+  CreacionViajeForm({Key key, this.title, this.viajeModificando})
+      : super(key: key);
   @override
-  _CreacionViajeFormState createState() => _CreacionViajeFormState();
+  _CreacionViajeFormState createState() =>
+      _CreacionViajeFormState();
 
   final String title;
-  Viaje viajeModificando;
+  final Viaje viajeModificando;
 }
 
 class _CreacionViajeFormState extends State<CreacionViajeForm> {
@@ -29,6 +31,8 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
   DateTime choosenDate;
   DateTime choosenTime;
+
+  bool get modificando => widget.viajeModificando != null;
 
   final Puntos puntos = Puntos();
 
@@ -288,76 +292,75 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                 ),
               ],
             )));
-            if(widget.viajeModificando != null) inicializarCampos();
-            return view;
-              }
-            
-              /*Si viajeModificando estaba inicializado lo actualiza con las modificaciones de la view
-              *y lo devuelve. Si no estaba inicializado, lo inicializa y hace los mismo.
-              */
-              Viaje getViajeFromControllers() {
-                
-                if(widget.viajeModificando == null) widget.viajeModificando = new Viaje();
+    if (modificando) inicializarCampos(widget.viajeModificando);
+    return view;
+  }
 
-                widget.viajeModificando.cargaMaxima = double.parse(pesoController.text);
-            
-                //print(_nombre);
-                DateTime fechaViajeElegida = new DateTime(
-                    choosenDate.year,
-                    choosenDate.month,
-                    choosenDate.day,
-                    choosenTime.hour,
-                    choosenTime.minute,
-                    0);
+  /// Si viajeModificando estaba inicializado lo actualiza con las modificaciones de la view
+  /// y lo devuelve. Si no estaba inicializado, lo inicializa y hace lo mismo.
+  Viaje getViajeFromControllers() {
+    Viaje viaje = modificando ? widget.viajeModificando : new Viaje();
 
-                widget.viajeModificando.fecha = fechaViajeElegida;
-            
-                widget.viajeModificando.destino = puntos.destino;
+    viaje.cargaMaxima = double.parse(pesoController.text);
 
-                widget.viajeModificando.origen = puntos.origen;
+    DateTime fechaViajeElegida = new DateTime(
+        choosenDate.year,
+        choosenDate.month,
+        choosenDate.day,
+        choosenTime.hour,
+        choosenTime.minute,
+        0);
 
-                return widget.viajeModificando;
-              }
-            
-              Widget buildButtonContainer(String hintText) {
-                return TransportifyFormButton(
-                  text: hintText,
-                  onPressed: () {
-                    if (hintText == "ACEPTAR") {
-                      if (_formKey.currentState.validate()) {
-                        Viaje viaje = getViajeFromControllers();
-                        viaje.crearEnBD();
-                        TransportifyMethods.doneDialog(context, "Viaje creado",
-                            content: "El viaje ha sido creado con éxito");
-                      }
-                    } else {
-                      Navigator.pop(context);
-                    }
-                  },
-                );
-              }
-            
-            /* Este método se llama cuando recibimos un viaje en el constructor, indicando así que lo que
-            *se quiere es modificar un viaje existente(el que nos pasan) y no crear uno nuevo. Si se quiere crear
-            *uno nuevo viajeModificando será 'null' y este método no se lanzará.
-            *
-            *Este método inicializa todos los campos del formulario a los valores del viaje que recibimos e 
-            *inicializa también las variables locales que se usan para luego crear o modificar el viaje.
-            */
-            void inicializarCampos() {
-              choosenTime = new DateTime(widget.viajeModificando.fecha.hour, widget.viajeModificando.fecha.minute);
-              horaController.text = DateFormat.Hm().format(widget.viajeModificando.fecha);
+    viaje.fecha = fechaViajeElegida;
 
-              choosenDate = widget.viajeModificando.fecha;
-              fechaController.text = '${widget.viajeModificando.fecha.day} / ${widget.viajeModificando.fecha.month} / ${widget.viajeModificando.fecha.year}';
+    viaje.destino = puntos.destino;
 
-              puntos.origen = widget.viajeModificando.origen;
-              origenController.text = puntos.origen?.nombre;
+    viaje.origen = puntos.origen;
 
-              puntos.destino = widget.viajeModificando.destino;
-              destinoController.text = puntos.destino?.nombre;
+    return viaje;
+  }
 
-              peso = widget.viajeModificando.cargaMaxima;
-              pesoController.text = widget.viajeModificando.cargaMaxima.toString();
-            }
+  Widget buildButtonContainer(String hintText) {
+    return TransportifyFormButton(
+      text: hintText,
+      onPressed: () {
+        if (hintText == "ACEPTAR") {
+          if (_formKey.currentState.validate()) {
+            Viaje viaje = getViajeFromControllers();
+            if (modificando) viaje.updateBD();
+            else viaje.crearEnBD();
+            TransportifyMethods.doneDialog(context, "Viaje creado",
+                content: "El viaje ha sido creado con éxito");
+          }
+        } else {
+          Navigator.pop(context);
+        }
+      },
+    );
+  }
+
+  /// Este método se llama cuando recibimos un viaje en el constructor, indicando así que lo que
+  /// se quiere es modificar un viaje existente (el que nos pasan) y no crear uno nuevo. Si se quiere crear
+  /// uno nuevo viajeModificando será `null` y este método no se lanzará.
+  ///
+  /// Este método inicializa todos los campos del formulario a los valores del viaje que recibimos e 
+  /// inicializa también las variables locales que se usan para luego crear o modificar el viaje.
+  void inicializarCampos(Viaje viaje) {
+    choosenTime = new DateTime(
+        viaje.fecha.hour, viaje.fecha.minute);
+    horaController.text = DateFormat.Hm().format(viaje.fecha);
+
+    choosenDate = viaje.fecha;
+    fechaController.text =
+        '${viaje.fecha.day} / ${viaje.fecha.month} / ${viaje.fecha.year}';
+
+    puntos.origen = viaje.origen;
+    origenController.text = puntos.origen?.nombre;
+
+    puntos.destino = viaje.destino;
+    destinoController.text = puntos.destino?.nombre;
+
+    peso = viaje.cargaMaxima;
+    pesoController.text = viaje.cargaMaxima.toString();
+  }
 }
