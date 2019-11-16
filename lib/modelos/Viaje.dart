@@ -8,8 +8,8 @@ import 'Usuario.dart';
 class Viaje extends ComponenteBD {
   double cargaMaxima;
   DateTime fecha;
-  PuntoTransportify destino;
-  PuntoTransportify origen;
+  String destino;
+  String origen;
   Usuario transportista;
 
   Viaje(
@@ -29,18 +29,18 @@ class Viaje extends ComponenteBD {
     super.loadFromSnapshot(snapshot);
     this.cargaMaxima = ViajeBD.obtenerCargaMaxima(snapshot);
     this.fecha = ViajeBD.obtenerFecha(snapshot).toDate();
-    this.destino = PuntoTransportify.fromReference(ViajeBD.obtenerDestino(snapshot));
-    this.origen = PuntoTransportify.fromReference(ViajeBD.obtenerOrigen(snapshot));
+    this.destino = ViajeBD.obtenerDestino(snapshot);
+    this.origen = ViajeBD.obtenerOrigen(snapshot);
     this.transportista = Usuario.fromReference(ViajeBD.obtenerTransportista(snapshot));
 
-    await Future.wait([this.destino.waitForInit(), this.origen.waitForInit(), this.transportista.waitForInit()]);
+    await this.transportista.waitForInit();
   }
 
   @override
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = Map<String, dynamic>();
-    map[ViajeBD.atributo_destino] = this.destino?.reference;
-    map[ViajeBD.atributo_origen] = this.origen?.reference;
+    map[ViajeBD.atributo_destino] = this.destino;
+    map[ViajeBD.atributo_origen] = this.origen;
     map[ViajeBD.atributo_transportista] = this.transportista?.reference;
     map[ViajeBD.atributo_carga_maxima] = this.cargaMaxima;
     map[ViajeBD.atributo_fecha] = this.fecha;

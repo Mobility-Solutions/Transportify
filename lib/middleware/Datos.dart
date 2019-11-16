@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:transportify/util/style.dart';
 
 class Datos {
   static StreamBuilder<QuerySnapshot> obtenerStreamBuilderCollectionBD(
@@ -22,5 +24,29 @@ class Datos {
 
   static Future<DocumentReference> crearDocument(String collectionPath, Map<String, dynamic> data) {
     return Firestore.instance.collection(collectionPath).add(data);
+  }
+
+  static Widget obtenerListViewItem<T>(
+      {T item,
+      String displayName,
+      bool selected = false,
+      Function(T) onSelected}) {
+    Function onTap;
+    if (onSelected != null) {
+      onTap = () => onSelected(item);
+    }
+
+    return Container(
+      color: selected ? TransportifyColors.primarySwatch : null,
+      child: ListTile(
+        title: Text(
+          displayName,
+          style: TextStyle(
+            color: selected ? Colors.white : Colors.black,
+          ),
+        ),
+        onTap: onTap,
+      ),
+    );
   }
 }
