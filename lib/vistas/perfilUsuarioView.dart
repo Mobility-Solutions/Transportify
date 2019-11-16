@@ -39,6 +39,19 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
           title: Text("Mi perfil"),
           backgroundColor: TransportifyColors.primarySwatch,
           elevation: 0.0,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.edit),
+              iconSize: 40,
+              color: colorEditar,
+              onPressed: () {
+                setState(() {
+                cambiarColorEditable();
+                editable = !editable;
+                });
+              },
+            ),
+          ],
         ),
           backgroundColor: Colors.grey[200],
           body: Padding(
@@ -47,7 +60,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
               child: SingleChildScrollView(
                 child: Column(
                 children: <Widget> [
-                  
+                  /*
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -58,20 +71,10 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                         color: TransportifyColors.primarySwatch,
                       ),
 
-                      IconButton(
-                        icon: Icon(Icons.edit),
-                        iconSize: 40,
-                        color: colorEditar,
-                        onPressed: () {
-                          setState(() {
-                            cambiarColorEditable();
-                            editable = !editable;
-                          });
-                        },
-                      ),
+                      
                     ],
                   ),
-                  
+                  */
                   SizedBox(
                   height: 20.0,
                   ),
@@ -181,83 +184,67 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                   height: 20.0,
                   ),
 
-                  RaisedButton(
-                    color: colorGuardarCambios,
-                    textColor: Colors.white,
-                    disabledColor: Colors.grey,
-                    disabledTextColor: Colors.white,
-                    padding: EdgeInsets.all(8.0),
-                    splashColor: colorInternoGuardarCambios,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        if(_formKey.currentState.validate()) {
-                          if(editable) {
-                            cambiarColorEditable();
-                            guardarCambios();
-                            editable = false;
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+
+                      RaisedButton(
+                        color: colorGuardarCambios,
+                        textColor: Colors.white,
+                        disabledColor: Colors.grey,
+                        disabledTextColor: Colors.white,
+                        padding: EdgeInsets.all(8.0),
+                        splashColor: colorInternoGuardarCambios,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if(_formKey.currentState.validate()) {
+                              if(editable) {
+                                cambiarColorEditable();
+                                guardarCambios();
+                                editable = false;
+                              }
+                            }
                           }
-                        }
-                      }
-                    );
-                  },
-                    child: Text(
-                      "Guardar cambios",
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                  ),
+                        );
+                      },
+                        child: Text(
+                          "Guardar cambios",
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+                      ),
 
-                  SizedBox(
-                  height: 20.0,
-                  ),
+                      SizedBox(
+                        width: 20.0,
+                      ),
 
-                  RaisedButton(
-                    color: TransportifyColors.primarySwatch,
-                    textColor: Colors.white,
-                    disabledColor: Colors.grey,
-                    disabledTextColor: Colors.white,
-                    padding: EdgeInsets.all(8.0),
-                    splashColor: Colors.blueAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    ),
-                    onPressed: () {
-                      print("Se muestra el historial");
-                    },
-                    child: Text(
-                      "Ver historial",
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                  ),
+                      RaisedButton(
+                        color: Colors.red,
+                        textColor: Colors.white,
+                        disabledColor: Colors.grey,
+                        disabledTextColor: Colors.white,
+                        padding: EdgeInsets.all(8.0),
+                        splashColor: Colors.redAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            showDialogBorrarPerfil();
+                          }
+                        );
+                      },
+                        child: Text(
+                          "Borrar perfil",
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+                      ),
 
-                  SizedBox(
-                  height: 20.0,
+                    ],
                   ),
-
-                  RaisedButton(
-                    color: Colors.red,
-                    textColor: Colors.white,
-                    disabledColor: Colors.grey,
-                    disabledTextColor: Colors.white,
-                    padding: EdgeInsets.all(8.0),
-                    splashColor: Colors.redAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        showDialogBorrarPerfil();
-                      }
-                    );
-                  },
-                    child: Text(
-                      "Borrar perfil",
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                  ),
-
+                  
                 ],
               ),
               ),
