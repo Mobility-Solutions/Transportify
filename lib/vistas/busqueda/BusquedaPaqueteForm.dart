@@ -1,20 +1,44 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:transportify/middleware/PaqueteBD.dart';
+import 'package:transportify/modelos/PuntoTransportify.dart';
 
-import 'BusquedaFormPuntos.dart';
+import 'BusquedaFormCiudades.dart';
 
 class BusquedaPaqueteForm extends StatefulWidget {
   @override
   _BusquedaPaqueteFormState createState() => _BusquedaPaqueteFormState();
 }
 
-class _BusquedaPaqueteFormState extends BusquedaFormPuntosState<BusquedaPaqueteForm> {
+class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaqueteForm> {
   _BusquedaPaqueteFormState()
       : super(
             titulo: "Buscar Paquete",
             coleccionBD: "paquetes",
             textoResultados: "Paquetes encontrados");
 
+  @override
+  Future<bool> buscar(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) async {
+    if (!snapshot.hasData) return false;
+
+    List<DocumentSnapshot> coleccion = snapshot.data.documents;
+    listaResultados.clear();
+
+    for (DocumentSnapshot snapshot in coleccion) {
+      PuntoTransportify origenBD = PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
+      PuntoTransportify destinoBD = PuntoTransportify.fromReference(PaqueteBD.obtenerDestino(snapshot));
+
+      await Future.wait([origenBD.waitForInit(), destinoBD.waitForInit()]);
+
+      if (origen == origenBD.ciudad && destino == destinoBD.ciudad) {
+        listaResultados.add(snapshot);
+      }
+    }
+
+    return true;
+  }
+  
   @override
   Widget builderListado(BuildContext context, int index) {
     return InkWell(
