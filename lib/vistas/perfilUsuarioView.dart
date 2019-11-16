@@ -286,9 +286,9 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
               onPressed: () {
                 Navigator.of(context).pop();
                 print("Perfil eliminado");
+                // Además del usuario, elimina todos sus paquetes y viajes publicados 
                 widget.usuario.deleteFromBD();
-                //Debe llevarte denuevo a registrar usuario
-                //Debería eliminar todos tus paquetes y viajes publicados 
+                //Debe llevarte de nuevo a registrar usuario            
                 Navigator.of(context).pop();
               },
             ),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:transportify/modelos/Viaje.dart';
 
 import 'PuntosBD.dart';
 
@@ -18,4 +19,7 @@ class ViajeBD {
       snapshot[atributo_carga_maxima];
   static Timestamp obtenerFecha(DocumentSnapshot snapshot) =>
       snapshot[atributo_fecha];
+
+  static Future<Iterable<Viaje>> obtenerListadoViajes()
+    => Firestore.instance.collection(coleccion_viajes).getDocuments().then((snapshot) => snapshot.documents.map((document) => Viaje.fromSnapshot(document)));
 }
