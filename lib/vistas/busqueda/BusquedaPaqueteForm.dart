@@ -1,5 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:transportify/middleware/PaqueteBD.dart';
+import 'package:transportify/middleware/PuntosBD.dart';
+import 'package:transportify/middleware/PuntoTransportifyBD.dart';
+import 'package:transportify/modelos/Puntos.dart';
+import 'package:transportify/modelos/PuntoTransportify.dart';
 
 import 'BusquedaFormPuntos.dart';
 
@@ -15,6 +21,40 @@ class _BusquedaPaqueteFormState extends BusquedaFormPuntosState<BusquedaPaqueteF
             coleccionBD: "paquetes",
             textoResultados: "Paquetes encontrados");
 
+  List<Puntos> listaPuntos = List<Puntos>();
+
+  @override
+  bool buscar(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    if (!snapshot.hasData) return false;
+
+    List<DocumentSnapshot> coleccion = snapshot.data.documents;
+    listaResultados.clear();
+    var now = new DateTime.now();
+
+    for (DocumentSnapshot document in coleccion) {
+      Puntos puntosDocument = Puntos(
+        destino: PuntoTransportify.fromReference(
+          document[PuntosBD.atributo_destino],
+          init: true,
+        ),
+        origen: PuntoTransportify.fromReference(
+          document[PuntosBD.atributo_origen],
+          init: true,
+        ),
+      );
+      var date = document[PaqueteBD.atributo_fecha_entrega].toDate();
+      var diff = date.isAfter(now);
+      if (puntosDocument == puntos && diff) {
+        listaPuntos.add(puntosDocument);
+        listaResultados.add(document);
+      }
+    }
+
+    return true;
+  }
+  
+
+
   @override
   Widget builderListado(BuildContext context, int index) {
     return InkWell(
@@ -24,12 +64,45 @@ class _BusquedaPaqueteFormState extends BusquedaFormPuntosState<BusquedaPaqueteF
             borderRadius: BorderRadius.circular(10),
             color: Colors.white,
           ),
-          height: 70,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          height: 120,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children:[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children:[
+                  Column(
+                    children: [
+                  
+                Row(
+                    children: [
+                      Text(
+                        'Dir Origen: ${puntos.origen.direccion}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle ( color : Colors.black, fontSize: 18),      
+                      ),
+                    ],
+                  ),
+                  
+                  Row(
+                    children: [
+                      Text(
+                        'Dir Destino: ${puntos.destino.direccion}',
+                        textAlign: TextAlign.right,
+                        style: TextStyle ( color : Colors.black, fontSize: 18),      
+                      ),
+                    ],
+                  ),
+                    ],
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Column(
                 children: [
+                  
                   Row(
                     children: [
                       Text(
@@ -38,7 +111,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormPuntosState<BusquedaPaqueteF
                         style: TextStyle(color: Colors.grey[500], fontSize: 18),
                       ),
                       Text(
-                        ' ${listaResultados[index]['Precio'] ?? 'No establecido'}',
+                        ' ${listaResultados[index]['Precio'] ?? 'No'}',
                         textAlign: TextAlign.right,
                         style: TextStyle(color: Colors.black, fontSize: 18),
                       ),
@@ -76,6 +149,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormPuntosState<BusquedaPaqueteF
               ),
               Column(
                 children: [
+                  
                   Row(
                     children: [
                       Text(
@@ -116,6 +190,8 @@ class _BusquedaPaqueteFormState extends BusquedaFormPuntosState<BusquedaPaqueteF
               ),
             ],
           ),
+            ],
+          ),
         ),
       ),
       onTap: () {
@@ -123,4 +199,5 @@ class _BusquedaPaqueteFormState extends BusquedaFormPuntosState<BusquedaPaqueteF
       },
     );
   }
+
 }
