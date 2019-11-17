@@ -59,15 +59,22 @@ abstract class BusquedaFormState<T extends StatefulWidget> extends State<T> {
   Widget Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
       obtenerListaBuilder() {
     return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      bool hasData = false;
+      Future<bool> hasData;
       if (validada) {
         hasData = buscar(context, snapshot);
+      } else {
+        hasData = Future.value(false);
       }
-      return _buildContainerBusqueda(hasData);
+      return FutureBuilder<bool>(
+        future: hasData,
+        builder: (context, hasData) =>
+            _buildContainerBusqueda(hasData.hasData ? hasData.data : false),
+      );
     };
   }
 
-  bool buscar(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot);
+  Future<bool> buscar(
+      BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot);
 
   Widget _buildContainerBusqueda(bool hasData) {
     return Column(
@@ -119,9 +126,9 @@ abstract class BusquedaFormState<T extends StatefulWidget> extends State<T> {
                     ? SizedBox.expand(
                         child: _buildListado(),
                       )
-                    : const Text('Cargando...'),
+                    : const Center(child: const CircularProgressIndicator()),
               )
-            : Container(),
+            : const SizedBox(),
       ],
     );
   }

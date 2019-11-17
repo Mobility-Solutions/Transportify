@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:transportify/middleware/ViajeBD.dart';
 
-import 'BusquedaFormPuntos.dart';
+import 'BusquedaFormCiudades.dart';
 
 class BusquedaViajeForm extends StatefulWidget {
   BusquedaViajeForm({Key key, this.title}) : super(key: key);
@@ -12,12 +14,36 @@ class BusquedaViajeForm extends StatefulWidget {
   final String title;
 }
 
-class _BusquedaViajeFormState extends BusquedaFormPuntosState<BusquedaViajeForm> {
+class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeForm> {
+  final origenController = TextEditingController();
+  final destinoController = TextEditingController();
+
+  String origen, destino;
+
   _BusquedaViajeFormState()
       : super(
             titulo: "Buscar Viaje",
             coleccionBD: "viajes",
             textoResultados: "Viajes encontrados");
+
+  @override
+  Future<bool> buscar(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) async {
+    if (!snapshot.hasData) return false;
+
+    List<DocumentSnapshot> coleccion = snapshot.data.documents;
+    listaResultados.clear();
+
+    for (DocumentSnapshot snapshot in coleccion) {
+      String origenBD = ViajeBD.obtenerOrigen(snapshot);
+      String destinoBD = ViajeBD.obtenerDestino(snapshot);
+
+      if (origen == origenBD && destino == destinoBD) {
+        listaResultados.add(snapshot);
+      }
+    }
+
+    return true;
+  }
 
   @override
   Widget builderListado(BuildContext context, int index) {
