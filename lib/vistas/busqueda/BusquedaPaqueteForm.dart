@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:transportify/middleware/PaqueteBD.dart';
-import 'package:transportify/middleware/PuntosBD.dart';
-import 'package:transportify/middleware/PuntoTransportifyBD.dart';
 import 'package:transportify/modelos/Puntos.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 
@@ -21,39 +19,8 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
             coleccionBD: "paquetes",
             textoResultados: "Paquetes encontrados");
 
-  List<Puntos> listaPuntos = List<Puntos>();
-
-  @override
-  bool buscar(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-    if (!snapshot.hasData) return false;
-
-    List<DocumentSnapshot> coleccion = snapshot.data.documents;
-    listaResultados.clear();
-    var now = new DateTime.now();
-
-    for (DocumentSnapshot document in coleccion) {
-      Puntos puntosDocument = Puntos(
-        destino: PuntoTransportify.fromReference(
-          document[PuntosBD.atributo_destino],
-          init: true,
-        ),
-        origen: PuntoTransportify.fromReference(
-          document[PuntosBD.atributo_origen],
-          init: true,
-        ),
-      );
-      var date = document[PaqueteBD.atributo_fecha_entrega].toDate();
-      var diff = date.isAfter(now);
-      if (puntosDocument == puntos && diff) {
-        listaPuntos.add(puntosDocument);
-        listaResultados.add(document);
-      }
-    }
-
-    return true;
-  }
-  
-
+  List<PuntoTransportify> listaPuntosOrigen = List<PuntoTransportify>();
+  List<PuntoTransportify> listaPuntosDestino = List<PuntoTransportify>();
 
   @override
   Future<bool> buscar(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) async {
@@ -61,15 +28,45 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
 
     List<DocumentSnapshot> coleccion = snapshot.data.documents;
     listaResultados.clear();
-
+    var now = new DateTime.now();
+    DateTime fechaElegida;
+    if(choosenDate != null && choosenTime != null){
+    fechaElegida = new DateTime(
+        choosenDate.year,
+        choosenDate.month,
+        choosenDate.day,
+        choosenTime.hour,
+        choosenTime.minute,
+        0);
+    }
+    else if (choosenTime == null && choosenDate != null){
+      fechaElegida = new DateTime(
+        choosenDate.year,
+        choosenDate.month,
+        choosenDate.day,
+        0,
+        0,
+        0);
+    }
+    else{
+      fechaElegida = now;
+    }
     for (DocumentSnapshot snapshot in coleccion) {
       PuntoTransportify origenBD = PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
       PuntoTransportify destinoBD = PuntoTransportify.fromReference(PaqueteBD.obtenerDestino(snapshot));
 
+
       await Future.wait([origenBD.waitForInit(), destinoBD.waitForInit()]);
 
-      if (origen == origenBD.ciudad && destino == destinoBD.ciudad) {
+      var date = snapshot[PaqueteBD.atributo_fecha_entrega].toDate();
+      var diff = date.isAfter(now);
+
+        var fechaBusqueda = date.isAfter(fechaElegida);
+
+      if (origen == origenBD.ciudad && destino == destinoBD.ciudad && diff && fechaBusqueda) {
         listaResultados.add(snapshot);
+        listaPuntosOrigen.add(origenBD);
+        listaPuntosDestino.add(destinoBD);
       }
     }
 
@@ -98,7 +95,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                 Row(
                     children: [
                       Text(
-                        'Dir Origen: ${puntos.origen.direccion}',
+                        'Dir Origen: ${listaPuntosOrigen[index].direccion}',
                         textAlign: TextAlign.center,
                         style: TextStyle ( color : Colors.black, fontSize: 18),      
                       ),
@@ -108,7 +105,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                   Row(
                     children: [
                       Text(
-                        'Dir Destino: ${puntos.destino.direccion}',
+                        'Dir Destino: ${listaPuntosDestino[index].direccion}',
                         textAlign: TextAlign.right,
                         style: TextStyle ( color : Colors.black, fontSize: 18),      
                       ),
