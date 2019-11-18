@@ -14,7 +14,7 @@ class _SeguimientoFormState extends State<SeguimientoForm> {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-          title: const Text("Home"),
+          title: const Text("Seguimiento"),
         ),
         body: Center(child: PaqueteBD.obtenerListaPaquetes(verSeguimiento)));
   }
