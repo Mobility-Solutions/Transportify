@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:transportify/modelos/Paquete.dart';
 
 import 'PuntosBD.dart';
 
@@ -28,4 +29,7 @@ class PaqueteBD {
   static double obtenerPeso(DocumentSnapshot snapshot) => snapshot[atributo_peso];
   static double obtenerPrecio(DocumentSnapshot snapshot) => snapshot[atributo_precio];
   static Timestamp obtenerFechaEntrega(DocumentSnapshot snapshot) => snapshot[atributo_fecha_entrega];
+
+  static Future<Iterable<Paquete>> obtenerListadoPaquetes()
+    => Firestore.instance.collection(coleccion_paquetes).getDocuments().then((snapshot) => snapshot.documents.map((document) => Paquete.fromSnapshot(document)));
 }

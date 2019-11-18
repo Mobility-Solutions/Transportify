@@ -75,6 +75,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                     ],
                   ),
                   */
+
                   SizedBox(
                   height: 20.0,
                   ),
@@ -138,6 +139,17 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     maxLength: 50,
+                    //Al clickar saldra la lista de ciudades
+                    /*onTap: () async {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      PuntoTransportify returnPunto =
+                          await PuntosDialog.show(this.context);
+
+                      if (returnPunto != null) {
+                        puntos.origen = returnPunto;
+                        origenController.text = puntos.origen?.nombre;
+                      }
+                    },*/
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
@@ -289,7 +301,9 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
               onPressed: () {
                 Navigator.of(context).pop();
                 print("Perfil eliminado");
+                // Además del usuario, elimina todos sus paquetes y viajes publicados 
                 widget.usuario.deleteFromBD();
+                //Debe llevarte de nuevo a registrar usuario            
                 Navigator.of(context).pop();
               },
             ),

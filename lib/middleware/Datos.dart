@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 
+import 'ComponenteBD.dart';
+
 class Datos {
   static StreamBuilder<QuerySnapshot> obtenerStreamBuilderCollectionBD(
       String collectionPath,
@@ -41,4 +43,8 @@ class Datos {
       String collectionPath, Map<String, dynamic> data) {
     return Firestore.instance.collection(collectionPath).add(data);
   }
+
+  static Future<void> eliminarTodosLosComponentes<T extends ComponenteBD>(
+          Iterable<T> listado) =>
+      Future.forEach(listado, (componente) => componente.deleteFromBD());
 }
