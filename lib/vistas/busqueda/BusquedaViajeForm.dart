@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:transportify/middleware/ViajeBD.dart';
+import 'package:transportify/modelos/Viaje.dart';
 
 import 'BusquedaFormCiudades.dart';
 
@@ -14,7 +14,7 @@ class BusquedaViajeForm extends StatefulWidget {
   final String title;
 }
 
-class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeForm> {
+class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeForm, Viaje> {
   final origenController = TextEditingController();
   final destinoController = TextEditingController();
 
@@ -34,11 +34,10 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
     listaResultados.clear();
 
     for (DocumentSnapshot snapshot in coleccion) {
-      String origenBD = ViajeBD.obtenerOrigen(snapshot);
-      String destinoBD = ViajeBD.obtenerDestino(snapshot);
+      Viaje viaje = Viaje.fromSnapshot(snapshot);
 
-      if (origen == origenBD && destino == destinoBD) {
-        listaResultados.add(snapshot);
+      if (origen == viaje.origen && destino == viaje.destino) {
+        listaResultados.add(viaje);
       }
     }
 
@@ -82,7 +81,7 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            '${listaResultados[index]['id_transportista']}',
+                            '${listaResultados[index].transportista?.nombre ?? 'No establecido'}',
                             style: TextStyle(
                                 fontSize: 18, color: Colors.black, height: 2.5),
                             textAlign: TextAlign.center,
@@ -93,7 +92,7 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            '${listaResultados[index]['carga_maxima']}',
+                            '${listaResultados[index].cargaMaxima}',
                             style: TextStyle(
                               fontSize: 15,
                               color: Colors.black54,
@@ -115,7 +114,7 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
                       children: <Widget>[
                         Text(
                           DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, "es_ES")
-                              .format(listaResultados[0]['fecha'].toDate()),
+                              .format(listaResultados[0].fecha),
                           style: TextStyle(
                               fontSize: 18, color: Colors.black, height: 2.5),
                           textAlign: TextAlign.center,
@@ -127,7 +126,7 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
                       children: <Widget>[
                         Text(
                           DateFormat.Hm()
-                              .format(listaResultados[0]['fecha'].toDate()),
+                              .format(listaResultados[0].fecha),
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.black54,
