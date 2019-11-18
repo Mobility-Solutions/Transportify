@@ -127,7 +127,10 @@ class TransportifyMethods {
 
   static InputDecoration returnTextFormDecoration(String hintText) {
     return InputDecoration(
-      suffixIcon: hintText.startsWith("Punto") || hintText.startsWith("Ciudad") ? Icon(Icons.location_on) : null,
+      suffixIcon: hintText.startsWith("Punto") || hintText.startsWith("Ciudad") ? Icon(Icons.location_on)
+        : hintText.startsWith("Fecha") ? Icon(Icons.calendar_today) 
+        : hintText.startsWith("Hora") ? Icon(Icons.access_alarms) 
+        : null,
       hintText: hintText,
       hintStyle: TextStyle(color: TransportifyColors.primarySwatch),
       filled: true,

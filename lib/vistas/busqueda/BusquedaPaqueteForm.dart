@@ -27,7 +27,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
     if (!snapshot.hasData) return false;
 
     List<DocumentSnapshot> coleccion = snapshot.data.documents;
-    listaResultados.clear();
+    
     var now = new DateTime.now();
     DateTime fechaElegida;
     if(choosenDate != null && choosenTime != null){
@@ -51,6 +51,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
     else{
       fechaElegida = now;
     }
+    listaResultados.clear();
     for (DocumentSnapshot snapshot in coleccion) {
       PuntoTransportify origenBD = PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
       PuntoTransportify destinoBD = PuntoTransportify.fromReference(PaqueteBD.obtenerDestino(snapshot));
@@ -61,11 +62,15 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
       var date = snapshot[PaqueteBD.atributo_fecha_entrega].toDate();
       var diff = date.isAfter(now);
       var fechaBusqueda = date.isAfter(fechaElegida);
-
-      if (origen == origenBD.ciudad && destino == destinoBD.ciudad && diff && fechaBusqueda) {
-        listaResultados.add(snapshot);
+      var repetido = false;
+      for(DocumentSnapshot documento in listaResultados){
+        if(documento.documentID == snapshot.documentID) repetido = true;
+      }
+      if (origen == origenBD.ciudad && destino == destinoBD.ciudad && diff && fechaBusqueda && !repetido) {
+        
         listaPuntosOrigen.add(origenBD);
         listaPuntosDestino.add(destinoBD);
+        listaResultados.add(snapshot);
       }
     }
 

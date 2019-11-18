@@ -16,7 +16,6 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget>
 
   String origen, destino;
   DateTime choosenDate, choosenTime;
-
   BusquedaFormCiudadesState({titulo, coleccionBD, textoResultados})
       : super(
             titulo: titulo,
@@ -87,70 +86,70 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget>
         SizedBox(
           height: 20.0,
         ),
-        
-        /** 
-                 * *******************
-                 * SELECTOR DE FECHA *
-                 * *******************
-                 * */
-                  TextFormField(
-                    
-                    maxLines: 1,
-                    controller: fechaController,
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      DatePicker.showDatePicker(context,
-                          theme: DatePickerTheme(
-                            containerHeight: 200.0,
-                          ),
-                          minTime: new DateTime(DateTime.now().year,
-                              DateTime.now().month, DateTime.now().day + 1),
-                          maxTime: new DateTime(DateTime.now().year + 3),
-                          showTitleActions: true, onConfirm: (date) {
-                        choosenDate = date;
-                        String _date =
-                            '${date.day} / ${date.month} / ${date.year}';
-                        setState(() {
-                          fechaController.text = _date;
-                        });
-                      }, currentTime: DateTime.now(), locale: LocaleType.es);
-                    },
-                    keyboardType: TextInputType.datetime,
-                    autofocus: false,
-                    style: TextStyle(color: TransportifyColors.primarySwatch),
-                    decoration: TransportifyMethods.returnTextFormDecoration(
-                        "Seleccionar fecha"),
-                  ),
-                  
-                  /** 
-                 * ******************
-                 * SELECTOR DE HORA *
-                 * ******************
-                 * */
-                  TextFormField(
-                    maxLines: 1,
-                    controller: horaController,
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      DatePicker.showTimePicker(context,
-                          theme: DatePickerTheme(
-                            containerHeight: 200.0,
-                          ),
-                          showTitleActions: true, onConfirm: (time) {
-                        print('confirm $time');
-                        choosenTime = time;
-                        String _time = DateFormat.Hm().format(time);
-                        setState(() {
-                          horaController.text = _time;
-                        });
-                      }, currentTime: DateTime.now(), locale: LocaleType.es);
-                    },
-                    decoration: TransportifyMethods.returnTextFormDecoration(
-                        "Seleccionar hora"),
-                    autofocus: false,
-                    style: TextStyle(color: TransportifyColors.primarySwatch),
-                  ),
+        Row(
+          children: <Widget>[
 
+            Expanded(
+              child:
+            TextFormField(
+                    
+          //maxLines: 1,
+          controller: fechaController,
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+            DatePicker.showDatePicker(context,
+            theme: DatePickerTheme(
+              containerHeight: 200.0,
+            ),
+            minTime: new DateTime(DateTime.now().year,
+            DateTime.now().month, DateTime.now().day + 1),
+            maxTime: new DateTime(DateTime.now().year + 3),
+            showTitleActions: true, onConfirm: (date) {
+              choosenDate = date;
+              String _date =
+                '${date.day} / ${date.month} / ${date.year}';
+                setState(() {
+                  fechaController.text = _date;
+                });
+            }, currentTime: DateTime.now(), locale: LocaleType.es);
+          },
+          keyboardType: TextInputType.datetime,
+          autofocus: false,
+          style: TextStyle(color: TransportifyColors.primarySwatch),
+          decoration: TransportifyMethods.returnTextFormDecoration(
+            "Fecha"),
+        ),
+            ),
+        Expanded(
+          child:
+        TextFormField(
+            maxLines: 1,
+            controller: horaController,
+            onTap: () {
+              FocusScope.of(context).requestFocus(FocusNode());
+              DatePicker.showTimePicker(context,
+                theme: DatePickerTheme(
+                  containerHeight: 200.0,
+                ),
+                showTitleActions: true, onConfirm: (time) {
+                  print('confirm $time');
+                  choosenTime = time;
+                  String _time = DateFormat.Hm().format(time);
+                  setState(() {
+                    horaController.text = _time;
+                  });
+                }, currentTime: DateTime.now(), locale: LocaleType.es);
+            },
+             decoration: TransportifyMethods.returnTextFormDecoration(
+              "Hora"),
+            autofocus: false,
+            style: TextStyle(color: TransportifyColors.primarySwatch),
+          ),
+        ),
+          ],
+        )
+                  
+          
       ],
     );
   }
