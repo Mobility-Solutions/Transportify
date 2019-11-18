@@ -7,7 +7,6 @@ import 'Usuario.dart';
 import 'Viaje.dart';
 import 'enumerados/EstadoPaquete.dart';
 
-
 class Paquete extends ComponenteBD {
   String nombre;
   double largo, ancho, alto;
@@ -18,8 +17,16 @@ class Paquete extends ComponenteBD {
   Usuario remitente;
   double precio;
   DateTime fechaEntrega;
+
   EstadoPaquete estado;
-  Viaje viajeAsignado;
+
+  Viaje _viajeAsignado;
+  Viaje get viajeAsignado => _viajeAsignado;
+  set viajeAsignado(Viaje nuevoViaje) {
+    if (estado == null && nuevoViaje != null)
+      estado = EstadoPaquete.por_recoger;
+    _viajeAsignado = nuevoViaje;
+  }
 
   Paquete(
       {this.nombre,
@@ -34,8 +41,10 @@ class Paquete extends ComponenteBD {
       this.precio,
       this.fechaEntrega,
       this.estado,
-      this.viajeAsignado})
-      : super(coleccion: PaqueteBD.coleccion_paquetes);
+      viajeAsignado})
+      : super(coleccion: PaqueteBD.coleccion_paquetes) {
+    this.viajeAsignado = viajeAsignado;
+  }
 
   Paquete.fromReference(DocumentReference reference, {bool init = true})
       : super.fromReference(reference, init: init);
@@ -60,16 +69,18 @@ class Paquete extends ComponenteBD {
         PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
     this.remitente =
         Usuario.fromReference(PaqueteBD.obtenerRemitente(snapshot));
-    this.estado = 
-        PaqueteBD.obtenerEstado(snapshot);
-    this.viajeAsignado =Viaje.fromReference(PaqueteBD.obtenerViaje(snapshot));
+    this.estado = PaqueteBD.obtenerEstado(snapshot);
+    
+    var viajeBD = PaqueteBD.obtenerViaje(snapshot);
+    this.viajeAsignado = viajeBD == null ? null : Viaje.fromReference(viajeBD);
 
-    await Future.wait([
+    List<Future> futures = [
       this.destino.waitForInit(),
       this.origen.waitForInit(),
       this.remitente.waitForInit(),
-      this.viajeAsignado.waitForInit()
-    ]);
+      this.viajeAsignado?.waitForInit()
+    ];
+    await ComponenteBD.waitForReferences(futures);
   }
 
   @override
