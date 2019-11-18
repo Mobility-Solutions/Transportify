@@ -33,11 +33,39 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
     List<DocumentSnapshot> coleccion = snapshot.data.documents;
     listaResultados.clear();
 
+    var now = new DateTime.now();
+    DateTime fechaElegida;
+    if(choosenDate != null && choosenTime != null){
+    fechaElegida = new DateTime(
+        choosenDate.year,
+        choosenDate.month,
+        choosenDate.day,
+        choosenTime.hour,
+        choosenTime.minute,
+        0);
+    }
+    else if (choosenTime == null && choosenDate != null){
+      fechaElegida = new DateTime(
+        choosenDate.year,
+        choosenDate.month,
+        choosenDate.day,
+        0,
+        0,
+        0);
+    }
+    else{
+      fechaElegida = now;
+    }
+
     for (DocumentSnapshot snapshot in coleccion) {
       String origenBD = ViajeBD.obtenerOrigen(snapshot);
       String destinoBD = ViajeBD.obtenerDestino(snapshot);
 
-      if (origen == origenBD && destino == destinoBD) {
+      var date = snapshot[ViajeBD.atributo_fecha].toDate();
+      var fechaBusqueda = date.isAfter(fechaElegida);
+      var diff = date.isAfter(now);
+
+      if (origen == origenBD && destino == destinoBD && fechaBusqueda && diff) {
         listaResultados.add(snapshot);
       }
     }
@@ -82,7 +110,7 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            '${listaResultados[index]['id_transportista']}',
+                            '${listaResultados[index]['id_transportista'] ?? 'No'}',
                             style: TextStyle(
                                 fontSize: 18, color: Colors.black, height: 2.5),
                             textAlign: TextAlign.center,
@@ -93,7 +121,7 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            '${listaResultados[index]['carga_maxima']}',
+                            '${listaResultados[index]['carga_maxima']} kg',
                             style: TextStyle(
                               fontSize: 15,
                               color: Colors.black54,
