@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:transportify/middleware/PaqueteBD.dart';
-import 'package:transportify/modelos/PuntoTransportify.dart';
+import 'package:transportify/modelos/Paquete.dart';
 
 import 'BusquedaFormCiudades.dart';
 
@@ -11,7 +10,7 @@ class BusquedaPaqueteForm extends StatefulWidget {
   _BusquedaPaqueteFormState createState() => _BusquedaPaqueteFormState();
 }
 
-class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaqueteForm> {
+class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaqueteForm, Paquete> {
   _BusquedaPaqueteFormState()
       : super(
             titulo: "Buscar Paquete",
@@ -26,13 +25,11 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
     listaResultados.clear();
 
     for (DocumentSnapshot snapshot in coleccion) {
-      PuntoTransportify origenBD = PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
-      PuntoTransportify destinoBD = PuntoTransportify.fromReference(PaqueteBD.obtenerDestino(snapshot));
+      Paquete paquete = Paquete.fromSnapshot(snapshot);
+      await paquete.waitForInit();
 
-      await Future.wait([origenBD.waitForInit(), destinoBD.waitForInit()]);
-
-      if (origen == origenBD.ciudad && destino == destinoBD.ciudad) {
-        listaResultados.add(snapshot);
+      if (origen == paquete.origen.ciudad && destino == paquete.destino.ciudad) {
+        listaResultados.add(paquete);
       }
     }
 
@@ -62,7 +59,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                         style: TextStyle(color: Colors.grey[500], fontSize: 18),
                       ),
                       Text(
-                        ' ${listaResultados[index]['Precio'] ?? 'No establecido'}',
+                        ' ${listaResultados[index].precio ?? 'No establecido'}',
                         textAlign: TextAlign.right,
                         style: TextStyle(color: Colors.black, fontSize: 18),
                       ),
@@ -76,7 +73,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                         style: TextStyle(color: Colors.grey[500], fontSize: 18),
                       ),
                       Text(
-                        '${listaResultados[index]['peso']}',
+                        '${listaResultados[index].peso}',
                         textAlign: TextAlign.left,
                         style: TextStyle(color: Colors.black, fontSize: 18),
                       ),
@@ -90,7 +87,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                         style: TextStyle(color: Colors.grey[500], fontSize: 18),
                       ),
                       Text(
-                        listaResultados[index]['fragil'] ? 'Sí' : 'No',
+                        listaResultados[index].fragil ? 'Sí' : 'No',
                         textAlign: TextAlign.left,
                         style: TextStyle(color: Colors.black, fontSize: 18),
                       ),
@@ -107,7 +104,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                         style: TextStyle(color: Colors.grey[500], fontSize: 18),
                       ),
                       Text(
-                        '${listaResultados[index]['alto']} cm',
+                        '${listaResultados[index].alto} cm',
                         style: TextStyle(color: Colors.black, fontSize: 18),
                       ),
                     ],
@@ -119,7 +116,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                         style: TextStyle(color: Colors.grey[500], fontSize: 18),
                       ),
                       Text(
-                        '${listaResultados[index]['ancho']} cm',
+                        '${listaResultados[index].ancho} cm',
                         style: TextStyle(color: Colors.black, fontSize: 18),
                       ),
                     ],
@@ -131,7 +128,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                         style: TextStyle(color: Colors.grey[500], fontSize: 18),
                       ),
                       Text(
-                        '${listaResultados[index]['largo']} cm',
+                        '${listaResultados[index].largo} cm',
                         style: TextStyle(color: Colors.black, fontSize: 18),
                       ),
                     ],

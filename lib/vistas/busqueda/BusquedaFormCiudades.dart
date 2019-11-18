@@ -6,8 +6,8 @@ import 'package:transportify/vistas/CiudadDialog.dart';
 
 import 'BusquedaForm.dart';
 
-abstract class BusquedaFormCiudadesState<T extends StatefulWidget>
-    extends BusquedaFormState<T> {
+abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
+    extends BusquedaFormState<T, R> {
   final origenController = TextEditingController();
   final destinoController = TextEditingController();
 

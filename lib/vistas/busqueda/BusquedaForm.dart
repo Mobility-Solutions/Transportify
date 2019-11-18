@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/middleware/Datos.dart';
 
-abstract class BusquedaFormState<T extends StatefulWidget> extends State<T> {
+abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
   final String titulo;
   final String coleccionBD;
   final String textoResultados;
@@ -12,7 +12,7 @@ abstract class BusquedaFormState<T extends StatefulWidget> extends State<T> {
   BusquedaFormState({this.titulo, this.coleccionBD, this.textoResultados});
 
   int get resultados => listaResultados.length;
-  List<DocumentSnapshot> listaResultados = List<DocumentSnapshot>();
+  List<R> listaResultados = List<R>();
   bool validada = false;
 
   final _formKey = GlobalKey<FormState>();
