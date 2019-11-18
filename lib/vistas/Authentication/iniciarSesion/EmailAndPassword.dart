@@ -109,29 +109,46 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
 
   // Example code of how to sign in with email and password.
   void _signInWithEmailAndPassword() async {
-    await _auth
-        .signInWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passwordController.text,
-    )
-        .catchError((error) {
-      if (error.toString().contains("ERROR_USER_NOT_FOUND")) {
-        Toast.show("Usuario no valido", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      }
-      if (error.toString().contains("ERROR_WRONG_PASSWORD")) {
-        Toast.show("Contraseña incorrecta", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      }
-
-      if (error.toString().contains("ERROR_TOO_MANY_REQUESTS")) {
-        Toast.show(
-            "Demasiados intentos incorrectos intentalo mas tarde", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      } else {
+    // NOTA: Usar try-catch con await es preferible a usar el método catchError(...) the Future.
+    // Aunque también funcione (y pueda ser incluso mejor), este causa un bug en VSCode, el cual no
+    // entiende que la excepción ha sido capturada, y la muestra como excepción sin tratar, aunque ya lo esté
+    // (known issue desde hace meses, no parece que estén trabajando activamente en arreglarlo).
+    try {
+      try {
+        await _auth.signInWithEmailAndPassword(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+      } on PlatformException catch (error) {
         print(error);
+        // Como se trata de un error de autenticacion, volvemos a lanzarlo como tal para que lo trate.
+        // Lo hacemos así para que, si en un futuro se lanza directamente AuthException en lugar de
+        // PlatformException, no sea necesario modificar el código, ya que lo capturará directamente.
+        throw AuthException(error.code, error.message);
       }
-    });
+    } on AuthException catch (error) {
+      String message;
+      switch (error.code) {
+        case "ERROR_USER_NOT_FOUND":
+          message = "Usuario no válido";
+          break;
+        case "ERROR_WRONG_PASSWORD":
+          message = "Contraseña incorrecta";
+          break;
+        case "ERROR_TOO_MANY_REQUESTS":
+          message = "Demasiados intentos incorrectos.\n" +
+              "Inténtelo de nuevo más tarde";
+          break;
+        default:
+          message = "Ha habido un error al tratar de iniciar sesión.\n" +
+              "Inténtelo de nuevo más tarde";
+          print(error);
+          break;
+      }
+      Toast.show(message, context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+    }
+
     final FirebaseUser user = await _auth.currentUser();
     if (user != null) {
       Autenticacion.userSignInCorrectly(context);
