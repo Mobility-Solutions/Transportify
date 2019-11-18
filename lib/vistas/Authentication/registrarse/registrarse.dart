@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:toast/toast.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/Authentication/Autenticacion.dart';
@@ -104,7 +105,8 @@ class RegistrarseState extends State<Registrarse> {
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
-                      }if(!_isEmailCorrectlyFormed(value)){
+                      }
+                      if (!_isEmailCorrectlyFormed(value)) {
                         return 'El formato es invalido';
                       }
                       return null;
@@ -123,12 +125,11 @@ class RegistrarseState extends State<Registrarse> {
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     maxLength: 50,
-
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
                       }
-                      if(value.length < 6){
+                      if (value.length < 6) {
                         return 'La contraseña debe tener mas de 6 carácteres';
                       }
                       return null;
@@ -147,17 +148,17 @@ class RegistrarseState extends State<Registrarse> {
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     maxLength: 50,
-                      enableInteractiveSelection: false,
-                      onTap: () async {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                        String returnCiudad = await CiudadDialog.show(
-                            this.context);
+                    enableInteractiveSelection: false,
+                    onTap: () async {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      String returnCiudad =
+                          await CiudadDialog.show(this.context);
 
-                        if (returnCiudad != null) {
-                          _ciudad = returnCiudad;
-                          _cityController.text = _ciudad;
-                        }
-                      },
+                      if (returnCiudad != null) {
+                        _ciudad = returnCiudad;
+                        _cityController.text = _ciudad;
+                      }
+                    },
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
@@ -237,19 +238,33 @@ class RegistrarseState extends State<Registrarse> {
 
   // Example code for registration.
   void _register() async {
-
-    await _auth.createUserWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passwordController.text,
-    ).catchError((error) {
-      if (error.toString().contains("ERROR_EMAIL_ALREADY_IN_USE")) {
-        Toast.show("Email en uso", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      } else {
+    try {
+      try {
+        await _auth.createUserWithEmailAndPassword(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+      } on PlatformException catch (error) {
         print(error);
-      }});
+        throw AuthException(error.code, error.message);
+      }
+    } on AuthException catch (error) {
+      String message;
+      switch (error.code) {
+        case "ERROR_EMAIL_ALREADY_IN_USE":
+          message = "Email ya registrado";
+          break;
 
-      final FirebaseUser user = await _auth.currentUser();
+        default:
+          message = "Ha habido un error al tratar de registrarse";
+          print(error);
+          break;
+      }
+
+      Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+    }
+
+    final FirebaseUser user = await _auth.currentUser();
     if (user != null) {
       _addUserParameters(user.uid);
       setState(() {
@@ -277,7 +292,9 @@ class RegistrarseState extends State<Registrarse> {
     Autenticacion.userSignInCorrectly(context);
   }
 
-  bool _isEmailCorrectlyFormed(String email){
-    return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(email);
+  bool _isEmailCorrectlyFormed(String email) {
+    return RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email);
   }
 }
