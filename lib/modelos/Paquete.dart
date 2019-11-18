@@ -4,6 +4,9 @@ import 'package:transportify/middleware/PaqueteBD.dart';
 
 import 'PuntoTransportify.dart';
 import 'Usuario.dart';
+import 'Viaje.dart';
+import 'enumerados/EstadoPaquete.dart';
+
 
 class Paquete extends ComponenteBD {
   String nombre;
@@ -15,6 +18,8 @@ class Paquete extends ComponenteBD {
   Usuario remitente;
   double precio;
   DateTime fechaEntrega;
+  EstadoPaquete estado;
+  Viaje viajeAsignado;
 
   Paquete(
       {this.nombre,
@@ -27,7 +32,10 @@ class Paquete extends ComponenteBD {
       this.origen,
       this.remitente,
       this.precio,
-      this.fechaEntrega}) : super(coleccion: PaqueteBD.coleccion_paquetes);
+      this.fechaEntrega,
+      this.estado,
+      this.viajeAsignado})
+      : super(coleccion: PaqueteBD.coleccion_paquetes);
 
   Paquete.fromReference(DocumentReference reference, {bool init = true})
       : super.fromReference(reference, init: init);
@@ -46,11 +54,22 @@ class Paquete extends ComponenteBD {
     this.fragil = PaqueteBD.obtenerFragil(snapshot);
     this.precio = PaqueteBD.obtenerPrecio(snapshot);
     this.fechaEntrega = PaqueteBD.obtenerFechaEntrega(snapshot).toDate();
-    this.destino = PuntoTransportify.fromReference(PaqueteBD.obtenerDestino(snapshot));
-    this.origen = PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
-    this.remitente = Usuario.fromReference(PaqueteBD.obtenerRemitente(snapshot));
-    
-    await Future.wait([this.destino.waitForInit(), this.origen.waitForInit(), this.remitente.waitForInit()]);
+    this.destino =
+        PuntoTransportify.fromReference(PaqueteBD.obtenerDestino(snapshot));
+    this.origen =
+        PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
+    this.remitente =
+        Usuario.fromReference(PaqueteBD.obtenerRemitente(snapshot));
+    this.estado = 
+        PaqueteBD.obtenerEstado(snapshot);
+    this.viajeAsignado =Viaje.fromReference(PaqueteBD.obtenerViaje(snapshot));
+
+    await Future.wait([
+      this.destino.waitForInit(),
+      this.origen.waitForInit(),
+      this.remitente.waitForInit(),
+      this.viajeAsignado.waitForInit()
+    ]);
   }
 
   @override
@@ -67,6 +86,8 @@ class Paquete extends ComponenteBD {
     map[PaqueteBD.atributo_peso] = this.peso;
     map[PaqueteBD.atributo_precio] = this.precio;
     map[PaqueteBD.atributo_fecha_entrega] = this.fechaEntrega;
+    map[PaqueteBD.atributo_estado] = this.estado;
+    map[PaqueteBD.atributo_viaje_asignado] = this.viajeAsignado?.reference;
     return map;
   }
 }

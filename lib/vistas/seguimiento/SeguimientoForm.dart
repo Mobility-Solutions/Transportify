@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:transportify/middleware/EnviosBD.dart';
+import 'package:transportify/middleware/PaqueteBD.dart';
 
 
 import 'CustomStepper.dart';
@@ -19,7 +19,7 @@ class _SeguimientoFormState extends State<SeguimientoForm>{
         title: new Text("Home"),
       ),
       body:Center(
-        child: EnviosBD.obtenerListaEnvios(verSeguimiento)
+        child: PaqueteBD.obtenerListaEnvios(verSeguimiento)
     )
     
     );
