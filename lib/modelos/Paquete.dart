@@ -97,7 +97,7 @@ class Paquete extends ComponenteBD {
     map[PaqueteBD.atributo_peso] = this.peso;
     map[PaqueteBD.atributo_precio] = this.precio;
     map[PaqueteBD.atributo_fecha_entrega] = this.fechaEntrega;
-    map[PaqueteBD.atributo_estado] = this.estado;
+    map[PaqueteBD.atributo_estado] = this.estado.index;
     map[PaqueteBD.atributo_viaje_asignado] = this.viajeAsignado?.reference;
     return map;
   }

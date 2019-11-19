@@ -155,9 +155,11 @@ class _BusquedaPaqueteFormState
             Viaje viaje;
             Paquete paquete = listaResultados[index];
             showDialog(
-                    context: context,
-                    builder: (BuildContext context) => VentanaViaje())
-                .then((value) {
+                context: context,
+                builder: (BuildContext context) => VentanaViaje(
+                      origen: paquete.origen.ciudad,
+                      destino: paquete.destino.ciudad,
+                    )).then((value) {
               viaje = value;
               _asyncConfirmDialog(
                       context, '¿Desea incluir el paquete en este viaje?')
