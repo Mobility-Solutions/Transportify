@@ -20,6 +20,7 @@ class PaqueteBD {
   static const String atributo_peso = "peso";
   static const String atributo_precio = "precio";
   static const String atributo_fecha_entrega = "fecha_entrega";
+
   static const String atributo_estado = 'estado';
   static const String atributo_viaje_asignado = 'viaje';
 
