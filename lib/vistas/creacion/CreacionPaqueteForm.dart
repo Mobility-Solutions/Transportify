@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:transportify/modelos/DatosUsuarioActual.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/modelos/Puntos.dart';
 import 'package:transportify/modelos/Paquete.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter/src/material/slider.dart';
@@ -416,6 +418,9 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
           if (_formKey.currentState.validate()) {
             Paquete paquete = getPaqueteFromControllers();
             paquete.crearEnBD();
+            Usuario usuarioActual = DatosUsuarioActual.instance.usuario;
+            usuarioActual?.paquetesCreados++;
+            usuarioActual?.updateBD();
             TransportifyMethods.doneDialog(context, "Paquete creado",
                 content: "El paquete ha sido creado con éxito");
           }

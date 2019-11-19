@@ -4,6 +4,8 @@ import 'package:transportify/middleware/PaqueteBD.dart';
 
 import 'PuntoTransportify.dart';
 import 'Usuario.dart';
+import 'Viaje.dart';
+import 'enumerados/EstadoPaquete.dart';
 
 class Paquete extends ComponenteBD {
   String nombre;
@@ -16,6 +18,16 @@ class Paquete extends ComponenteBD {
   double precio;
   DateTime fechaEntrega;
   int diasMargen;
+
+  EstadoPaquete estado;
+
+  Viaje _viajeAsignado;
+  Viaje get viajeAsignado => _viajeAsignado;
+  set viajeAsignado(Viaje nuevoViaje) {
+    if (estado == null && nuevoViaje != null)
+      estado = EstadoPaquete.por_recoger;
+    _viajeAsignado = nuevoViaje;
+  }
 
   Paquete(
       {this.nombre,
@@ -30,6 +42,11 @@ class Paquete extends ComponenteBD {
       this.precio,
       this.fechaEntrega,
       this.diasMargen}) : super(coleccion: PaqueteBD.coleccion_paquetes);
+      this.estado,
+      viajeAsignado})
+      : super(coleccion: PaqueteBD.coleccion_paquetes) {
+    this.viajeAsignado = viajeAsignado;
+  }
 
   Paquete.fromReference(DocumentReference reference, {bool init = true})
       : super.fromReference(reference, init: init);
@@ -52,8 +69,19 @@ class Paquete extends ComponenteBD {
     this.origen = PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
     this.remitente = Usuario.fromReference(PaqueteBD.obtenerRemitente(snapshot));
     this.diasMargen = PaqueteBD.obtenerDiasMargen(snapshot);
+    this.estado = PaqueteBD.obtenerEstado(snapshot);
+
     
-    await Future.wait([this.destino.waitForInit(), this.origen.waitForInit(), this.remitente.waitForInit()]);
+    var viajeBD = PaqueteBD.obtenerViaje(snapshot);
+    this.viajeAsignado = viajeBD == null ? null : Viaje.fromReference(viajeBD);
+
+    List<Future> futures = [
+      this.destino.waitForInit(),
+      this.origen.waitForInit(),
+      this.remitente.waitForInit(),
+      this.viajeAsignado?.waitForInit()
+    ];
+    await ComponenteBD.waitForReferences(futures);
   }
 
   @override
@@ -71,6 +99,10 @@ class Paquete extends ComponenteBD {
     map[PaqueteBD.atributo_precio] = this.precio;
     map[PaqueteBD.atributo_fecha_entrega] = this.fechaEntrega;
     map[PaqueteBD.atributo_dias_margen] = this.diasMargen;
+
+    map[PaqueteBD.atributo_estado] = this.estado;
+    map[PaqueteBD.atributo_viaje_asignado] = this.viajeAsignado?.reference;
+    
     return map;
   }
 }
