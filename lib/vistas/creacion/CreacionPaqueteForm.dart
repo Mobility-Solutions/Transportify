@@ -12,16 +12,11 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import '../PuntosDialog.dart';
 
 class CreacionPaqueteForm extends StatefulWidget {
-  CreacionPaqueteForm([this.miPaquete]) : super();
-
-  final Paquete miPaquete;
-
   @override
   _CreacionPaqueteFormState createState() => _CreacionPaqueteFormState();
 }
 
 class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
-
   final nombreController = TextEditingController();
   final pesoController = TextEditingController();
   final origenController = TextEditingController();
@@ -41,19 +36,11 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   final _formKey = GlobalKey<FormState>();
 
   void _add() {
-    if(widget.miPaquete == null) {
-      pesoController.text = (peso += 1).toString();
-    } else {
-      pesoController.text = (widget.miPaquete.peso += 1).toString();
-    }
+    pesoController.text = (peso += 1).toString();
   }
 
   void _remove() {
-    if(widget.miPaquete == null) {
-      if (peso - 1 >= 0.0) pesoController.text = (peso -= 1).toString();
-    } else {
-      if (widget.miPaquete.peso - 1 >= 0.0) pesoController.text = (widget.miPaquete.peso -= 1).toString();
-    }
+    if (peso - 1 >= 0.0) pesoController.text = (peso -= 1).toString();
   }
 
   @override
@@ -64,7 +51,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: (widget.miPaquete == null) ? Text(TransportifyLabels.nuevoPaquete) : Text("Modificar paquete"),
+          title: Text(TransportifyLabels.nuevoPaquete),
           backgroundColor: TransportifyColors.primarySwatch,
           elevation: 0.0,
         ),
@@ -80,7 +67,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 decoration:
-                    (widget.miPaquete == null) ? TransportifyMethods.returnTextFormDecoration("Nombre") : TransportifyMethods.returnTextFormDecoration(widget.miPaquete.nombre),
+                    TransportifyMethods.returnTextFormDecoration("Nombre"),
                 controller: nombreController,
                 validator: (value) {
                   if (value.isEmpty)
@@ -99,7 +86,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
                       decoration:
-                          (widget.miPaquete == null) ? TransportifyMethods.returnTextFormDecoration("Peso(kg)") : TransportifyMethods.returnTextFormDecoration(widget.miPaquete.peso.toString()),
+                          TransportifyMethods.returnTextFormDecoration("Peso(kg)"),
                       onChanged: (text) {
                         peso = double.parse(text);
                       },
@@ -150,8 +137,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                     keyboardType: TextInputType.number,
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
-                    decoration: (widget.miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
-                        "Alto(cm)") : TransportifyMethods.returnTextFormDecoration(widget.miPaquete.alto.toString()),
+                    decoration: TransportifyMethods.returnTextFormDecoration(
+                        "Alto(cm)"),
                     controller: altoController,
                     validator: (value) {
                       if (value.isEmpty || double.parse(value) <= 0)
@@ -166,8 +153,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                       keyboardType: TextInputType.number,
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
-                      decoration: (widget.miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
-                          "Ancho(cm)") : TransportifyMethods.returnTextFormDecoration(widget.miPaquete.ancho.toString()),
+                      decoration: TransportifyMethods.returnTextFormDecoration(
+                          "Ancho(cm)"),
                       controller: anchoController,
                       validator: (value) {
                         if (value.isEmpty || double.parse(value) <= 0)
@@ -183,8 +170,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                       keyboardType: TextInputType.number,
                       autofocus: false,
                       style: TextStyle(color: TransportifyColors.primarySwatch),
-                      decoration: (widget.miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
-                          "Largo(cm)") : TransportifyMethods.returnTextFormDecoration(widget.miPaquete.largo.toString()) ,
+                      decoration: TransportifyMethods.returnTextFormDecoration(
+                          "Largo(cm)"),
                       controller: largoController,
                       validator: (value) {
                         if (value.isEmpty || double.parse(value) <= 0)
@@ -203,8 +190,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 controller: origenController,
-                decoration: (widget.miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
-                    "Punto Transportify de origen") : TransportifyMethods.returnTextFormDecoration(widget.miPaquete.origen.toString()),
+                decoration: TransportifyMethods.returnTextFormDecoration(
+                    "Punto Transportify de origen"),
                 onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
                   PuntoTransportify returnPunto =
@@ -223,8 +210,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 controller: destinoController,
-                decoration: (widget.miPaquete == null) ? TransportifyMethods.returnTextFormDecoration(
-                    "Punto Transportify de destino") : TransportifyMethods.returnTextFormDecoration(widget.miPaquete.destino.toString()),
+                decoration: TransportifyMethods.returnTextFormDecoration(
+                    "Punto Transportify de destino"),
                 onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
                   PuntoTransportify returnPunto =
@@ -241,7 +228,6 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
               TextFormField(
                 maxLines: 1,
                 controller: fechaController,
-                
                 onTap: () {
                   FocusScope.of(context).requestFocus(FocusNode());
                   DatePicker.showDatePicker(context,
@@ -352,46 +338,12 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
         fechaEntrega: _fechaentrega);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    if(widget.miPaquete != null) {
-    nombreController.text = widget.miPaquete.nombre;
-    pesoController.text = widget.miPaquete.peso.toString();
-    origenController.text = widget.miPaquete.origen.toString();
-    destinoController.text = widget.miPaquete.destino.toString();
-    fechaController.text = widget.miPaquete.fechaEntrega.toString();
-    altoController.text = widget.miPaquete.alto.toString();
-    anchoController.text = widget.miPaquete.ancho.toString();
-    largoController.text = widget.miPaquete.largo.toString();
-    _fragil = widget.miPaquete.fragil;
-    }
-  }
-
-  @override
-  void dispose() {
-    if(widget.miPaquete != null) {
-    nombreController.dispose();
-    pesoController.dispose();
-    origenController.dispose();
-    destinoController.dispose();
-    fechaController.dispose();
-    altoController.dispose();
-    anchoController.dispose();
-    largoController.dispose();
-    super.dispose();
-    }
-  }
-
   Widget buildButtonContainer(String hintText) {
     return TransportifyFormButton(
       text: hintText,
       onPressed: () {
-
-        if (hintText == "ACEPTAR" && widget.miPaquete == null) {
-          
+        if (hintText == "ACEPTAR") {
           if (_formKey.currentState.validate()) {
-
             Paquete paquete = getPaqueteFromControllers();
             paquete.crearEnBD();
             Usuario usuarioActual = DatosUsuarioActual.instance.usuario;
@@ -399,27 +351,6 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
             usuarioActual?.updateBD();
             TransportifyMethods.doneDialog(context, "Paquete creado",
                 content: "El paquete ha sido creado con éxito");
-
-          }
-
-        } else if(hintText == "ACEPTAR" && widget.miPaquete != null) {
-
-          if (_formKey.currentState.validate()) {
-
-            widget.miPaquete.alto = double.parse(altoController.text);
-            widget.miPaquete.ancho = double.parse(anchoController.text);
-            widget.miPaquete.largo = double.parse(largoController.text);
-            widget.miPaquete.peso = double.parse(pesoController.text);
-            widget.miPaquete.origen = puntos.origen;
-            widget.miPaquete.destino = puntos.destino;
-            widget.miPaquete.nombre = nombreController.text;
-            widget.miPaquete.fragil = _fragil;
-            widget.miPaquete.fechaEntrega = _fechaentrega;
-
-            widget.miPaquete.updateBD();
-            TransportifyMethods.doneDialog(context, "Paquete modificado",
-                  content: "El paquete ha sido modificado con éxito");
-
           }
         } else {
           Navigator.pop(context);

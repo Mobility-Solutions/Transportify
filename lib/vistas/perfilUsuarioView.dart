@@ -60,21 +60,6 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
               child: SingleChildScrollView(
                 child: Column(
                 children: <Widget> [
-                  /*
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      
-                      Icon(
-                        Icons.supervised_user_circle,
-                        size: 120,
-                        color: TransportifyColors.primarySwatch,
-                      ),
-
-                      
-                    ],
-                  ),
-                  */
 
                   SizedBox(
                   height: 20.0,
