@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:transportify/middleware/ViajeBD.dart';
 import 'package:transportify/modelos/Paquete.dart';
+import 'package:transportify/modelos/Viaje.dart';
 
 import 'BusquedaFormCiudades.dart';
 
@@ -10,7 +12,10 @@ class BusquedaPaqueteForm extends StatefulWidget {
   _BusquedaPaqueteFormState createState() => _BusquedaPaqueteFormState();
 }
 
-class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaqueteForm, Paquete> {
+enum ConfirmAction { ACCEPT, CANCEL }
+
+class _BusquedaPaqueteFormState
+    extends BusquedaFormCiudadesState<BusquedaPaqueteForm, Paquete> {
   _BusquedaPaqueteFormState()
       : super(
             titulo: "Buscar Paquete",
@@ -18,7 +23,8 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
             textoResultados: "Paquetes encontrados");
 
   @override
-  Future<bool> buscar(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) async {
+  Future<bool> buscar(
+      BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) async {
     if (!snapshot.hasData) return false;
 
     List<DocumentSnapshot> coleccion = snapshot.data.documents;
@@ -28,14 +34,15 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
       Paquete paquete = Paquete.fromSnapshot(snapshot);
       await paquete.waitForInit();
 
-      if (origen == paquete.origen.ciudad && destino == paquete.destino.ciudad) {
+      if (origen == paquete.origen.ciudad &&
+          destino == paquete.destino.ciudad) {
         listaResultados.add(paquete);
       }
     }
 
     return true;
   }
-  
+
   @override
   Widget builderListado(BuildContext context, int index) {
     return InkWell(
@@ -141,7 +148,71 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
       ),
       onTap: () {
         print('Has pulsado un paquete');
+        _asyncConfirmDialog(context).then((ConfirmAction value) {
+          if (value == ConfirmAction.ACCEPT) {
+            print("has seleccionado un paquete: " + index.toString());
+            showDialog(context: context, builder: (BuildContext context) => VentanaViaje());  
+                   
+          }
+        }, onError: (error) {
+          print(error);
+        });
       },
+    );
+  }
+
+  Future<ConfirmAction> _asyncConfirmDialog(BuildContext context) async {
+    return showDialog<ConfirmAction>(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('¿Desea aceptar este paquete?'),
+          actions: <Widget>[
+            FlatButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop(ConfirmAction.CANCEL);
+              },
+            ),
+            FlatButton(
+              child: const Text('Aceptar'),
+              onPressed: () {
+                Navigator.of(context).pop(ConfirmAction.ACCEPT);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+}
+
+class VentanaViaje extends StatefulWidget {
+  @override
+  _VentanaViaje createState() => new _VentanaViaje();
+
+  static Future<Viaje> show(BuildContext context) async => await showDialog(
+      context: context,
+      builder: (_) {
+        return VentanaViaje();
+      });
+}
+
+class _VentanaViaje extends State<VentanaViaje> {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text("Seleccione el viaje en el que desea llevar el paquete: "),
+      content: Container(
+          height: 300,
+          width: 300,
+          child: Center(
+            child: ViajeBD.obtenerListadoViajes_widget(
+                onSelected: (_viajeSeleccionado) {
+              Navigator.pop(context, _viajeSeleccionado);
+            }),
+          )),
     );
   }
 }
