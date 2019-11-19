@@ -61,8 +61,15 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
       Viaje viaje = Viaje.fromSnapshot(snapshot);
 
       var date = viaje.fecha;
-      var fechaBusqueda = date.isAfter(fechaElegida);
+      var fechaBusqueda =false;
       var diff = date.isAfter(now);
+
+      if(date.day == fechaElegida.day && date.month == fechaElegida.month && date.year == fechaElegida.year && choosenTime==null || choosenDate == null) {
+         fechaBusqueda = true;
+      }
+
+      else if(choosenTime != null && date.hour == fechaElegida.hour && date.minute == fechaElegida.minute){ fechaBusqueda = true;} 
+
 
       if (origen == viaje.origen && destino == viaje.destino && fechaBusqueda && diff) {
         listaResultados.add(viaje);
