@@ -147,12 +147,28 @@ class _BusquedaPaqueteFormState
         ),
       ),
       onTap: () {
-        print('Has pulsado un paquete');
-        _asyncConfirmDialog(context).then((ConfirmAction value) {
+        Viaje viaje;
+        _asyncConfirmDialog(context, '¿Desea aceptar este paquete?').then(
+            (ConfirmAction value) {
           if (value == ConfirmAction.ACCEPT) {
             print("has seleccionado un paquete: " + index.toString());
-            showDialog(context: context, builder: (BuildContext context) => VentanaViaje());  
-                   
+            showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    VentanaViaje()).then((value) {
+              viaje = value;
+              _asyncConfirmDialog(context, '¿Desea incluir el paquete en este viaje?')
+                  .then((ConfirmAction value) {
+                    if (value == ConfirmAction.ACCEPT) {
+                      print("se incluyo el paquete");
+
+                    }
+                  }, onError: (error) {
+                print(error);
+              });
+            }
+                //Viaje viaje = await showDialog(context: context, builder: (BuildContext context) => VentanaViaje())
+                );
           }
         }, onError: (error) {
           print(error);
@@ -161,13 +177,14 @@ class _BusquedaPaqueteFormState
     );
   }
 
-  Future<ConfirmAction> _asyncConfirmDialog(BuildContext context) async {
+  Future<ConfirmAction> _asyncConfirmDialog(
+      BuildContext context, String title) async {
     return showDialog<ConfirmAction>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('¿Desea aceptar este paquete?'),
+          title: Text(title),
           actions: <Widget>[
             FlatButton(
               child: const Text('Cancelar'),
