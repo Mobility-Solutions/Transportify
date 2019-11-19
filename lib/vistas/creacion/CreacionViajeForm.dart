@@ -10,11 +10,12 @@ import 'package:transportify/util/style.dart';
 import '../PuntosDialog.dart';
 
 class CreacionViajeForm extends StatefulWidget {
-  CreacionViajeForm({Key key, this.title, this.viajeModificando})
+  CreacionViajeForm([this.viajeModificando, Key key, this.title])
       : super(key: key);
   @override
   _CreacionViajeFormState createState() =>
       _CreacionViajeFormState();
+
 
   final String title;
   final Viaje viajeModificando;
@@ -28,7 +29,6 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
   final pesoController = TextEditingController();
 
   double peso = 0.0;
-
   DateTime choosenDate;
   DateTime choosenTime;
 
@@ -52,7 +52,7 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
         key: _formKey,
         child: Scaffold(
             appBar: AppBar(
-              title: Text(TransportifyLabels.nuevoViaje),
+              title: (modificando) ? Text("Modificar Viaje") : Text(TransportifyLabels.nuevoViaje) ,
               backgroundColor: TransportifyColors.primarySwatch,
               elevation: 0.0,
             ),
@@ -292,7 +292,6 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                 ),
               ],
             )));
-    if (modificando) inicializarCampos(widget.viajeModificando);
     return view;
   }
 
@@ -320,25 +319,76 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
     return viaje;
   }
 
+    @override
+  void initState() {
+    super.initState();
+      if(widget.viajeModificando != null) {
+        pesoController.text = widget.viajeModificando.cargaMaxima.toString();
+        peso = widget.viajeModificando.cargaMaxima;
+        
+        origenController.text = widget.viajeModificando.origen.nombre;
+        puntos.origen = widget.viajeModificando.origen;
+        
+        destinoController.text = widget.viajeModificando.destino.nombre;
+        puntos.destino = widget.viajeModificando.destino;
+        
+        fechaController.text = '${widget.viajeModificando.fecha.day} / ${widget.viajeModificando.fecha.month} / ${widget.viajeModificando.fecha.year}';
+        DateTime fechaModificando = new DateTime(
+          widget.viajeModificando.fecha.year,
+          widget.viajeModificando.fecha.month,
+          widget.viajeModificando.fecha.day
+        );
+        choosenDate = fechaModificando;
+        
+        horaController.text = '${widget.viajeModificando.fecha.hour}:${widget.viajeModificando.fecha.minute}';
+        DateTime horaModificando = new DateTime(
+          0,
+          0,
+          0,
+          widget.viajeModificando.fecha.hour,
+          widget.viajeModificando.fecha.minute
+        );
+        choosenTime = horaModificando;
+    }
+  }
+
+   @override
+  void dispose() {
+    if(widget.viajeModificando != null) {
+      pesoController.dispose();      origenController.dispose();
+      destinoController.dispose();
+      fechaController.dispose();
+      origenController.dispose();
+      super.dispose();
+    }
+  }
+
   Widget buildButtonContainer(String hintText) {
     return TransportifyFormButton(
       text: hintText,
       onPressed: () {
-        if (hintText == "ACEPTAR") {
+        if (hintText == "ACEPTAR" && modificando) {
           if (_formKey.currentState.validate()) {
             Viaje viaje = getViajeFromControllers();
-            if (modificando) viaje.updateBD();
-            else viaje.crearEnBD();
-            TransportifyMethods.doneDialog(context, "Viaje creado",
-                content: "El viaje ha sido creado con éxito");
+            viaje.updateBD();
+
+            TransportifyMethods.doneDialog(context, "Viaje modificado",
+                content: "El viaje ha sido modificado con éxito");
           }
+        } else if(hintText == "ACEPTAR" && !modificando) {
+          if (_formKey.currentState.validate()) {
+            Viaje viaje = getViajeFromControllers();
+            viaje.crearEnBD();
+            TransportifyMethods.doneDialog(context, "Viaje creado",
+                content: "El viaje ha sido creado con éxito");            
+          }       
         } else {
           Navigator.pop(context);
         }
       },
     );
   }
-
+/** 
   /// Este método se llama cuando recibimos un viaje en el constructor, indicando así que lo que
   /// se quiere es modificar un viaje existente (el que nos pasan) y no crear uno nuevo. Si se quiere crear
   /// uno nuevo viajeModificando será `null` y este método no se lanzará.
@@ -363,4 +413,5 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
     peso = viaje.cargaMaxima;
     pesoController.text = viaje.cargaMaxima.toString();
   }
+  */
 }

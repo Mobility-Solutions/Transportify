@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:transportify/modelos/Viaje.dart';
 
+import '../modelos/PuntoTransportify.dart';
 import 'Datos.dart';
 import 'PuntosBD.dart';
 
@@ -52,8 +53,8 @@ class ViajeBD {
     return ListView.builder(
       itemBuilder: (context, index) {
         if (index >= 0 && index < viajes.length) {
-          var usuario = viajes.elementAt(index);
-          return _obtenerListViewItemViaje(usuario, onSelected);
+          var viaje = viajes.elementAt(index);
+          return _obtenerListViewItemViaje(viaje, onSelected);
         } else {
           return null;
         }
@@ -73,7 +74,7 @@ class ViajeBD {
     }
 
     return ListTile(
-      title: Text("Origen - Destino: " + viaje.origen.toString() + " - " + viaje.destino.toString()),
+      title: Text("Fecha de Viaje: " + viaje.fecha.day.toString() + "/" + viaje.fecha.month.toString() + "/" + viaje.fecha.year.toString()),
       onTap: onTap,
     );
   }

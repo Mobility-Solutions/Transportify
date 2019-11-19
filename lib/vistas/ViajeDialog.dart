@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/middleware/ViajeBD.dart';
 
+import 'creacion/CreacionViajeForm.dart';
+
 class ViajeDialog extends StatefulWidget {
   @override
   _ViajeDialogState createState() => new _ViajeDialogState();
 
-  static Future<ViajeDialog> show(BuildContext context) async =>
+  static Future<Viaje> show(BuildContext context) async =>
       await showDialog(
           context: context,
           builder: (_) {
@@ -28,6 +30,20 @@ class _ViajeDialogState extends State<ViajeDialog> {
                   Navigator.pop(context, _viajeSeleccionado);
                 }
               ),
-            )));
+
+ 
+            )),
+        actions: <Widget>[
+          new FlatButton(
+            child: new Text("Crear Viaje"),
+            onPressed: () {
+            Navigator.of(context)
+              .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+              return new CreacionViajeForm();
+              }));
+          },
+          )
+        ],
+            );
   }
 }

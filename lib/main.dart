@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:transportify/vistas/ViajeDialog.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
 import 'package:transportify/vistas/seguimiento/SeguimientoForm.dart';
@@ -7,6 +8,7 @@ import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';
 
 import 'middleware/PuntoTransportifyBD.dart';
+import 'modelos/Viaje.dart';
 
 void main() async =>
     await initializeDateFormatting("es_ES", null).then((_) => runApp(MyApp()));
@@ -134,8 +136,18 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.search), title: Text('Viaje')),
         ],
         type: BottomNavigationBarType.fixed,
-        onTap: (int index) {
+        onTap: (int index) async {
+          if(index == 1) {
+            Viaje viaje = await ViajeDialog.show(context);
+            if(viaje != null) {
+              Navigator.of(context)
+              .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+              return new CreacionViajeForm(viaje);
+        }));
+            }          
+          } else {
           _onItemTapped(index);
+          }
         },
         selectedItemColor: Colors.blue[800],
       ), // This trailing comma makes auto-formatting nicer for build methods.
