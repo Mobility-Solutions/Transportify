@@ -93,19 +93,6 @@ class PaqueteBD {
     );
   }
 
-
-  static String obtenerNombre(DocumentSnapshot snapshot) => snapshot[atributo_nombre];
-  static double obtenerAlto(DocumentSnapshot snapshot) => snapshot[atributo_alto];
-  static double obtenerAncho(DocumentSnapshot snapshot) => snapshot[atributo_ancho];
-  static bool obtenerFragil(DocumentSnapshot snapshot) => snapshot[atributo_fragil];
-  static DocumentReference obtenerDestino(DocumentSnapshot snapshot) => PuntosBD.obtenerDestino(snapshot);
-  static DocumentReference obtenerOrigen(DocumentSnapshot snapshot) => PuntosBD.obtenerOrigen(snapshot);
-  static DocumentReference obtenerRemitente(DocumentSnapshot snapshot) => snapshot[atributo_remitente];
-  static double obtenerLargo(DocumentSnapshot snapshot) => snapshot[atributo_largo];
-  static double obtenerPeso(DocumentSnapshot snapshot) => snapshot[atributo_peso];
-  static double obtenerPrecio(DocumentSnapshot snapshot) => snapshot[atributo_precio];
-  static Timestamp obtenerFechaEntrega(DocumentSnapshot snapshot) => snapshot[atributo_fecha_entrega];
-
   static Future<Iterable<Paquete>> obtenerListadoPaquetes()
     => Firestore.instance.collection(coleccion_paquetes).getDocuments().then((snapshot) => snapshot.documents.map((document) => Paquete.fromSnapshot(document)));
 
