@@ -2,9 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:transportify/modelos/Viaje.dart';
-import 'package:transportify/modelos/Viaje.dart';
 
-import '../modelos/PuntoTransportify.dart';
 import 'Datos.dart';
 import 'PuntosBD.dart';
 
@@ -24,29 +22,26 @@ class ViajeBD {
       snapshot[atributo_carga_maxima];
   static Timestamp obtenerFecha(DocumentSnapshot snapshot) =>
       snapshot[atributo_fecha];
-/**
-  static Future<Iterable<Viaje>> obtenerListadoViajes()
-    => Firestore.instance.collection(coleccion_viajes).getDocuments().then((snapshot) => snapshot.documents.map((document) => Viaje.fromSnapshot(document)));
-*/
+
   static StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(
       Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
     return Datos.obtenerStreamBuilderCollectionBD(coleccion_viajes, builder);
   }
 
-  static Widget obtenerListadoViajes_widget({Function(Viaje) onSelected}) {
+  static Widget obtenerListadoViajesWidget({Function(Viaje) onSelected, bool Function(Viaje) filtro}) {
     return obtenerStreamBuilderListado(
-        _obtenerListadoViajesBuilder(onSelected));
+        _obtenerListadoViajesBuilder(onSelected, filtro));
   }
 
   static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
-      _obtenerListadoViajesBuilder(Function(Viaje) onSelected) {
+      _obtenerListadoViajesBuilder(Function(Viaje) onSelected, bool Function(Viaje) filtro) {
     return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      return _obtenerListadoViajes(context, snapshot, onSelected);
+      return _obtenerListadoViajes(context, snapshot, onSelected, filtro);
     };
   }
 
   static Widget _obtenerListadoViajes(BuildContext context,
-      AsyncSnapshot<QuerySnapshot> snapshot, Function(Viaje) onSelected) {
+      AsyncSnapshot<QuerySnapshot> snapshot, Function(Viaje) onSelected, bool Function(Viaje) filtro) {
     if (!snapshot.hasData) return const Text('Cargando...');
 
     var viajes = snapshot.data.documents;
@@ -54,20 +49,21 @@ class ViajeBD {
     return ListView.builder(
       itemBuilder: (context, index) {
         if (index >= 0 && index < viajes.length) {
-          var viaje = viajes.elementAt(index);
-          return _obtenerListViewItemViaje(viaje, onSelected);
+          Viaje viaje = Viaje.fromSnapshot(viajes.elementAt(index));
+          if (filtro == null || filtro(viaje)) {
+            return _obtenerListViewItemViaje(viaje, onSelected);
+          } else {
+            return null;
+          }
         } else {
           return null;
         }
       },
     );
-
-
   }
 
   static Widget _obtenerListViewItemViaje(
-      DocumentSnapshot snapshot, Function(Viaje) onSelected) {
-    Viaje viaje = Viaje.fromSnapshot(snapshot);
+      Viaje viaje, Function(Viaje) onSelected) {
     String ciudadOrigen, ciudadDestino;
 
     Function onTap;

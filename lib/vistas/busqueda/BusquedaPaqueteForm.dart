@@ -159,29 +159,23 @@ class _BusquedaPaqueteFormState
                     builder: (BuildContext context) => VentanaViaje())
                 .then((value) {
               viaje = value;
-              if (!(paquete.origen.ciudad == viaje.origen &&
-                  paquete.destino.ciudad == viaje.destino)) {
-                _ackAlert(context,
-                    "Tanto el viaje como el paquete deben tener el mismo origen y destino");
-              } else {
-                _asyncConfirmDialog(
-                        context, '¿Desea incluir el paquete en este viaje?')
-                    .then((ConfirmAction value) {
-                  if (value == ConfirmAction.ACCEPT) {
-                    paquete.estado = EstadoPaquete.por_recoger;
-                    paquete.viajeAsignado = viaje;
-                    paquete.updateBD();
+              _asyncConfirmDialog(
+                      context, '¿Desea incluir el paquete en este viaje?')
+                  .then((ConfirmAction value) {
+                if (value == ConfirmAction.ACCEPT) {
+                  paquete.estado = EstadoPaquete.por_recoger;
+                  paquete.viajeAsignado = viaje;
+                  paquete.updateBD();
 
-                    TransportifyMethods.doneDialog(context, "Paquete vinculado",
-                        content: "¡El paquete ha sido asignado con éxito!");
+                  TransportifyMethods.doneDialog(context, "Paquete vinculado",
+                      content: "¡El paquete ha sido asignado con éxito!");
 
-                    //aceptar paquete en viaje
+                  //aceptar paquete en viaje
 
-                  }
-                }, onError: (error) {
-                  print(error);
-                });
-              }
+                }
+              }, onError: (error) {
+                print(error);
+              });
             });
           }
         }, onError: (error) {
@@ -219,28 +213,14 @@ class _BusquedaPaqueteFormState
   }
 }
 
-Future<void> _ackAlert(BuildContext context, String title) {
-  return showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(title),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('Aceptar'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
 class VentanaViaje extends StatefulWidget {
+  final String origen, destino;
+
+  VentanaViaje({this.origen, this.destino});
+
   @override
-  _VentanaViaje createState() => new _VentanaViaje();
+  _VentanaViaje createState() =>
+      new _VentanaViaje(origen: origen, destino: destino);
 
   static Future<Viaje> show(BuildContext context) async => await showDialog(
       context: context,
@@ -250,6 +230,10 @@ class VentanaViaje extends StatefulWidget {
 }
 
 class _VentanaViaje extends State<VentanaViaje> {
+  String origen, destino;
+
+  _VentanaViaje({this.origen, this.destino});
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -258,10 +242,14 @@ class _VentanaViaje extends State<VentanaViaje> {
           height: 300,
           width: 300,
           child: Center(
-            child: ViajeBD.obtenerListadoViajes_widget(
-                onSelected: (_viajeSeleccionado) {
-              Navigator.pop(context, _viajeSeleccionado);
-            }),
+            child: ViajeBD.obtenerListadoViajesWidget(
+              onSelected: (_viajeSeleccionado) {
+                Navigator.pop(context, _viajeSeleccionado);
+              },
+              filtro: (viaje) =>
+                  (origen != null ? origen == viaje.origen : true) &&
+                  (destino != null ? destino == viaje.destino : true),
+            ),
           )),
     );
   }
