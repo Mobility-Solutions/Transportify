@@ -53,14 +53,18 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
     }
     listaResultados.clear();
     for (DocumentSnapshot snapshot in coleccion) {
+
       Paquete paquete = Paquete.fromSnapshot(snapshot);
       await paquete.waitForInit();
 
       var date = paquete.fechaEntrega;
       var diff = date.isAfter(now);
       var fechaBusqueda = date.isAfter(fechaElegida);
-      
-      if (origen == paquete.origen.ciudad && destino == paquete.destino.ciudad && diff && fechaBusqueda) {
+      bool repetido = false;
+      for(Paquete aux in listaResultados){
+        if(aux == paquete) repetido = true;
+      }
+      if (origen == paquete.origen.ciudad && destino == paquete.destino.ciudad && diff && fechaBusqueda && paquete.viajeAsignado==null && !repetido) {
         listaPuntosOrigen.add(paquete.origen);
         listaPuntosDestino.add(paquete.destino);
         listaResultados.add(paquete);
