@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:transportify/middleware/ViajeBD.dart';
 import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Viaje.dart';
+import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
+import 'package:transportify/util/style.dart';
 
 import 'BusquedaFormCiudades.dart';
 
@@ -147,27 +149,40 @@ class _BusquedaPaqueteFormState
         ),
       ),
       onTap: () {
-        Viaje viaje;
-        _asyncConfirmDialog(context, '¿Desea aceptar este paquete?').then((ConfirmAction value) {
+        _asyncConfirmDialog(context, '¿Desea aceptar este paquete?').then(
+            (ConfirmAction value) {
           if (value == ConfirmAction.ACCEPT) {
-            print("has seleccionado un paquete: " + index.toString());
+            Viaje viaje;
+            Paquete paquete = listaResultados[index];
             showDialog(
-                context: context,
-                builder: (BuildContext context) =>
-                    VentanaViaje()).then((value) {
+                    context: context,
+                    builder: (BuildContext context) => VentanaViaje())
+                .then((value) {
               viaje = value;
-              _asyncConfirmDialog(context, '¿Desea incluir el paquete en este viaje?')
-                  .then((ConfirmAction value) {
-                    if (value == ConfirmAction.ACCEPT) {
-                      
-                      //aceptar paquete en viaje
+              if (!(paquete.origen.ciudad == viaje.origen &&
+                  paquete.destino.ciudad == viaje.destino)) {
+                _ackAlert(context,
+                    "Tanto el viaje como el paquete deben tener el mismo origen y destino");
+              } else {
+                _asyncConfirmDialog(
+                        context, '¿Desea incluir el paquete en este viaje?')
+                    .then((ConfirmAction value) {
+                  if (value == ConfirmAction.ACCEPT) {
+                    paquete.estado = EstadoPaquete.por_recoger;
+                    paquete.viajeAsignado = viaje;
+                    paquete.updateBD();
 
-                    }
-                  }, onError: (error) {
-                print(error);
-              });
-            }                
-                );
+                    TransportifyMethods.doneDialog(context, "Paquete vinculado",
+                        content: "¡El paquete ha sido asignado con éxito!");
+
+                    //aceptar paquete en viaje
+
+                  }
+                }, onError: (error) {
+                  print(error);
+                });
+              }
+            });
           }
         }, onError: (error) {
           print(error);
@@ -176,7 +191,8 @@ class _BusquedaPaqueteFormState
     );
   }
 
-  Future<ConfirmAction> _asyncConfirmDialog(BuildContext context, String title) async {
+  Future<ConfirmAction> _asyncConfirmDialog(
+      BuildContext context, String title) async {
     return showDialog<ConfirmAction>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
@@ -201,6 +217,25 @@ class _BusquedaPaqueteFormState
       },
     );
   }
+}
+
+Future<void> _ackAlert(BuildContext context, String title) {
+  return showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(title),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Aceptar'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
 
 class VentanaViaje extends StatefulWidget {
