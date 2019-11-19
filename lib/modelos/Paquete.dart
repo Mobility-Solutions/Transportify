@@ -41,7 +41,7 @@ class Paquete extends ComponenteBD {
       this.remitente,
       this.precio,
       this.fechaEntrega,
-      this.diasMargen}) : super(coleccion: PaqueteBD.coleccion_paquetes);
+      this.diasMargen,
       this.estado,
       viajeAsignado})
       : super(coleccion: PaqueteBD.coleccion_paquetes) {

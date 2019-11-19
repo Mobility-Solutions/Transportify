@@ -8,7 +8,6 @@ import 'package:transportify/middleware/Datos.dart';
 
 import 'PuntosBD.dart';
 import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
-import 'package:transportify/modelos/Paquete.dart';
 
 class PaqueteBD {
   static const String coleccion_paquetes = 'paquetes';
@@ -24,6 +23,7 @@ class PaqueteBD {
   static const String atributo_peso = "peso";
   static const String atributo_precio = "precio";
   static const String atributo_fecha_entrega = "fecha_entrega";
+  static const String atributo_dias_margen = "dias_margen";
 
   static const String atributo_estado = 'estado';
   static const String atributo_viaje_asignado = 'viaje';
@@ -50,6 +50,8 @@ class PaqueteBD {
       snapshot[atributo_precio];
   static Timestamp obtenerFechaEntrega(DocumentSnapshot snapshot) =>
       snapshot[atributo_fecha_entrega];
+  static int obtenerDiasMargen(DocumentSnapshot snapshot) =>
+      snapshot[atributo_dias_margen];
   static EstadoPaquete obtenerEstado(DocumentSnapshot snapshot) {
     int estado = snapshot[atributo_estado];
     return estado == null ? null : EstadoPaquete.values[estado];
