@@ -167,7 +167,7 @@ class PaqueteBD {
     }
 
     return ListTile(
-      title: Text("Paquete desde " + ciudadOrigen + " a " + ciudadDestino + ", con fecha: " + paquete.fechaEntrega.day.toString() + "/" + paquete.fechaEntrega.month.toString() + "/" + paquete.fechaEntrega.year.toString() +"."),
+      title: Text("Paquete con nombre: " + paquete.nombre + ", con fecha: " + paquete.fechaEntrega.day.toString() + "/" + paquete.fechaEntrega.month.toString() + "/" + paquete.fechaEntrega.year.toString() +"."),
       onTap: onTap,
     );
   }

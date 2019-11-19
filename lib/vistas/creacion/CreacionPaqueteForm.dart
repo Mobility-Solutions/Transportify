@@ -425,10 +425,20 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
     nombreController.text = widget.miPaquete.nombre;
     pesoController.text = widget.miPaquete.peso.toString();
     peso = widget.miPaquete.peso;
-    origenController.text = widget.miPaquete.origen.toString();
     puntos.origen = widget.miPaquete.origen;
-    destinoController.text = widget.miPaquete.destino.toString();
     puntos.destino = widget.miPaquete.destino;
+    if(widget.miPaquete.origen != null) {
+      origenController.text = widget.miPaquete.origen.nombre.toString();
+    } else {
+      origenController.text = "Sin punto seleccionado";
+    }
+
+    if(widget.miPaquete.destino != null) {
+      destinoController.text = widget.miPaquete.destino.nombre.toString();
+    } else {
+      destinoController.text = "Sin punto seleccionado";
+    }
+
     fechaController.text = '${widget.miPaquete.fechaEntrega.day} / ${widget.miPaquete.fechaEntrega.month} / ${widget.miPaquete.fechaEntrega.year}';
     DateTime fechaModificando = new DateTime(
           widget.miPaquete.fechaEntrega.year,
