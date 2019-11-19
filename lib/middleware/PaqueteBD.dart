@@ -172,5 +172,4 @@ class PaqueteBD {
       onTap: onTap,
     );
   }
-r
 }
