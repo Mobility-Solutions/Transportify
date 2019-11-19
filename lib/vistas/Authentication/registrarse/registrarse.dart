@@ -147,7 +147,6 @@ class RegistrarseState extends State<Registrarse> {
                     textCapitalization: TextCapitalization.sentences,
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
-                    maxLength: 50,
                     enableInteractiveSelection: false,
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());

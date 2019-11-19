@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:transportify/util/style.dart';
 
 import '../modelos/Usuario.dart';
+import 'Authentication/iniciarSesion/iniciarSesion.dart';
+import 'CiudadDialog.dart';
 
 class PerfilUsuarioView extends StatefulWidget {
   @override
@@ -23,6 +25,8 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
   Color colorEditar = Colors.grey;
   Color colorGuardarCambios = Colors.grey;
   Color colorInternoGuardarCambios = Colors.grey;
+
+  String ciudad;
 
   var nombreApellidosText = TextEditingController();
   var correoText = TextEditingController();
@@ -123,18 +127,16 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                     keyboardType: TextInputType.text,
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
-                    maxLength: 50,
-                    //Al clickar saldra la lista de ciudades
-                    /*onTap: () async {
+                    onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
-                      PuntoTransportify returnPunto =
-                          await PuntosDialog.show(this.context);
+                      String returnCiudad =
+                          await CiudadDialog.show(this.context);
 
-                      if (returnPunto != null) {
-                        puntos.origen = returnPunto;
-                        origenController.text = puntos.origen?.nombre;
+                      if (returnCiudad != null) {
+                        ciudad = returnCiudad;
+                        ciudadText.text = ciudad;
                       }
-                    },*/
+                    },
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
@@ -286,10 +288,11 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
               onPressed: () {
                 Navigator.of(context).pop();
                 print("Perfil eliminado");
-                // Además del usuario, elimina todos sus paquetes y viajes publicados 
                 widget.usuario.deleteFromBD();
-                //Debe llevarte de nuevo a registrar usuario            
-                Navigator.of(context).pop();
+                Navigator.of(context)
+                .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+                return new IniciarSesionView();
+                }));
               },
             ),
 
