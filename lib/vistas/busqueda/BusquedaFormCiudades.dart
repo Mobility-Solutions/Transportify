@@ -90,6 +90,7 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
           children: <Widget>[
 
             Expanded(
+              flex: 3,
               child:
             TextFormField(
                     
@@ -121,6 +122,7 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
         ),
             ),
         Expanded(
+          flex:2,
           child:
         TextFormField(
             maxLines: 1,

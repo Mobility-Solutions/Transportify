@@ -56,10 +56,16 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
 
       Paquete paquete = Paquete.fromSnapshot(snapshot);
       await paquete.waitForInit();
-
+      var fechaBusqueda = false;
       var date = paquete.fechaEntrega;
       var diff = date.isAfter(now);
-      var fechaBusqueda = date.isAfter(fechaElegida);
+      if(date.day == fechaElegida.day && date.month == fechaElegida.month && date.year == fechaElegida.year && choosenTime==null || choosenDate == null) {
+         fechaBusqueda = true;
+      }
+
+      else if(choosenTime != null && date.hour == fechaElegida.hour && date.minute == fechaElegida.minute){ fechaBusqueda = true;} 
+
+      
       bool repetido = false;
       for(Paquete aux in listaResultados){
         if(aux == paquete) repetido = true;
@@ -139,7 +145,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                     ),
                   ),
                   
-                  Expanded(
+                  Container(
                     //flex: 2,
                     child:
                       Column(
@@ -189,6 +195,9 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                           )
                         ],
                       ),
+                  ),
+                  Container(
+                    width: 10,
                   ),
                   Expanded(
                     //flex: 2,
