@@ -13,8 +13,11 @@ import 'package:flutter/src/material/slider.dart';
 import '../PuntosDialog.dart';
 
 class CreacionPaqueteForm extends StatefulWidget {
+  CreacionPaqueteForm([this.paqueteModificando]);
   @override
   _CreacionPaqueteFormState createState() => _CreacionPaqueteFormState();
+
+  final Paquete paqueteModificando;
 }
 
 class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
@@ -37,6 +40,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
   DateTime _fechaentrega;
   DateTime _horaEntrega;
+
+  bool get modificando => widget.paqueteModificando != null;
 
   final _formKey = GlobalKey<FormState>();
 

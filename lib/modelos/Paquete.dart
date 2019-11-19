@@ -41,12 +41,9 @@ class Paquete extends ComponenteBD {
       this.remitente,
       this.precio,
       this.fechaEntrega,
-      this.diasMargen}) : super(coleccion: PaqueteBD.coleccion_paquetes);
-      this.estado,
-      viajeAsignado})
-      : super(coleccion: PaqueteBD.coleccion_paquetes) {
-    this.viajeAsignado = viajeAsignado;
-  }
+      this.diasMargen,
+      this.estado
+  })  : super(coleccion: PaqueteBD.coleccion_paquetes);
 
   Paquete.fromReference(DocumentReference reference, {bool init = true})
       : super.fromReference(reference, init: init);
