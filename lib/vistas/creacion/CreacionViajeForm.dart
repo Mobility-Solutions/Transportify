@@ -9,7 +9,7 @@ import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
 
-import '../PuntosDialog.dart';
+import '../CiudadDialog.dart';
 
 class CreacionViajeForm extends StatefulWidget {
   CreacionViajeForm({Key key, this.title}) : super(key: key);
@@ -28,10 +28,10 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
   double peso = 0.0;
 
-  DateTime choosenDate;
-  DateTime choosenTime;
+  DateTime choosenDate, choosenTime;
 
-  final Puntos puntos = Puntos();
+  // Ciudades origen y destino
+  String origen, destino;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -73,18 +73,25 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     controller: origenController,
                     decoration: TransportifyMethods.returnTextFormDecoration(
-                        "Punto Transportify de origen"),
+                        "Ciudad de origen"),
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
-                      PuntoTransportify returnPunto =
-                          await PuntosDialog.show(this.context);
+                      String returnCiudad =
+                          await CiudadDialog.show(this.context);
 
-                      if (returnPunto != null) {
-                        puntos.origen = returnPunto;
-                        origenController.text = puntos.origen?.nombre;
+                      if (returnCiudad != null) {
+                        origen = returnCiudad;
+                        origenController.text = origen;
                       }
                     },
-                    validator: (value) => puntos.validate(),
+                    validator: (value) {
+                      if (origen == null || destino == null)
+                        return 'Introduzca las ciudades origen y destino';
+                      else if (origen == destino)
+                        return 'Las ciudades no deben coincidir.';
+                      else
+                        return null;
+                    },
                   ),
                   SizedBox(
                     height: 20.0,
@@ -100,18 +107,25 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     controller: destinoController,
                     decoration: TransportifyMethods.returnTextFormDecoration(
-                        "Punto Transportify de destino"),
+                        "Ciudad de destino"),
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
-                      PuntoTransportify returnPunto =
-                          await PuntosDialog.show(this.context);
+                      String returnCiudad =
+                          await CiudadDialog.show(this.context);
 
-                      if (returnPunto != null) {
-                        puntos.destino = returnPunto;
-                        destinoController.text = puntos.destino?.nombre;
+                      if (returnCiudad != null) {
+                        destino = returnCiudad;
+                        destinoController.text = destino;
                       }
                     },
-                    validator: (value) => puntos.validate(),
+                    validator: (value) {
+                      if (origen == null || destino == null)
+                        return 'Introduzca las ciudades origen y destino';
+                      else if (origen == destino)
+                        return 'Las ciudades no deben coincidir.';
+                      else
+                        return null;
+                    },
                   ),
                   SizedBox(
                     height: 20.0,
@@ -306,8 +320,8 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
     return new Viaje(
       cargaMaxima: _peso,
       fecha: fechaViajeElegida,
-      destino: puntos.destino,
-      origen: puntos.origen,
+      destino: destino,
+      origen: origen,
     );
   }
 

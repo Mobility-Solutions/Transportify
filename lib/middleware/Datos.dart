@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:transportify/util/style.dart';
 
 import 'ComponenteBD.dart';
 
@@ -44,7 +46,33 @@ class Datos {
     return Firestore.instance.collection(collectionPath).add(data);
   }
 
+
   static Future<void> eliminarTodosLosComponentes<T extends ComponenteBD>(
           Iterable<T> listado) =>
       Future.forEach(listado, (componente) => componente.deleteFromBD());
+
+  static Widget obtenerListViewItem<T>(
+      {T item,
+      String displayName,
+      bool selected = false,
+      Function(T) onSelected}) {
+    Function onTap;
+    if (onSelected != null) {
+      onTap = () => onSelected(item);
+    }
+
+    return Container(
+      color: selected ? TransportifyColors.primarySwatch : null,
+      child: ListTile(
+        title: Text(
+          displayName,
+          style: TextStyle(
+            color: selected ? Colors.white : Colors.black,
+          ),
+        ),
+        onTap: onTap,
+      ),
+    );
+  }
+
 }

@@ -131,7 +131,7 @@ class TransportifyMethods {
 
   static InputDecoration returnTextFormDecoration(String hintText) {
     return InputDecoration(
-      suffixIcon: hintText.startsWith("Punto") ? Icon(Icons.location_on) : null,
+      suffixIcon: hintText.startsWith("Punto") || hintText.startsWith("Ciudad") ? Icon(Icons.location_on) : null,
       hintText: hintText,
       hintStyle: TextStyle(color: TransportifyColors.primarySwatch),
       filled: true,
