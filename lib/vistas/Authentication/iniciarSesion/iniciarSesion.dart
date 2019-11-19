@@ -53,6 +53,8 @@ class _IniciarSesionViewState extends State<IniciarSesionView> {
       return Scaffold(
         backgroundColor: Colors.grey[200],
         appBar: AppBar(
+          //automaticallyImplyLeading: false,
+          leading: new Container(child: SizedBox(),),
           title: Text(widget.title),
           backgroundColor: TransportifyColors.primarySwatch,
 

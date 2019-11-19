@@ -99,7 +99,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                     controller: correoText,
                     enabled: editable,
                     maxLines: 1,
-                    keyboardType: TextInputType.text,
+                    keyboardType: TextInputType.emailAddress,
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     maxLength: 50,
@@ -292,10 +292,19 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                 Navigator.of(context).pop();
                 print("Perfil eliminado");
                 widget.usuario.deleteFromBD();
+                
                 Navigator.of(context)
                 .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
                 return new IniciarSesionView();
                 }));
+
+                /*
+                Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => IniciarSesionView()),
+                (Route<dynamic> route) => false,
+                );
+                */
               },
             ),
 
