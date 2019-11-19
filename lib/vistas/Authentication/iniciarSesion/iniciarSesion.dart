@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:transportify/main.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/Authentication/registrarse/registrarse.dart';
+import 'package:transportify/vistas/inicio/Inicio.dart';
 
 import 'EmailAndPassword.dart';
 
@@ -16,7 +17,9 @@ class IniciarSesionMain extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: title,
+      
       theme: ThemeData(
+        fontFamily: 'Quicksand'),
         // This is the theme of your application.
         //
         // Try running your application with "flutter run". You'll see the
@@ -26,8 +29,6 @@ class IniciarSesionMain extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
       home: IniciarSesionView(),
     );
   }
@@ -132,7 +133,7 @@ class _IniciarSesionViewState extends State<IniciarSesionView> {
     if (_auth.currentUser() != null) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => MyApp()),
+        MaterialPageRoute(builder: (context) => MyHomePage()),
       );
     }
   }
