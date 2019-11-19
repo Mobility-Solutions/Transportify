@@ -151,8 +151,23 @@ class _BusquedaPaqueteFormState
         _asyncConfirmDialog(context).then((ConfirmAction value) {
           if (value == ConfirmAction.ACCEPT) {
             print("has seleccionado un paquete: " + index.toString());
-            showDialog(context: context, builder: (BuildContext context) => VentanaViaje());  
-                   
+            showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    VentanaViaje()).then((value) {
+              viaje = value;
+              _asyncConfirmDialog(context, '¿Desea incluir el paquete en este viaje?')
+                  .then((ConfirmAction value) {
+                    if (value == ConfirmAction.ACCEPT) {
+                      
+                      //aceptar paquete en viaje
+
+                    }
+                  }, onError: (error) {
+                print(error);
+              });
+            }                
+                );
           }
         }, onError: (error) {
           print(error);
