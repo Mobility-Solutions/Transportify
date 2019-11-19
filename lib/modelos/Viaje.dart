@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:transportify/middleware/ComponenteBD.dart';
 import 'package:transportify/middleware/ViajeBD.dart';
-import 'package:transportify/modelos/PuntoTransportify.dart';
 
 import 'Usuario.dart';
 

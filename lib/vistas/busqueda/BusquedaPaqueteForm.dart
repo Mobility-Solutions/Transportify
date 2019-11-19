@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:transportify/middleware/PaqueteBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:intl/intl.dart';
+import 'package:transportify/modelos/Paquete.dart';
 
 import 'BusquedaFormCiudades.dart';
 
@@ -12,7 +12,7 @@ class BusquedaPaqueteForm extends StatefulWidget {
   _BusquedaPaqueteFormState createState() => _BusquedaPaqueteFormState();
 }
 
-class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaqueteForm> {
+class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaqueteForm, Paquete> {
   _BusquedaPaqueteFormState()
       : super(
             titulo: "Buscar Paquete",
@@ -53,24 +53,17 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
     }
     listaResultados.clear();
     for (DocumentSnapshot snapshot in coleccion) {
-      PuntoTransportify origenBD = PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
-      PuntoTransportify destinoBD = PuntoTransportify.fromReference(PaqueteBD.obtenerDestino(snapshot));
+      Paquete paquete = Paquete.fromSnapshot(snapshot);
+      await paquete.waitForInit();
 
-
-      await Future.wait([origenBD.waitForInit(), destinoBD.waitForInit()]);
-
-      var date = snapshot[PaqueteBD.atributo_fecha_entrega].toDate();
+      var date = paquete.fechaEntrega;
       var diff = date.isAfter(now);
       var fechaBusqueda = date.isAfter(fechaElegida);
-      var repetido = false;
-      for(DocumentSnapshot documento in listaResultados){
-        if(documento.documentID == snapshot.documentID) repetido = true;
-      }
-      if (origen == origenBD.ciudad && destino == destinoBD.ciudad && diff && fechaBusqueda && !repetido) {
-        
-        listaPuntosOrigen.add(origenBD);
-        listaPuntosDestino.add(destinoBD);
-        listaResultados.add(snapshot);
+      
+      if (origen == paquete.origen.ciudad && destino == paquete.destino.ciudad && diff && fechaBusqueda) {
+        listaPuntosOrigen.add(paquete.origen);
+        listaPuntosDestino.add(paquete.destino);
+        listaResultados.add(paquete);
       }
     }
 
@@ -133,7 +126,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                         ),
                         Text(
                           DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, "es_ES")
-                              .format(listaResultados[index]['fecha_entrega'].toDate()),
+                              .format(listaResultados[index].fechaEntrega),
                           style: TextStyle(
                               fontSize: 18, color: Colors.black, height: 1.5),
                           textAlign: TextAlign.center,
@@ -156,7 +149,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                                 style: TextStyle(color: Colors.grey[500], fontSize: 18),
                               ),
                               Text(
-                                ' ${listaResultados[index]['Precio'] ?? 'No'}',
+                                ' ${listaResultados[index].precio ?? 'No'}',
                                 textAlign: TextAlign.right,
                                 style: TextStyle(color: Colors.black, fontSize: 18),
                               ),
@@ -170,7 +163,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                                 style: TextStyle(color: Colors.grey[500], fontSize: 18),
                               ),
                               Text(
-                                '${listaResultados[index]['peso']}',
+                                '${listaResultados[index].peso}',
                                 textAlign: TextAlign.left,
                                 style: TextStyle(color: Colors.black, fontSize: 18),
                               ),
@@ -184,7 +177,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                                 style: TextStyle(color: Colors.grey[500], fontSize: 18),
                               ),
                               Text(
-                                listaResultados[index]['fragil'] ? 'Sí' : 'No',
+                                listaResultados[index].fragil ? 'Sí' : 'No',
                                 textAlign: TextAlign.left,
                                 style: TextStyle(color: Colors.black, fontSize: 18),
                               ),
@@ -206,7 +199,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                             style: TextStyle(color: Colors.grey[500], fontSize: 18),
                           ),
                           Text(
-                            '${listaResultados[index]['alto']} cm',
+                            '${listaResultados[index].alto} cm',
                             style: TextStyle(color: Colors.black, fontSize: 18),
                           ),
                         ],
@@ -218,7 +211,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                             style: TextStyle(color: Colors.grey[500], fontSize: 18),
                           ),
                           Text(
-                            '${listaResultados[index]['ancho']} cm',
+                            '${listaResultados[index].ancho} cm',
                             style: TextStyle(color: Colors.black, fontSize: 18),
                           ),
                         ],
@@ -230,7 +223,7 @@ class _BusquedaPaqueteFormState extends BusquedaFormCiudadesState<BusquedaPaquet
                             style: TextStyle(color: Colors.grey[500], fontSize: 18),
                           ),
                           Text(
-                            '${listaResultados[index]['largo']} cm',
+                            '${listaResultados[index].largo} cm',
                             style: TextStyle(color: Colors.black, fontSize: 18),
                           ),
                         ],

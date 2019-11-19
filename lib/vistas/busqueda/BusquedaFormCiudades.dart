@@ -7,8 +7,8 @@ import 'package:intl/intl.dart';
 
 import 'BusquedaForm.dart';
 
-abstract class BusquedaFormCiudadesState<T extends StatefulWidget>
-    extends BusquedaFormState<T> {
+abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
+    extends BusquedaFormState<T, R> {
   final origenController = TextEditingController();
   final destinoController = TextEditingController();
   final horaController = TextEditingController();

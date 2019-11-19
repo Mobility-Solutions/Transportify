@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:transportify/vistas/Authentication/iniciarSesion/iniciarSesion.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
-import 'package:transportify/vistas/seguimiento/SeguimientoForm.dart';
 import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';
 
-import 'middleware/PuntoTransportifyBD.dart';
 
 void main() async =>
     await initializeDateFormatting("es_ES", null).then((_) => runApp(MyApp()));
@@ -72,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 2:
         Navigator.of(context)
             .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-          return new SeguimientoForm();
+          return new IniciarSesionView();
         }));
         break;
       case 3:
