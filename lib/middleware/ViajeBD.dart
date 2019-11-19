@@ -86,7 +86,7 @@ class ViajeBD {
     }
 
     return ListTile(
-      title: Text("Viaje desde " + ciudadOrigen + " a " + ciudadDestino + ", con fecha: " + viaje.fecha.day.toString() + "/" + viaje.fecha.month.toString() + "/" + viaje.fecha.year.toString() +"."),
+      title: Text("Paquete desde " + ciudadOrigen + " a " + ciudadDestino + ", con fecha: " + viaje.fecha.day.toString() + "/" + viaje.fecha.month.toString() + "/" + viaje.fecha.year.toString() +"."),
       onTap: onTap,
     );
   }

@@ -48,6 +48,7 @@ class PaqueteBD {
       snapshot[atributo_peso];
   static double obtenerPrecio(DocumentSnapshot snapshot) =>
       snapshot[atributo_precio];
+  
   static Timestamp obtenerFechaEntrega(DocumentSnapshot snapshot) =>
       snapshot[atributo_fecha_entrega];
   static int obtenerDiasMargen(DocumentSnapshot snapshot) =>
@@ -104,4 +105,70 @@ class PaqueteBD {
     return Datos.obtenerStreamBuilderCollectionBD(coleccion_paquetes, builder);
   }
 
+  //** MÉTODOS PARA EL DÍALOGO DE MODIFICAR PAQUETE */
+
+  static StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(
+      Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
+    return Datos.obtenerStreamBuilderCollectionBD(coleccion_paquetes, builder);
+  }
+
+  static Widget obtenerPaquetesList({Function(Paquete) onSelected}) {
+    return obtenerStreamBuilderListado(
+        _obtenerListadoViajesBuilder(onSelected));
+  }
+
+  static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
+      _obtenerListadoViajesBuilder(Function(Paquete) onSelected) {
+    return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      return _obtenerPaquetesList(context, snapshot, onSelected);
+    };
+  }
+
+  static Widget _obtenerPaquetesList(BuildContext context,
+      AsyncSnapshot<QuerySnapshot> snapshot, Function(Paquete) onSelected) {
+    if (!snapshot.hasData) return const Text('Cargando...');
+
+    var paquetes = snapshot.data.documents;
+
+    return ListView.builder(
+      itemBuilder: (context, index) {
+        if (index >= 0 && index < paquetes.length) {
+          var paquete = paquetes.elementAt(index);
+          return _obtenerListViewItemPaquete(paquete, onSelected);
+        } else {
+          return null;
+        }
+      },
+    );
+
+
+  }
+
+  static Widget _obtenerListViewItemPaquete(
+      DocumentSnapshot snapshot, Function(Paquete) onSelected) {
+    Paquete paquete = Paquete.fromSnapshot(snapshot);
+    String ciudadOrigen, ciudadDestino;
+
+    Function onTap;
+    if (onSelected != null) {
+      onTap = () => onSelected(paquete);
+    }
+
+    if(paquete.origen == null) {
+      ciudadOrigen = "Sin ciudad";
+    } else {
+      ciudadOrigen = paquete.origen.direccion.toString();
+    }
+
+    if(paquete.destino == null) {
+      ciudadDestino = "Sin ciudad";
+    } else {
+      ciudadDestino = paquete.destino.direccion.toString();
+    }
+
+    return ListTile(
+      title: Text("Paquete con nombre: " + paquete.nombre + ", con fecha: " + paquete.fechaEntrega.day.toString() + "/" + paquete.fechaEntrega.month.toString() + "/" + paquete.fechaEntrega.year.toString() +"."),
+      onTap: onTap,
+    );
+  }
 }
