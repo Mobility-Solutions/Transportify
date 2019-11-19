@@ -35,7 +35,7 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
   bool get modificando => widget.viajeModificando != null;
 
-  final Puntos puntos = Puntos();
+  //final Puntos puntos = Puntos();
 
   // Ciudades origen y destino
   String origen, destino;
@@ -331,9 +331,9 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
     viaje.fecha = fechaViajeElegida;
 
-    viaje.destino = puntos.destino;
+    viaje.destino = destino;
 
-    viaje.origen = puntos.origen;
+    viaje.origen = origen;
 
     return viaje;
   }
@@ -345,11 +345,11 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
         pesoController.text = widget.viajeModificando.cargaMaxima.toString();
         peso = widget.viajeModificando.cargaMaxima;
         
-        origenController.text = widget.viajeModificando.origen.nombre;
-        puntos.origen = widget.viajeModificando.origen;
+        origenController.text = widget.viajeModificando.origen;
+        origen = widget.viajeModificando.origen;
         
-        destinoController.text = widget.viajeModificando.destino.nombre;
-        puntos.destino = widget.viajeModificando.destino;
+        destinoController.text = widget.viajeModificando.destino;
+        destino = widget.viajeModificando.destino;
         
         fechaController.text = '${widget.viajeModificando.fecha.day} / ${widget.viajeModificando.fecha.month} / ${widget.viajeModificando.fecha.year}';
         DateTime fechaModificando = new DateTime(
@@ -380,12 +380,6 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
       origenController.dispose();
       super.dispose();
     }
-    return new Viaje(
-      cargaMaxima: _peso,
-      fecha: fechaViajeElegida,
-      destino: destino,
-      origen: origen,
-    );
   }
 
   Widget buildButtonContainer(String hintText) {

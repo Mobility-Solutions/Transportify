@@ -67,14 +67,25 @@ class ViajeBD {
   static Widget _obtenerListViewItemViaje(
       DocumentSnapshot snapshot, Function(Viaje) onSelected) {
     Viaje viaje = Viaje.fromSnapshot(snapshot);
+    String ciudadOrigen, ciudadDestino;
 
     Function onTap;
     if (onSelected != null) {
       onTap = () => onSelected(viaje);
     }
+    if(viaje.origen == null) {
+      ciudadOrigen = "Sin ciudad";
+    } else {
+      ciudadOrigen = viaje.origen;
+    }
+    if(viaje.destino == null) {
+      ciudadDestino = "Sin ciudad";
+    }else {
+      ciudadDestino = viaje.destino;
+    }
 
     return ListTile(
-      title: Text("Fecha de Viaje: " + viaje.fecha.day.toString() + "/" + viaje.fecha.month.toString() + "/" + viaje.fecha.year.toString()),
+      title: Text("Viaje desde " + ciudadOrigen + " a " + ciudadDestino + ", con fecha: " + viaje.fecha.day.toString() + "/" + viaje.fecha.month.toString() + "/" + viaje.fecha.year.toString() +"."),
       onTap: onTap,
     );
   }
