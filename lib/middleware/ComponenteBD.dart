@@ -69,4 +69,9 @@ abstract class ComponenteBD {
   });
 
   Future<void> deleteFromBD() => reference?.delete();
+
+  static Future<void> waitForReferences(List<Future> futures) {
+    futures.removeWhere((future) => future == null);
+    return Future.wait(futures);
+  }
 }

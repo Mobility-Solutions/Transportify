@@ -16,24 +16,30 @@ class PuntosDialog extends StatefulWidget {
 
 class _PuntosDialogState extends State<PuntosDialog> {
   String _ciudadSeleccionada;
+  PuntoTransportify _puntoSeleccionado;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-        title: Text("Puntos Transportify"),
+        title: Text(_ciudadSeleccionada == null ? "Seleccione una ciudad:" : "Seleccione un Punto Transportify:"),
         content: Container(
             height: 300,
             width: 300,
             child: Center(
-              child: PuntoTransportifyBD.obtenerDropDownCiudadesYListadoPuntos(
+              child: PuntoTransportifyBD.obtenerSelectorCiudadesYPuntos(
                 onPuntoChanged: (nuevoPunto) {
-                  Navigator.pop(context, nuevoPunto);
+                  setState(() {
+                    this._puntoSeleccionado = nuevoPunto;
+                  });
                 },
                 onCiudadChanged: (nuevaCiudad) {
                   setState(() {
                     this._ciudadSeleccionada = nuevaCiudad;
                   });
                 },
+                onSelected: (nuevoPunto) => Navigator.pop(context, nuevoPunto),
+                onCanceled: () => Navigator.pop(context, null),
                 ciudadValue: _ciudadSeleccionada,
+                puntoValue: _puntoSeleccionado,
               ),
             )));
   }
