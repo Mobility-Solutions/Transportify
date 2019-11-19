@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transportify/middleware/PaqueteBD.dart';
 import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/middleware/ViajeBD.dart';
@@ -28,9 +29,9 @@ class _PaquetesDialogState extends State<PaquetesDialog> {
             height: 300,
             width: 300,
             child: Center(
-              child: ViajeBD.obtenerListadoViajes(
-                onSelected: (_viajeSeleccionado){
-                  Navigator.pop(context, _viajeSeleccionado);
+              child: PaqueteBD.obtenerPaquetesList(
+                onSelected: (_paqueteSeleccionado){
+                  Navigator.pop(context, _paqueteSeleccionado);
                 }
               ),
 

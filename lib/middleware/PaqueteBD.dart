@@ -146,15 +146,17 @@ class PaqueteBD {
     if (onSelected != null) {
       onTap = () => onSelected(paquete);
     }
+
     if(paquete.origen == null) {
       ciudadOrigen = "Sin ciudad";
     } else {
-      ciudadOrigen = paquete.origen.ciudad;
+      ciudadOrigen = paquete.origen.direccion.toString();
     }
+
     if(paquete.destino == null) {
       ciudadDestino = "Sin ciudad";
-    }else {
-      ciudadDestino = paquete.destino.ciudad;
+    } else {
+      ciudadDestino = paquete.destino.direccion.toString();
     }
 
     return ListTile(

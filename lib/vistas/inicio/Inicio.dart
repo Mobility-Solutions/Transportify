@@ -215,7 +215,7 @@ class CrearPaquetePartState extends UserDependantPartState<CrearPaquetePart> {
             if(paquete is Paquete) {
               Navigator.of(context)
                 .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return new CreacionPaqueteForm();
+              return new CreacionPaqueteForm(paquete);
               }));
             }
           }

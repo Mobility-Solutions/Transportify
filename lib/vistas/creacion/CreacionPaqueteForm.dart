@@ -13,11 +13,11 @@ import 'package:flutter/src/material/slider.dart';
 import '../PuntosDialog.dart';
 
 class CreacionPaqueteForm extends StatefulWidget {
-  CreacionPaqueteForm([this.paqueteModificando]);
+  CreacionPaqueteForm([this.miPaquete]) : super();
   @override
   _CreacionPaqueteFormState createState() => _CreacionPaqueteFormState();
 
-  final Paquete paqueteModificando;
+  final Paquete miPaquete;
 }
 
 class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
@@ -33,6 +33,9 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
   double peso = 0.0;
   bool _fragil = false;
+  double alto = 0.0;
+  double ancho = 0.0;
+  double largo = 0.0;
   double _sliderValue = 0.0;
   double diasMargen = 0.0;
 
@@ -41,7 +44,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   DateTime _fechaentrega;
   DateTime _horaEntrega;
 
-  bool get modificando => widget.paqueteModificando != null;
+  bool get modificando => widget.miPaquete != null;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -61,7 +64,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: Text(TransportifyLabels.nuevoPaquete),
+          title: (widget.miPaquete == null) ? Text(TransportifyLabels.nuevoPaquete) : Text("Modificar paquete"),
           backgroundColor: TransportifyColors.primarySwatch,
           elevation: 0.0,
         ),
@@ -415,19 +418,104 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
         diasMargen: diasMargenFinal);
   }
 
+    @override
+  void initState() {
+    super.initState();
+    if(widget.miPaquete != null) {
+    nombreController.text = widget.miPaquete.nombre;
+    pesoController.text = widget.miPaquete.peso.toString();
+    peso = widget.miPaquete.peso;
+    origenController.text = widget.miPaquete.origen.toString();
+    puntos.origen = widget.miPaquete.origen;
+    destinoController.text = widget.miPaquete.destino.toString();
+    puntos.destino = widget.miPaquete.destino;
+    fechaController.text = '${widget.miPaquete.fechaEntrega.day} / ${widget.miPaquete.fechaEntrega.month} / ${widget.miPaquete.fechaEntrega.year}';
+    DateTime fechaModificando = new DateTime(
+          widget.miPaquete.fechaEntrega.year,
+          widget.miPaquete.fechaEntrega.month,
+          widget.miPaquete.fechaEntrega.day
+        );
+        _fechaentrega = fechaModificando;
+    DateTime horaModificando = new DateTime(
+          0,
+          0,
+          0,
+          widget.miPaquete.fechaEntrega.hour,
+          widget.miPaquete.fechaEntrega.minute
+        );
+    _horaEntrega = horaModificando;
+        horaController.text = '${_horaEntrega.hour}:${_horaEntrega.minute}';
+    altoController.text = widget.miPaquete.alto.toString();
+    anchoController.text = widget.miPaquete.ancho.toString();
+    largoController.text = widget.miPaquete.largo.toString();
+    _fragil = widget.miPaquete.fragil;
+    if(widget.miPaquete.diasMargen != null) {
+      diasMargen = widget.miPaquete.diasMargen.toDouble();
+      _sliderValue = widget.miPaquete.diasMargen.toDouble();
+    }
+    }
+  }
+
+  @override
+  void dispose() {
+    if(widget.miPaquete != null) {
+    nombreController.dispose();
+    pesoController.dispose();
+    origenController.dispose();
+    destinoController.dispose();
+    fechaController.dispose();
+    horaController.dispose();
+    altoController.dispose();
+    anchoController.dispose();
+    largoController.dispose();
+    super.dispose();
+    }
+  }
+
+
+
   Widget buildButtonContainer(String hintText) {
     return TransportifyFormButton(
       text: hintText,
       onPressed: () {
-        if (hintText == "ACEPTAR") {
+        
+        if (hintText == "ACEPTAR" && widget.miPaquete == null) {
+          
           if (_formKey.currentState.validate()) {
+
             Paquete paquete = getPaqueteFromControllers();
             paquete.crearEnBD();
-            Usuario usuarioActual = DatosUsuarioActual.instance.usuario;
-            usuarioActual?.paquetesCreados++;
-            usuarioActual?.updateBD();
             TransportifyMethods.doneDialog(context, "Paquete creado",
                 content: "El paquete ha sido creado con éxito");
+
+          }
+
+        } else if(hintText == "ACEPTAR" && widget.miPaquete != null) {
+
+          if (_formKey.currentState.validate()) {
+
+            widget.miPaquete.alto = double.parse(altoController.text);
+            widget.miPaquete.ancho = double.parse(anchoController.text);
+            widget.miPaquete.largo = double.parse(largoController.text);
+            widget.miPaquete.peso = double.parse(pesoController.text);
+            widget.miPaquete.origen = puntos.origen;
+            widget.miPaquete.destino = puntos.destino;
+            widget.miPaquete.nombre = nombreController.text;
+            widget.miPaquete.fragil = _fragil;
+            DateTime fechaEntregaDefinitiva = new DateTime(
+              _fechaentrega.year,
+              _fechaentrega.month,
+              _fechaentrega.day,
+              _horaEntrega.hour,
+              _horaEntrega.minute
+            );
+            widget.miPaquete.fechaEntrega = fechaEntregaDefinitiva;
+            widget.miPaquete.diasMargen = _sliderValue.toInt();
+
+            widget.miPaquete.updateBD();
+            TransportifyMethods.doneDialog(context, "Paquete modificado",
+                  content: "El paquete ha sido modificado con éxito");
+
           }
         } else {
           Navigator.pop(context);
