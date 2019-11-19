@@ -1,6 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:transportify/middleware/ComponenteBD.dart';
+import 'package:transportify/middleware/Datos.dart';
+import 'package:transportify/middleware/PaqueteBD.dart';
 import 'package:transportify/middleware/UsuarioBD.dart';
+import 'package:transportify/middleware/ViajeBD.dart';
+
+import 'Paquete.dart';
+import 'Viaje.dart';
 
 class Usuario extends ComponenteBD {
   String nombre, nickname, password, correo, ciudad;
@@ -8,12 +14,14 @@ class Usuario extends ComponenteBD {
 
   int paquetesCreados, viajesCreados;
 
-  Usuario({this.nombre, 
-          this.nickname, 
-          this.password, 
-          this.correo, 
-          this.ciudad, 
-          this.edad}) : super(coleccion: UsuarioBD.coleccion_usuarios);
+  Usuario(
+      {this.nombre,
+      this.nickname,
+      this.password,
+      this.correo,
+      this.ciudad,
+      this.edad})
+      : super(coleccion: UsuarioBD.coleccion_usuarios);
 
   Usuario.fromReference(DocumentReference reference, {bool init = true})
       : super.fromReference(reference, init: init);
@@ -47,4 +55,30 @@ class Usuario extends ComponenteBD {
     map[UsuarioBD.atributo_viajes_creados] = this.viajesCreados;
     return map;
   }
+
+  /// Además del usuario, elimina todos sus paquetes y viajes publicados 
+  @override
+  Future<void> deleteFromBD() {
+    _eliminarTodosMisViajesYPaquetesPublicados();
+    return super.deleteFromBD();
+  }
+
+  Future<void> _eliminarTodosMisViajesYPaquetesPublicados() => Future.wait([
+        _eliminarTodosMisViajesPublicados(),
+        _eliminarTodosMisPaquetesPublicados()
+      ]);
+
+  Future<void> _eliminarTodosMisViajesPublicados() =>
+      obtenerMisViajesPublicados().then((listado) => Datos.eliminarTodosLosComponentes(listado));
+
+  Future<void> _eliminarTodosMisPaquetesPublicados() =>
+      obtenerMisPaquetesPublicados().then((listado) => Datos.eliminarTodosLosComponentes(listado));
+
+  Future<Iterable<Viaje>> obtenerMisViajesPublicados() =>
+      ViajeBD.obtenerListadoViajes().then(
+          (listado) => listado.where((viaje) => viaje.transportista == this));
+
+  Future<Iterable<Paquete>> obtenerMisPaquetesPublicados() =>
+      PaqueteBD.obtenerListadoPaquetes().then(
+          (listado) => listado.where((paquete) => paquete.remitente == this));
 }

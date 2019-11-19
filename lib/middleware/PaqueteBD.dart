@@ -1,7 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'package:transportify/modelos/Paquete.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:transportify/middleware/Datos.dart';
+
 import 'PuntosBD.dart';
 import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
 import 'package:transportify/modelos/Paquete.dart';
@@ -90,8 +94,12 @@ class PaqueteBD {
     );
   }
 
+  static Future<Iterable<Paquete>> obtenerListadoPaquetes()
+    => Firestore.instance.collection(coleccion_paquetes).getDocuments().then((snapshot) => snapshot.documents.map((document) => Paquete.fromSnapshot(document)));
+
   static Widget obtenerListaPaquetes(Function(int estado) onTapMethod) {
     var builder = _obtenerListaEnviosBuilder(onTapMethod);
     return Datos.obtenerStreamBuilderCollectionBD(coleccion_paquetes, builder);
   }
+
 }

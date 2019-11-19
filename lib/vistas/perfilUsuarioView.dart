@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:transportify/util/style.dart';
 
 import '../modelos/Usuario.dart';
+import 'Authentication/iniciarSesion/iniciarSesion.dart';
+import 'CiudadDialog.dart';
 
 class PerfilUsuarioView extends StatefulWidget {
   @override
@@ -24,6 +26,8 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
   Color colorGuardarCambios = Colors.grey;
   Color colorInternoGuardarCambios = Colors.grey;
 
+  String ciudad;
+
   var nombreApellidosText = TextEditingController();
   var correoText = TextEditingController();
   var ciudadText = TextEditingController();
@@ -39,6 +43,19 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
           title: Text("Mi perfil"),
           backgroundColor: TransportifyColors.primarySwatch,
           elevation: 0.0,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.edit),
+              iconSize: 40,
+              color: colorEditar,
+              onPressed: () {
+                setState(() {
+                cambiarColorEditable();
+                editable = !editable;
+                });
+              },
+            ),
+          ],
         ),
           backgroundColor: Colors.grey[200],
           body: Padding(
@@ -47,31 +64,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
               child: SingleChildScrollView(
                 child: Column(
                 children: <Widget> [
-                  
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      
-                      Icon(
-                        Icons.supervised_user_circle,
-                        size: 120,
-                        color: TransportifyColors.primarySwatch,
-                      ),
 
-                      IconButton(
-                        icon: Icon(Icons.edit),
-                        iconSize: 40,
-                        color: colorEditar,
-                        onPressed: () {
-                          setState(() {
-                            cambiarColorEditable();
-                            editable = !editable;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  
                   SizedBox(
                   height: 20.0,
                   ),
@@ -106,13 +99,16 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                     controller: correoText,
                     enabled: editable,
                     maxLines: 1,
-                    keyboardType: TextInputType.text,
+                    keyboardType: TextInputType.emailAddress,
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     maxLength: 50,
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
+                      }
+                      if (!_isEmailCorrectlyFormed(value)) {
+                        return 'El formato es invalido';
                       }
                       return null;
                     },
@@ -134,7 +130,16 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                     keyboardType: TextInputType.text,
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
-                    maxLength: 50,
+                    onTap: () async {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      String returnCiudad =
+                          await CiudadDialog.show(this.context);
+
+                      if (returnCiudad != null) {
+                        ciudad = returnCiudad;
+                        ciudadText.text = ciudad;
+                      }
+                    },
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
@@ -181,83 +186,67 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                   height: 20.0,
                   ),
 
-                  RaisedButton(
-                    color: colorGuardarCambios,
-                    textColor: Colors.white,
-                    disabledColor: Colors.grey,
-                    disabledTextColor: Colors.white,
-                    padding: EdgeInsets.all(8.0),
-                    splashColor: colorInternoGuardarCambios,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        if(_formKey.currentState.validate()) {
-                          if(editable) {
-                            cambiarColorEditable();
-                            guardarCambios();
-                            editable = false;
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+
+                      RaisedButton(
+                        color: colorGuardarCambios,
+                        textColor: Colors.white,
+                        disabledColor: Colors.grey,
+                        disabledTextColor: Colors.white,
+                        padding: EdgeInsets.all(8.0),
+                        splashColor: colorInternoGuardarCambios,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if(_formKey.currentState.validate()) {
+                              if(editable) {
+                                cambiarColorEditable();
+                                guardarCambios();
+                                editable = false;
+                              }
+                            }
                           }
-                        }
-                      }
-                    );
-                  },
-                    child: Text(
-                      "Guardar cambios",
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                  ),
+                        );
+                      },
+                        child: Text(
+                          "Guardar cambios",
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+                      ),
 
-                  SizedBox(
-                  height: 20.0,
-                  ),
+                      SizedBox(
+                        width: 20.0,
+                      ),
 
-                  RaisedButton(
-                    color: TransportifyColors.primarySwatch,
-                    textColor: Colors.white,
-                    disabledColor: Colors.grey,
-                    disabledTextColor: Colors.white,
-                    padding: EdgeInsets.all(8.0),
-                    splashColor: Colors.blueAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    ),
-                    onPressed: () {
-                      print("Se muestra el historial");
-                    },
-                    child: Text(
-                      "Ver historial",
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                  ),
+                      RaisedButton(
+                        color: Colors.red,
+                        textColor: Colors.white,
+                        disabledColor: Colors.grey,
+                        disabledTextColor: Colors.white,
+                        padding: EdgeInsets.all(8.0),
+                        splashColor: Colors.redAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            showDialogBorrarPerfil();
+                          }
+                        );
+                      },
+                        child: Text(
+                          "Borrar perfil",
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+                      ),
 
-                  SizedBox(
-                  height: 20.0,
+                    ],
                   ),
-
-                  RaisedButton(
-                    color: Colors.red,
-                    textColor: Colors.white,
-                    disabledColor: Colors.grey,
-                    disabledTextColor: Colors.white,
-                    padding: EdgeInsets.all(8.0),
-                    splashColor: Colors.redAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        showDialogBorrarPerfil();
-                      }
-                    );
-                  },
-                    child: Text(
-                      "Borrar perfil",
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                  ),
-
+                  
                 ],
               ),
               ),
@@ -303,7 +292,19 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                 Navigator.of(context).pop();
                 print("Perfil eliminado");
                 widget.usuario.deleteFromBD();
-                Navigator.of(context).pop();
+                
+                Navigator.of(context)
+                .pushReplacement(MaterialPageRoute<Null>(builder: (BuildContext context) {
+                return new IniciarSesionView();
+                }));
+
+                /*
+                Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => IniciarSesionView()),
+                (Route<dynamic> route) => false,
+                );
+                */
               },
             ),
 
@@ -331,6 +332,12 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
     widget.usuario.ciudad = ciudadText.text;
     widget.usuario.edad = int.parse(edadText.text);
     widget.usuario.updateBD();
+  }
+
+  bool _isEmailCorrectlyFormed(String email) {
+    return RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email);
   }
 
   @override

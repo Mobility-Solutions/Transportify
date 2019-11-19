@@ -26,7 +26,7 @@ class _ViajeDialogState extends State<ViajeDialog> {
             height: 300,
             width: 300,
             child: Center(
-              child: ViajeBD.obtenerListadoViajes(
+              child: ViajeBD.obtenerListadoViajes_widget(
                 onSelected: (_viajeSeleccionado){
                   Navigator.pop(context, _viajeSeleccionado);
                 }

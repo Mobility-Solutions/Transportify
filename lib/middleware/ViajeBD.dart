@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:transportify/modelos/Viaje.dart';
+import 'package:transportify/modelos/Viaje.dart';
 
 import '../modelos/PuntoTransportify.dart';
 import 'Datos.dart';
@@ -23,7 +24,7 @@ class ViajeBD {
       snapshot[atributo_carga_maxima];
   static Timestamp obtenerFecha(DocumentSnapshot snapshot) =>
       snapshot[atributo_fecha];
-/** 
+/**
   static Future<Iterable<Viaje>> obtenerListadoViajes()
     => Firestore.instance.collection(coleccion_viajes).getDocuments().then((snapshot) => snapshot.documents.map((document) => Viaje.fromSnapshot(document)));
 */
@@ -32,7 +33,7 @@ class ViajeBD {
     return Datos.obtenerStreamBuilderCollectionBD(coleccion_viajes, builder);
   }
 
-  static Widget obtenerListadoViajes({Function(Viaje) onSelected}) {
+  static Widget obtenerListadoViajes_widget({Function(Viaje) onSelected}) {
     return obtenerStreamBuilderListado(
         _obtenerListadoViajesBuilder(onSelected));
   }
@@ -89,5 +90,9 @@ class ViajeBD {
       onTap: onTap,
     );
   }
+
+
+  static Future<Iterable<Viaje>> obtenerListadoViajes()
+    => Firestore.instance.collection(coleccion_viajes).getDocuments().then((snapshot) => snapshot.documents.map((document) => Viaje.fromSnapshot(document)));
 
 }
