@@ -7,8 +7,16 @@ class Datos {
   static StreamBuilder<QuerySnapshot> obtenerStreamBuilderCollectionBD(
       String collectionPath,
       Widget Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
+    return obtenerStreamBuilderCollectionBDFromReference(
+        Firestore.instance.collection(collectionPath), builder);
+  }
+
+  static StreamBuilder<QuerySnapshot>
+      obtenerStreamBuilderCollectionBDFromReference(
+          CollectionReference collectionReference,
+          Widget Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection(collectionPath).snapshots(),
+      stream: collectionReference.snapshots(),
       builder: builder,
     );
   }
@@ -16,13 +24,23 @@ class Datos {
   static StreamBuilder<DocumentSnapshot> obtenerStreamBuilderDocumentBD(
       String documentPath,
       Widget Function(BuildContext, AsyncSnapshot<DocumentSnapshot>) builder) {
+    return obtenerStreamBuilderDocumentBDFromReference(
+        Firestore.instance.document(documentPath), builder);
+  }
+
+  static StreamBuilder<DocumentSnapshot>
+      obtenerStreamBuilderDocumentBDFromReference(
+          DocumentReference documentReference,
+          Widget Function(BuildContext, AsyncSnapshot<DocumentSnapshot>)
+              builder) {
     return StreamBuilder<DocumentSnapshot>(
-      stream: Firestore.instance.document(documentPath).snapshots(),
+      stream: documentReference.snapshots(),
       builder: builder,
     );
   }
 
-  static Future<DocumentReference> crearDocument(String collectionPath, Map<String, dynamic> data) {
+  static Future<DocumentReference> crearDocument(
+      String collectionPath, Map<String, dynamic> data) {
     return Firestore.instance.collection(collectionPath).add(data);
   }
 
