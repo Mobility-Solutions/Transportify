@@ -107,6 +107,9 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
                       }
+                      if (!_isEmailCorrectlyFormed(value)) {
+                        return 'El formato es invalido';
+                      }
                       return null;
                     },
                     decoration: InputDecoration(
@@ -320,6 +323,12 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
     widget.usuario.ciudad = ciudadText.text;
     widget.usuario.edad = int.parse(edadText.text);
     widget.usuario.updateBD();
+  }
+
+  bool _isEmailCorrectlyFormed(String email) {
+    return RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email);
   }
 
   @override
