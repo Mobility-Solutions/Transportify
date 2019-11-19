@@ -17,6 +17,7 @@ class Paquete extends ComponenteBD {
   Usuario remitente;
   double precio;
   DateTime fechaEntrega;
+  int diasMargen;
 
   EstadoPaquete estado;
 
@@ -40,11 +41,11 @@ class Paquete extends ComponenteBD {
       this.remitente,
       this.precio,
       this.fechaEntrega,
-      this.estado,
-      viajeAsignado})
-      : super(coleccion: PaqueteBD.coleccion_paquetes) {
-    this.viajeAsignado = viajeAsignado;
-  }
+      this.diasMargen,
+
+      this.estado
+  })  : super(coleccion: PaqueteBD.coleccion_paquetes);
+
 
   Paquete.fromReference(DocumentReference reference, {bool init = true})
       : super.fromReference(reference, init: init);
@@ -63,13 +64,12 @@ class Paquete extends ComponenteBD {
     this.fragil = PaqueteBD.obtenerFragil(snapshot);
     this.precio = PaqueteBD.obtenerPrecio(snapshot);
     this.fechaEntrega = PaqueteBD.obtenerFechaEntrega(snapshot).toDate();
-    this.destino =
-        PuntoTransportify.fromReference(PaqueteBD.obtenerDestino(snapshot));
-    this.origen =
-        PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
-    this.remitente =
-        Usuario.fromReference(PaqueteBD.obtenerRemitente(snapshot));
+    this.destino = PuntoTransportify.fromReference(PaqueteBD.obtenerDestino(snapshot));
+    this.origen = PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
+    this.remitente = Usuario.fromReference(PaqueteBD.obtenerRemitente(snapshot));
+    this.diasMargen = PaqueteBD.obtenerDiasMargen(snapshot);
     this.estado = PaqueteBD.obtenerEstado(snapshot);
+
     
     var viajeBD = PaqueteBD.obtenerViaje(snapshot);
     this.viajeAsignado = viajeBD == null ? null : Viaje.fromReference(viajeBD);
@@ -97,8 +97,10 @@ class Paquete extends ComponenteBD {
     map[PaqueteBD.atributo_peso] = this.peso;
     map[PaqueteBD.atributo_precio] = this.precio;
     map[PaqueteBD.atributo_fecha_entrega] = this.fechaEntrega;
+    map[PaqueteBD.atributo_dias_margen] = this.diasMargen;
     map[PaqueteBD.atributo_estado] = this.estado.index;
     map[PaqueteBD.atributo_viaje_asignado] = this.viajeAsignado?.reference;
+    
     return map;
   }
 }

@@ -294,7 +294,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                 widget.usuario.deleteFromBD();
                 
                 Navigator.of(context)
-                .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+                .pushReplacement(MaterialPageRoute<Null>(builder: (BuildContext context) {
                 return new IniciarSesionView();
                 }));
 

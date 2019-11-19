@@ -33,10 +33,45 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
     List<DocumentSnapshot> coleccion = snapshot.data.documents;
     listaResultados.clear();
 
+    var now = new DateTime.now();
+    DateTime fechaElegida;
+    if(choosenDate != null && choosenTime != null){
+    fechaElegida = new DateTime(
+        choosenDate.year,
+        choosenDate.month,
+        choosenDate.day,
+        choosenTime.hour,
+        choosenTime.minute,
+        0);
+    }
+    else if (choosenTime == null && choosenDate != null){
+      fechaElegida = new DateTime(
+        choosenDate.year,
+        choosenDate.month,
+        choosenDate.day,
+        0,
+        0,
+        0);
+    }
+    else{
+      fechaElegida = now;
+    }
+
     for (DocumentSnapshot snapshot in coleccion) {
       Viaje viaje = Viaje.fromSnapshot(snapshot);
 
-      if (origen == viaje.origen && destino == viaje.destino) {
+      var date = viaje.fecha;
+      var fechaBusqueda =false;
+      var diff = date.isAfter(now);
+
+      if(date.day == fechaElegida.day && date.month == fechaElegida.month && date.year == fechaElegida.year && choosenTime==null || choosenDate == null) {
+         fechaBusqueda = true;
+      }
+
+      else if(choosenTime != null && date.hour == fechaElegida.hour && date.minute == fechaElegida.minute){ fechaBusqueda = true;} 
+
+
+      if (origen == viaje.origen && destino == viaje.destino && fechaBusqueda && diff) {
         listaResultados.add(viaje);
       }
     }
@@ -92,7 +127,7 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            '${listaResultados[index].cargaMaxima}',
+                            '${listaResultados[index].cargaMaxima} kg',
                             style: TextStyle(
                               fontSize: 15,
                               color: Colors.black54,

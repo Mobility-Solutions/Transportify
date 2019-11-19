@@ -5,8 +5,11 @@ import 'package:transportify/middleware/Datos.dart';
 import 'package:transportify/middleware/PaqueteBD.dart';
 import 'package:transportify/middleware/ViajeBD.dart';
 import 'package:transportify/modelos/DatosUsuarioActual.dart';
+import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Usuario.dart';
+import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
+import 'package:transportify/vistas/PaquetesDialog.dart';
 import 'package:transportify/vistas/UsuariosDialog.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
@@ -14,6 +17,8 @@ import 'package:transportify/vistas/perfilUsuarioView.dart';
 import 'package:transportify/vistas/seguimiento/SeguimientoForm.dart';
 import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';
+
+import '../ViajeDialog.dart';
 
 void main() async =>
     await initializeDateFormatting("es_ES", null).then((_) => runApp(MyApp()));
@@ -204,11 +209,16 @@ class CrearPaquetePartState extends UserDependantPartState<CrearPaquetePart> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-            return new CreacionPaqueteForm();
-          }));
+        onTap: () async {
+          Paquete paquete = await PaquetesDialog.show(context);
+          if(paquete != null) {
+            if(paquete is Paquete) {
+              Navigator.of(context)
+                .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+              return new CreacionPaqueteForm(paquete);
+              }));
+            }
+          }
         },
         child: Container(
           height: 208.0,
@@ -302,11 +312,18 @@ class CrearViajePartState extends UserDependantPartState<CrearViajePart> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-            return new CreacionViajeForm();
-          }));
+        onTap: () async {
+          Viaje viaje = await ViajeDialog.show(context);
+          if(viaje != null) {
+            if(viaje is Viaje) {
+              Navigator.of(context)
+                .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+              return new CreacionViajeForm(viaje);
+              }));
+            }
+          } else {
+            
+          }
         },
         child: Container(
           height: 208.0,
