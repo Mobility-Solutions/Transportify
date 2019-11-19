@@ -48,7 +48,6 @@ class PaqueteBD {
       snapshot[atributo_peso];
   static double obtenerPrecio(DocumentSnapshot snapshot) =>
       snapshot[atributo_precio];
-      snapshot[atributo_dias_margen];
   
   static Timestamp obtenerFechaEntrega(DocumentSnapshot snapshot) =>
       snapshot[atributo_fecha_entrega];
