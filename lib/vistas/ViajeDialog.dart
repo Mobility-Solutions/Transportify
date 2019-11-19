@@ -20,6 +20,7 @@ class _ViajeDialogState extends State<ViajeDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      
         title: Text("Viajes modificables: "),
         content: Container(
             height: 300,
