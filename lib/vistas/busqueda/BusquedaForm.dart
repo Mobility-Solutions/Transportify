@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/middleware/Datos.dart';
 
-abstract class BusquedaFormState<T extends StatefulWidget> extends State<T> {
+abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
   final String titulo;
   final String coleccionBD;
   final String textoResultados;
@@ -12,7 +12,7 @@ abstract class BusquedaFormState<T extends StatefulWidget> extends State<T> {
   BusquedaFormState({this.titulo, this.coleccionBD, this.textoResultados});
 
   int get resultados => listaResultados.length;
-  List<DocumentSnapshot> listaResultados = List<DocumentSnapshot>();
+  List<R> listaResultados = List<R>();
   bool validada = false;
 
   final _formKey = GlobalKey<FormState>();
@@ -59,15 +59,22 @@ abstract class BusquedaFormState<T extends StatefulWidget> extends State<T> {
   Widget Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
       obtenerListaBuilder() {
     return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      bool hasData = false;
+      Future<bool> hasData;
       if (validada) {
         hasData = buscar(context, snapshot);
+      } else {
+        hasData = Future.value(false);
       }
-      return _buildContainerBusqueda(hasData);
+      return FutureBuilder<bool>(
+        future: hasData,
+        builder: (context, hasData) =>
+            _buildContainerBusqueda(hasData.hasData ? hasData.data : false),
+      );
     };
   }
 
-  bool buscar(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot);
+  Future<bool> buscar(
+      BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot);
 
   Widget _buildContainerBusqueda(bool hasData) {
     return Column(
@@ -119,9 +126,9 @@ abstract class BusquedaFormState<T extends StatefulWidget> extends State<T> {
                     ? SizedBox.expand(
                         child: _buildListado(),
                       )
-                    : const Text('Cargando...'),
+                    : const Center(child: const CircularProgressIndicator()),
               )
-            : Container(),
+            : const SizedBox(),
       ],
     );
   }

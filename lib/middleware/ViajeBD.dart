@@ -15,8 +15,8 @@ class ViajeBD {
   static const String atributo_carga_maxima = "carga_maxima";
   static const String atributo_fecha = "fecha";
 
-  static DocumentReference obtenerDestino(DocumentSnapshot snapshot) => PuntosBD.obtenerDestino(snapshot);
-  static DocumentReference obtenerOrigen(DocumentSnapshot snapshot) => PuntosBD.obtenerOrigen(snapshot);
+  static String obtenerDestino(DocumentSnapshot snapshot) => snapshot[atributo_destino];
+  static String obtenerOrigen(DocumentSnapshot snapshot) => snapshot[atributo_origen];
   static DocumentReference obtenerTransportista(DocumentSnapshot snapshot) =>
       snapshot[atributo_transportista];
   static double obtenerCargaMaxima(DocumentSnapshot snapshot) =>

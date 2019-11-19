@@ -15,7 +15,7 @@ abstract class ComponenteBD {
 
   ComponenteBD.fromReference(DocumentReference reference, {bool init = true}) :
     this._reference = reference,
-    this.coleccion = reference.parent() {
+    this.coleccion = reference?.parent() {
       if (init) this._init = revertToBD();
     }
 
@@ -69,4 +69,9 @@ abstract class ComponenteBD {
   });
 
   Future<void> deleteFromBD() => reference?.delete();
+
+  static Future<void> waitForReferences(List<Future> futures) {
+    futures.removeWhere((future) => future == null);
+    return Future.wait(futures);
+  }
 }

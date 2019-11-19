@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:transportify/modelos/Viaje.dart';
 
-import 'BusquedaFormPuntos.dart';
+import 'BusquedaFormCiudades.dart';
 
 class BusquedaViajeForm extends StatefulWidget {
   BusquedaViajeForm({Key key, this.title}) : super(key: key);
@@ -12,12 +14,35 @@ class BusquedaViajeForm extends StatefulWidget {
   final String title;
 }
 
-class _BusquedaViajeFormState extends BusquedaFormPuntosState<BusquedaViajeForm> {
+class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeForm, Viaje> {
+  final origenController = TextEditingController();
+  final destinoController = TextEditingController();
+
+  String origen, destino;
+
   _BusquedaViajeFormState()
       : super(
             titulo: "Buscar Viaje",
             coleccionBD: "viajes",
             textoResultados: "Viajes encontrados");
+
+  @override
+  Future<bool> buscar(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) async {
+    if (!snapshot.hasData) return false;
+
+    List<DocumentSnapshot> coleccion = snapshot.data.documents;
+    listaResultados.clear();
+
+    for (DocumentSnapshot snapshot in coleccion) {
+      Viaje viaje = Viaje.fromSnapshot(snapshot);
+
+      if (origen == viaje.origen && destino == viaje.destino) {
+        listaResultados.add(viaje);
+      }
+    }
+
+    return true;
+  }
 
   @override
   Widget builderListado(BuildContext context, int index) {
@@ -56,7 +81,7 @@ class _BusquedaViajeFormState extends BusquedaFormPuntosState<BusquedaViajeForm>
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            '${listaResultados[index]['id_transportista']}',
+                            '${listaResultados[index].transportista?.nombre ?? 'No establecido'}',
                             style: TextStyle(
                                 fontSize: 18, color: Colors.black, height: 2.5),
                             textAlign: TextAlign.center,
@@ -67,7 +92,7 @@ class _BusquedaViajeFormState extends BusquedaFormPuntosState<BusquedaViajeForm>
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            '${listaResultados[index]['carga_maxima']}',
+                            '${listaResultados[index].cargaMaxima}',
                             style: TextStyle(
                               fontSize: 15,
                               color: Colors.black54,
@@ -89,7 +114,7 @@ class _BusquedaViajeFormState extends BusquedaFormPuntosState<BusquedaViajeForm>
                       children: <Widget>[
                         Text(
                           DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, "es_ES")
-                              .format(listaResultados[0]['fecha'].toDate()),
+                              .format(listaResultados[0].fecha),
                           style: TextStyle(
                               fontSize: 18, color: Colors.black, height: 2.5),
                           textAlign: TextAlign.center,
@@ -101,7 +126,7 @@ class _BusquedaViajeFormState extends BusquedaFormPuntosState<BusquedaViajeForm>
                       children: <Widget>[
                         Text(
                           DateFormat.Hm()
-                              .format(listaResultados[0]['fecha'].toDate()),
+                              .format(listaResultados[0].fecha),
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.black54,

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:transportify/vistas/ViajeDialog.dart';
+import 'package:transportify/vistas/Authentication/iniciarSesion/iniciarSesion.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
-import 'package:transportify/vistas/seguimiento/SeguimientoForm.dart';
 import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';
-
 import 'middleware/PuntoTransportifyBD.dart';
 import 'modelos/Viaje.dart';
 
@@ -57,8 +56,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _ciudadSeleccionada;
-
   void _onItemTapped(int index) {
     switch (index) {
       case 0:
@@ -76,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 2:
         Navigator.of(context)
             .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-          return new SeguimientoForm();
+          return new IniciarSesionView();
         }));
         break;
       case 3:
@@ -113,14 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: PuntoTransportifyBD.obtenerDropDownCiudadesYListadoPuntos(
-          onCiudadChanged: (nuevaCiudad) {
-            setState(() {
-              this._ciudadSeleccionada = nuevaCiudad;
-            });
-          },
-          ciudadValue: _ciudadSeleccionada,
-        ),
+        child: Text("Transportify"),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
