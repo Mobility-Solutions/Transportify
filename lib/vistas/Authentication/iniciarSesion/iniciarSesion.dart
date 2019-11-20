@@ -2,10 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:transportify/main.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/Authentication/registrarse/registrarse.dart';
-import 'package:transportify/vistas/inicio/Inicio.dart';
 
 import 'EmailAndPassword.dart';
 
@@ -133,7 +131,7 @@ class _IniciarSesionViewState extends State<IniciarSesionView> {
     if (_auth.currentUser() != null) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => MyHomePage()),
+        MaterialPageRoute(builder: (context) => IniciarSesionView()),
       );
     }
   }
