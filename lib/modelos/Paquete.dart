@@ -69,7 +69,6 @@ class Paquete extends ComponenteBD {
     this.remitente = Usuario.fromReference(PaqueteBD.obtenerRemitente(snapshot));
     this.diasMargen = PaqueteBD.obtenerDiasMargen(snapshot);
     this.estado = PaqueteBD.obtenerEstado(snapshot);
-
     
     var viajeBD = PaqueteBD.obtenerViaje(snapshot);
     this.viajeAsignado = viajeBD == null ? null : Viaje.fromReference(viajeBD);
@@ -77,10 +76,12 @@ class Paquete extends ComponenteBD {
     List<Future> futures = [
       this.destino.waitForInit(),
       this.origen.waitForInit(),
-      this.remitente.waitForInit(),
-      this.viajeAsignado?.waitForInit()
+      this.remitente.waitForInit()
     ];
-    await ComponenteBD.waitForReferences(futures);
+    
+    if (viajeAsignado != null) futures.add(this.viajeAsignado.waitForInit());
+
+    await Future.wait(futures);
   }
 
   @override

@@ -31,10 +31,8 @@ class _BusquedaPaqueteFormState
 
   @override
   Future<bool> buscar(
-      BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) async {
-    if (!snapshot.hasData) return false;
-
-    List<DocumentSnapshot> coleccion = snapshot.data.documents;
+      BuildContext context, QuerySnapshot snapshot) async {
+    List<DocumentSnapshot> coleccion = snapshot.documents;
 
     var now = new DateTime.now();
     DateTime fechaElegida;
@@ -47,6 +45,7 @@ class _BusquedaPaqueteFormState
     } else {
       fechaElegida = now;
     }
+
     listaResultados.clear();
     for (DocumentSnapshot snapshot in coleccion) {
       Paquete paquete = Paquete.fromSnapshot(snapshot);
@@ -66,16 +65,11 @@ class _BusquedaPaqueteFormState
         fechaBusqueda = true;
       }
 
-      bool repetido = false;
-      for (Paquete aux in listaResultados) {
-        if (aux == paquete) repetido = true;
-      }
       if (origen == paquete.origen.ciudad &&
           destino == paquete.destino.ciudad &&
           diff &&
           fechaBusqueda &&
-          paquete.viajeAsignado == null &&
-          !repetido) {
+          paquete.viajeAsignado == null) {
         listaPuntosOrigen.add(paquete.origen);
         listaPuntosDestino.add(paquete.destino);
         listaResultados.add(paquete);

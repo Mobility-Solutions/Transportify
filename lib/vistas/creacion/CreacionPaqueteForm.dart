@@ -491,6 +491,9 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
           if (_formKey.currentState.validate()) {
             Paquete paquete = getPaqueteFromControllers();
             paquete.crearEnBD();
+            Usuario usuarioActual = DatosUsuarioActual.instance.usuario;
+            usuarioActual?.paquetesCreados++;
+            usuarioActual?.updateBD();
             TransportifyMethods.doneDialog(context, "Paquete creado",
                 content: "El paquete ha sido creado con éxito");
           }
