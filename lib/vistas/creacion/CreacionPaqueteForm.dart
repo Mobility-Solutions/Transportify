@@ -6,6 +6,7 @@ import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/modelos/Puntos.dart';
 import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Usuario.dart';
+import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
 import 'package:transportify/util/style.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter/src/material/slider.dart';
@@ -415,7 +416,9 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
         origen: puntos.origen,
         destino: puntos.destino,
         fechaEntrega: fechaPaqueteElegida,
-        diasMargen: diasMargenFinal);
+        diasMargen: diasMargenFinal,
+        estado: EstadoPaquete.por_recoger,
+        );
   }
 
     @override
