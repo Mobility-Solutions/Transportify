@@ -51,43 +51,21 @@ class ViajeBD {
       bool Function(Viaje) filtro) {
     if (!snapshot.hasData) return const Text('Cargando...');
 
-    var viajes = snapshot.data.documents;
+    var viajes = snapshot.data.documents
+        .map((snapshot) => Viaje.fromSnapshot(snapshot))
+        .where((viaje) => filtro == null || filtro(viaje));
 
-//para no tocar el mostrarViaje sin filtro TODO
-if(filtro == null) {
     return ListView.builder(
       itemBuilder: (context, index) {
         if (index >= 0 && index < viajes.length) {
-          Viaje viaje = Viaje.fromSnapshot(viajes.elementAt(index));
-          if (filtro == null || filtro(viaje)) {
-            return _obtenerListViewItemViaje(viaje, onSelected);
-          } else {
-            return null;            
-          }
+          Viaje viaje = viajes.elementAt(index);
+          return _obtenerListViewItemViaje(viaje, onSelected);
         } else {
-         return null;
+          return null;
         }
       },
     );
   }
-
-  else {
-    return ListView.builder(
-      itemBuilder: (context, index) {
-        if (index >= 0 && index < viajes.length) {
-          Viaje viaje = Viaje.fromSnapshot(viajes.elementAt(index));
-          if (filtro == null || filtro(viaje)) {
-            return _obtenerListViewItemViaje(viaje, onSelected);
-          } else {
-            return ListTile();            
-          }
-        } else {
-         return ListTile();
-        }
-      },
-    );
-  }
-}
 
   static Widget _obtenerListViewItemViaje(
       Viaje viaje, Function(Viaje) onSelected) {
