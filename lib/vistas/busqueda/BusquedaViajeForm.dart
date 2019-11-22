@@ -27,10 +27,8 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
             textoResultados: "Viajes encontrados");
 
   @override
-  Future<bool> buscar(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) async {
-    if (!snapshot.hasData) return false;
-
-    List<DocumentSnapshot> coleccion = snapshot.data.documents;
+  Future<bool> buscar(BuildContext context, QuerySnapshot snapshot) async {
+    List<DocumentSnapshot> coleccion = snapshot.documents;
     listaResultados.clear();
 
     var now = new DateTime.now();
@@ -59,6 +57,8 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
 
     for (DocumentSnapshot snapshot in coleccion) {
       Viaje viaje = Viaje.fromSnapshot(snapshot);
+
+      await viaje.waitForInit();
 
       var date = viaje.fecha;
       var fechaBusqueda =false;
