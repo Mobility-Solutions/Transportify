@@ -63,6 +63,7 @@ class RegistrarseState extends State<Registrarse> {
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     maxLength: 50,
+                    key: Key('input_nickname'),
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
@@ -82,6 +83,7 @@ class RegistrarseState extends State<Registrarse> {
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     maxLength: 50,
+                    key: Key('input_name'),
                     textCapitalization: TextCapitalization.words,
                     validator: (value) {
                       if (value.isEmpty) {
@@ -102,6 +104,7 @@ class RegistrarseState extends State<Registrarse> {
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     maxLength: 50,
+                    key: Key('input_email'),
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
@@ -125,6 +128,7 @@ class RegistrarseState extends State<Registrarse> {
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     maxLength: 50,
+                    key: Key('input_password'),
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
@@ -148,6 +152,7 @@ class RegistrarseState extends State<Registrarse> {
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     enableInteractiveSelection: false,
+                    key: Key('select_city'),
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
                       String returnCiudad =
@@ -177,6 +182,7 @@ class RegistrarseState extends State<Registrarse> {
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     maxLength: 2,
+                    key: Key('input_age'),
                     validator: (value) {
                       final soloNumeros = int.tryParse(value);
                       if (soloNumeros == null) {
@@ -197,6 +203,8 @@ class RegistrarseState extends State<Registrarse> {
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     alignment: Alignment.center,
                     child: RaisedButton(
+                      key: Key('button_registrarse'),
+
                       color: TransportifyColors.primarySwatch,
                       textColor: Colors.white,
                       disabledColor: Colors.grey,

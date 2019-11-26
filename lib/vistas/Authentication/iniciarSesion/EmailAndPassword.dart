@@ -35,6 +35,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
             autofocus: false,
             style: TextStyle(color: TransportifyColors.primarySwatch),
             maxLength: 50,
+            key: Key('input_email'),
             validator: (value) {
               if (value.isEmpty) {
                 return 'El valor no puede estar vacío';
@@ -58,6 +59,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
             autofocus: false,
             style: TextStyle(color: TransportifyColors.primarySwatch),
             maxLength: 50,
+            key: Key('input_password'),
             validator: (value) {
               if (value.isEmpty) {
                 return 'El valor no puede estar vacío';

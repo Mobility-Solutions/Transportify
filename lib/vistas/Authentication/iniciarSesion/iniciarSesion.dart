@@ -94,6 +94,8 @@ class _IniciarSesionViewState extends State<IniciarSesionView> {
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       alignment: Alignment.center,
                       child: RaisedButton(
+                        key: Key('button_register'),
+
                         color: TransportifyColors.primarySwatch,
                         textColor: Colors.white,
                         disabledColor: Colors.grey,
