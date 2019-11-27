@@ -20,7 +20,7 @@ class _ViajeDialogState extends State<ViajeDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      
+        key: Key('pestaña_viaje'),
         title: Text("Viajes modificables: "),
         content: Container(
             height: 300,
@@ -36,6 +36,7 @@ class _ViajeDialogState extends State<ViajeDialog> {
             )),
         actions: <Widget>[
           new FlatButton(
+            key: Key('añadir_viaje'),
             child: new Text("Crear Viaje"),
             onPressed: () {
             Navigator.of(context)

@@ -312,6 +312,7 @@ class CrearViajePartState extends UserDependantPartState<CrearViajePart> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+        key: Key('crear_viaje'),
         onTap: () async {
           Viaje viaje = await ViajeDialog.show(context);
           if(viaje != null) {
