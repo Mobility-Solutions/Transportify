@@ -55,21 +55,21 @@ void main() {
       await driver.tap(find.text('OK'));
 
       await driver.waitFor(fechaTextFinder);
-      await driver.scroll(fechaTextFinder,0,0,Duration(milliseconds: 400));
+      await driver.scroll(fechaTextFinder,0,0,Duration(seconds: 1));
       await driver.enterText('31/12/19');
       
       //await driver.tap(find.text('Confirmar'));
 
       await driver.waitFor(horaTextFinder);
-      await driver.scroll(horaTextFinder,0,0,Duration(milliseconds: 400));
+      await driver.scroll(horaTextFinder,0,0,Duration(seconds: 1));
       await driver.enterText('10:00');
       //await driver.tap(find.text('Confirmar'));
 
       await driver.waitFor(buscarBotonFinder);
       await driver.tap(buscarBotonFinder);
-      
+      /*
       final listFinder = find.byValueKey('listaViajes');
-      final viajeBuscadoFinder = find.byValueKey("viaje_0_Buscado");
+      final viajeBuscadoFinder = find.byValueKey("cargaViaje");
       final timeline = await driver.traceAction(() async {
         await driver.scrollUntilVisible(
           listFinder,
@@ -77,7 +77,7 @@ void main() {
           dyScroll: -300.0,
         );
 
-        expect(await driver.getText(viajeBuscadoFinder), 'viaje_0_Buscado');
+        expect(await driver.getText(viajeBuscadoFinder), "8.0 kg");
         
       });
 
@@ -86,7 +86,7 @@ void main() {
 
       summary.writeSummaryToFile('scrolling_summary', pretty: true);
 
-      summary.writeTimelineToFile('scrolling_timeline', pretty: true);
+      summary.writeTimelineToFile('scrolling_timeline', pretty: true);*/
     });
 
   });
