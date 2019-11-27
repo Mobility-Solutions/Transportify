@@ -55,14 +55,15 @@ void main() {
       await driver.tap(find.text('OK'));
 
       await driver.waitFor(fechaTextFinder);
-      await driver.tap(fechaTextFinder);
+      await driver.scroll(fechaTextFinder,0,0,Duration(milliseconds: 400));
       await driver.enterText('31/12/19');
-      await driver.tap(find.text('Confirmar'));
+      
+      //await driver.tap(find.text('Confirmar'));
 
       await driver.waitFor(horaTextFinder);
-      await driver.tap(horaTextFinder);
+      await driver.scroll(horaTextFinder,0,0,Duration(milliseconds: 400));
       await driver.enterText('10:00');
-      await driver.tap(find.text('Confirmar'));
+      //await driver.tap(find.text('Confirmar'));
 
       await driver.waitFor(buscarBotonFinder);
       await driver.tap(buscarBotonFinder);
