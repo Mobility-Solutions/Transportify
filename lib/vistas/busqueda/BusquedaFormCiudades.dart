@@ -30,6 +30,7 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
           height: 20.0,
         ),
         TextFormField(
+          key: ValueKey("ciudad_origen"),
           maxLines: 1,
           keyboardType: TextInputType.text,
           autofocus: false,
@@ -59,6 +60,7 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
           height: 20.0,
         ),
         TextFormField(
+          key: ValueKey("ciudad_destino"),
           maxLines: 1,
           autofocus: false,
           style: TextStyle(color: TransportifyColors.primarySwatch),
@@ -93,6 +95,7 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
               flex: 3,
               child:
             TextFormField(
+              key: ValueKey("fecha_entrega"),
                     
           //maxLines: 1,
           controller: fechaController,
@@ -125,6 +128,7 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
           flex:2,
           child:
         TextFormField(
+            key: ValueKey("hora_entrega"),
             maxLines: 1,
             controller: horaController,
             onTap: () {
