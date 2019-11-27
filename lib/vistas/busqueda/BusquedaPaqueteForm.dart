@@ -81,7 +81,9 @@ class _BusquedaPaqueteFormState
 
   @override
   Widget builderListado(BuildContext context, int index) {
+    key: ValueKey("listaPaquetes");
     return InkWell(
+      key: ValueKey("paquete_"+ index.toString() +"_Buscado"),
       child: Container(
         decoration: new BoxDecoration(
           borderRadius: BorderRadius.circular(10),

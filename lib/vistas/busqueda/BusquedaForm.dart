@@ -116,6 +116,7 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
                   color: TransportifyColors.primarySwatch[900],
                 ),
                 child: IconButton(
+                  key: ValueKey("buscar"),
                   icon: Icon(Icons.search),
                   color: Colors.white,
                   // Pasar un onPressed null pone el botón en disabled
