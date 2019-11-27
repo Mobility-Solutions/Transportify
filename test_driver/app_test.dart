@@ -26,39 +26,48 @@ void main() {
         driver.close();
       }
     });
-/*
-    test("Fields empty on init.",() async {
-      expect(await driver.getText(ciudadOrigenFinder),"");
-      expect(await driver.getText(ciudadDestinoFinder),"");
-      expect(await driver.getText(fechaTextFinder),"");
-      expect(await driver.getText(horaTextFinder),"");
+
+    test('Flutter drive methods demo', () async {
+
+      await driver.tap(find.byValueKey('input_email'));
+      await driver.enterText('alcisande@entrepeneur.org');
+      await driver.tap(find.byValueKey('input_password'));
+      await driver.enterText('sandemetrio',timeout: Duration(seconds: 5));
+      await driver.tap(find.byValueKey('button_login'));
     });
-*/
+
     test('BuscarViaje', () async {
       // Use the `driver.getText` method to verify the counter starts at 0.
-      try {
+       await driver.waitFor(find.byValueKey('buscar_viaje'));
+      await driver.tap(find.byValueKey('buscar_viaje'));
 
       await driver.waitFor(ciudadOrigenFinder);
       await driver.tap(ciudadOrigenFinder);
-      await driver.tap(find.byValueKey('ciudad'));
+      //await driver.tap(find.byValueKey('ciudad'));
       await driver.tap(find.text('Valencia'));
-      await driver.tap(find.byValueKey('ciudad'));
+      //await driver.tap(find.byValueKey('ciudad'));
       await driver.tap(find.text('OK'));
 
+      await driver.waitFor(ciudadDestinoFinder);
       await driver.tap(ciudadDestinoFinder);
-      await driver.tap(find.byValueKey('ciudad'));
-      await driver.tap(find.text('Barcelona'));
+      //await driver.tap(find.byValueKey('ciudad'));
+      await driver.tap(find.text('Madrid'));
       await driver.tap(find.text('OK'));
 
+      await driver.waitFor(fechaTextFinder);
       await driver.tap(fechaTextFinder);
-      await driver.enterText('16/01/20');
+      await driver.enterText('31/12/19');
+      await driver.tap(find.text('Confirmar'));
 
+      await driver.waitFor(horaTextFinder);
       await driver.tap(horaTextFinder);
-      await driver.enterText('09:55');
+      await driver.enterText('10:00');
+      await driver.tap(find.text('Confirmar'));
 
+      await driver.waitFor(buscarBotonFinder);
       await driver.tap(buscarBotonFinder);
-
-       final listFinder = find.byValueKey('listaViajes');
+      
+      final listFinder = find.byValueKey('listaViajes');
       final viajeBuscadoFinder = find.byValueKey("viaje_0_Buscado");
       final timeline = await driver.traceAction(() async {
         await driver.scrollUntilVisible(
@@ -68,6 +77,7 @@ void main() {
         );
 
         expect(await driver.getText(viajeBuscadoFinder), 'viaje_0_Buscado');
+        
       });
 
 
@@ -76,9 +86,6 @@ void main() {
       summary.writeSummaryToFile('scrolling_summary', pretty: true);
 
       summary.writeTimelineToFile('scrolling_timeline', pretty: true);
-      } catch (e) {
-          print(e);
-      }
     });
 
   });

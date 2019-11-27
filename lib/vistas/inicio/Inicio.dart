@@ -312,6 +312,7 @@ class CrearViajePartState extends UserDependantPartState<CrearViajePart> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+        key: Key('crear_viaje'),
         onTap: () async {
           Viaje viaje = await ViajeDialog.show(context);
           if(viaje != null) {
@@ -474,7 +475,7 @@ class BuscarPart extends StatelessWidget {
                         ),
                         SizedBox(width: 10),
                         Text(
-                          "Busca Viajes disponibles.",
+                          "Busca Viajes disponibles.", key: Key('buscar_viaje'),
                           style:
                               TextStyle(fontSize: 20.0, color: Colors.white70),
                         ),

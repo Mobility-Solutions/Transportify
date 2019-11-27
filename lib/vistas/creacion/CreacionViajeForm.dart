@@ -76,6 +76,7 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                     height: 15.0,
                   ),
                   TextFormField(
+                    key: Key('ciudad_origen'),
                     maxLines: 1,
                     keyboardType: TextInputType.text,
                     autofocus: false,
