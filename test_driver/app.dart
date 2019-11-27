@@ -23,7 +23,7 @@ void main() {
     return MaterialApp(
 
       theme: ThemeData(fontFamily: 'Quicksand'),
-      home: BusquedaPaqueteForm(),
+      home: BusquedaViajeForm(),
 
     );
   }

@@ -26,27 +26,35 @@ void main() {
         driver.close();
       }
     });
-
+/*
     test("Fields empty on init.",() async {
       expect(await driver.getText(ciudadOrigenFinder),"");
       expect(await driver.getText(ciudadDestinoFinder),"");
       expect(await driver.getText(fechaTextFinder),"");
       expect(await driver.getText(horaTextFinder),"");
     });
-
+*/
     test('BuscarViaje', () async {
       // Use the `driver.getText` method to verify the counter starts at 0.
+      try {
+
+      await driver.waitFor(ciudadOrigenFinder);
       await driver.tap(ciudadOrigenFinder);
       await driver.tap(find.byValueKey('ciudad'));
+      await driver.tap(find.text('Valencia'));
+      await driver.tap(find.byValueKey('ciudad'));
+      await driver.tap(find.text('OK'));
 
       await driver.tap(ciudadDestinoFinder);
       await driver.tap(find.byValueKey('ciudad'));
+      await driver.tap(find.text('Barcelona'));
+      await driver.tap(find.text('OK'));
 
       await driver.tap(fechaTextFinder);
-      await driver.enterText('16/12/19');
+      await driver.enterText('16/01/20');
 
       await driver.tap(horaTextFinder);
-      await driver.enterText('01:00');
+      await driver.enterText('09:55');
 
       await driver.tap(buscarBotonFinder);
 
@@ -68,7 +76,9 @@ void main() {
       summary.writeSummaryToFile('scrolling_summary', pretty: true);
 
       summary.writeTimelineToFile('scrolling_timeline', pretty: true);
-      
+      } catch (e) {
+          print(e);
+      }
     });
 
   });
