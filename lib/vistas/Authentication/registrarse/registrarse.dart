@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:toast/toast.dart';
-import 'package:transportify/middleware/Datos.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/Authentication/Autenticacion.dart';
