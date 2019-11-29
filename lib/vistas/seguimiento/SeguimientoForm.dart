@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:transportify/middleware/PaqueteBD.dart';
+import 'package:transportify/modelos/Usuario.dart';
+import 'package:transportify/vistas/inicio/Inicio.dart';
 
 import 'CustomStepper.dart';
 
-class SeguimientoForm extends StatefulWidget {
-  @override
-  _SeguimientoFormState createState() => new _SeguimientoFormState();
-}
+class SeguimientoForm extends UserDependantStatelessWidget {
+  SeguimientoForm(Usuario usuario) : super(usuario);
 
-class _SeguimientoFormState extends State<SeguimientoForm> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
           title: const Text("Seguimiento"),
         ),
-        body: Center(child: PaqueteBD.obtenerListaPaquetes(verSeguimiento)));
+        body: Center(child: PaqueteBD.obtenerListadoPaquetesWidget(usuario: usuario, onSelected: obtenerFuncionVerSeguimiento(context))));
   }
 
-  void verSeguimiento(int estado) {
+  Function(int) obtenerFuncionVerSeguimiento(BuildContext context) {
+    return (estado) => _verSeguimiento(context, estado);
+  }
+
+  void _verSeguimiento(BuildContext context, int estado) {
     Navigator.of(context)
         .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
       return new SeguimientoView(estado);

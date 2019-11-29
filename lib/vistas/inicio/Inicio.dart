@@ -4,13 +4,11 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:transportify/middleware/Datos.dart';
 import 'package:transportify/middleware/PaqueteBD.dart';
 import 'package:transportify/middleware/ViajeBD.dart';
-import 'package:transportify/modelos/DatosUsuarioActual.dart';
 import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/PaquetesDialog.dart';
-import 'package:transportify/vistas/UsuariosDialog.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
 import 'package:transportify/vistas/perfilUsuarioView.dart';
@@ -34,29 +32,40 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
+  final Usuario usuario;
+
+  MyHomePage({Key key, this.usuario}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState(usuario: usuario);
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String numPaquetesYViajes;
+  final Usuario usuario;
+
+  _MyHomePageState({this.usuario});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: TransportifyColors.homeBackgroundSwatch,
         body: ListView(children: <Widget>[
-          TopPart(),
-          CrearPaquetePart(),
-          CrearViajePart(),
-          BuscarPart()
+          TopPart(usuario: usuario),
+          CrearPaquetePart(usuario: usuario),
+          CrearViajePart(usuario: usuario),
+          BuscarPart(),
         ]));
-    // This trailing comma makes auto-formatting nicer for build methods.
   }
 }
 
-class TopPart extends StatelessWidget {
+abstract class UserDependantStatelessWidget extends StatelessWidget {
+  final Usuario usuario;
+  UserDependantStatelessWidget(this.usuario);
+}
+
+class TopPart extends UserDependantStatelessWidget {
+  TopPart({Usuario usuario}) : super(usuario);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -68,14 +77,20 @@ class TopPart extends StatelessWidget {
           ),
           child: Column(
             children: <Widget>[
-              Row(mainAxisAlignment: MainAxisAlignment.end,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   IconButton(
-                      icon: Icon(Icons.settings,color: TransportifyColors.appBackground,),
+                      icon: Icon(
+                        Icons.settings,
+                        color: TransportifyColors.appBackground,
+                      ),
                       onPressed: () {
                         /*!TODO llevar a la pantalla de preferencias.*/
                       }),
-                      SizedBox(width: 5,)
+                  SizedBox(
+                    width: 5,
+                  )
                 ],
               ),
               Row(
@@ -85,14 +100,10 @@ class TopPart extends StatelessWidget {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () async {
-                          Usuario usuario = await UsuariosDialog.show(context);
-                          if (usuario != null) {
-                            DatosUsuarioActual.instance.usuario = usuario;
-                            Navigator.of(context).push(MaterialPageRoute<Null>(
-                                builder: (BuildContext context) {
-                              return PerfilUsuarioView(usuario);
-                            }));
-                          }
+                          Navigator.of(context).push(MaterialPageRoute<Null>(
+                              builder: (BuildContext context) {
+                            return PerfilUsuarioView(usuario);
+                          }));
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -151,7 +162,7 @@ class TopPart extends StatelessWidget {
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute<Null>(
                             builder: (BuildContext context) {
-                          return new SeguimientoForm();
+                          return new SeguimientoForm(usuario);
                         }));
                       },
                       child: Column(
@@ -187,35 +198,19 @@ class TopPart extends StatelessWidget {
   }
 }
 
-class CrearPaquetePart extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => CrearPaquetePartState();
-}
+class CrearPaquetePart extends UserDependantStatelessWidget {
+  CrearPaquetePart({Usuario usuario}) : super(usuario);
 
-abstract class UserDependantPartState<T extends StatefulWidget> extends State<T> {
-  Usuario usuarioActual;
-
-  UserDependantPartState() {
-    usuarioActual = DatosUsuarioActual.instance.usuario;
-    DatosUsuarioActual.instance.usuarioStream.listen((nuevoUsuario) {
-      setState(() {
-        usuarioActual = nuevoUsuario;
-      });
-    });
-  }
-}
-
-class CrearPaquetePartState extends UserDependantPartState<CrearPaquetePart> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () async {
-          Paquete paquete = await PaquetesDialog.show(context);
-          if(paquete != null) {
-            if(paquete is Paquete) {
-              Navigator.of(context)
-                .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return new CreacionPaqueteForm(paquete);
+          Paquete paquete = await PaquetesDialog.show(context, usuario: usuario);
+          if (paquete != null) {
+            if (paquete is Paquete) {
+              Navigator.of(context).push(
+                  MaterialPageRoute<Null>(builder: (BuildContext context) {
+                return new CreacionPaqueteForm(paquete);
               }));
             }
           }
@@ -264,7 +259,7 @@ class CrearPaquetePartState extends UserDependantPartState<CrearPaquetePart> {
                       SizedBox(height: 23.0),
                       Row(
                         children: [
-                          usuarioActual == null
+                          usuario == null
                               ? const Text(
                                   "-",
                                   style: TextStyle(
@@ -272,13 +267,12 @@ class CrearPaquetePartState extends UserDependantPartState<CrearPaquetePart> {
                                 )
                               : Datos
                                   .obtenerStreamBuilderDocumentBDFromReference(
-                                      usuarioActual.reference,
-                                      (context, snapshot) {
+                                      usuario.reference, (context, snapshot) {
                                   if (!snapshot.hasData)
                                     return const Text("Cargando...");
-                                  usuarioActual.loadFromSnapshot(snapshot.data);
+                                  usuario.loadFromSnapshot(snapshot.data);
                                   return Text(
-                                    usuarioActual.paquetesCreados.toString(),
+                                    usuario.paquetesCreados.toString(),
                                     style: TextStyle(
                                         fontSize: 20.0, color: Colors.white70),
                                   );
@@ -303,27 +297,22 @@ class CrearPaquetePartState extends UserDependantPartState<CrearPaquetePart> {
   }
 }
 
-class CrearViajePart extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => CrearViajePartState();
-}
+class CrearViajePart extends UserDependantStatelessWidget {
+  CrearViajePart({Usuario usuario}) : super(usuario);
 
-class CrearViajePartState extends UserDependantPartState<CrearViajePart> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () async {
-          Viaje viaje = await ViajeDialog.show(context);
-          if(viaje != null) {
-            if(viaje is Viaje) {
-              Navigator.of(context)
-                .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return new CreacionViajeForm(viaje);
+          Viaje viaje = await ViajeDialog.show(context, usuario: usuario);
+          if (viaje != null) {
+            if (viaje is Viaje) {
+              Navigator.of(context).push(
+                  MaterialPageRoute<Null>(builder: (BuildContext context) {
+                return new CreacionViajeForm(viaje);
               }));
             }
-          } else {
-            
-          }
+          } else {}
         },
         child: Container(
           height: 208.0,
@@ -368,7 +357,7 @@ class CrearViajePartState extends UserDependantPartState<CrearViajePart> {
                       SizedBox(height: 10.0),
                       Row(
                         children: [
-                          usuarioActual == null
+                          usuario == null
                               ? const Text(
                                   "-",
                                   style: TextStyle(
@@ -376,14 +365,13 @@ class CrearViajePartState extends UserDependantPartState<CrearViajePart> {
                                 )
                               : Datos
                                   .obtenerStreamBuilderDocumentBDFromReference(
-                                      usuarioActual.reference,
-                                      (context, snapshot) {
+                                      usuario.reference, (context, snapshot) {
                                   if (!snapshot.hasData)
                                     return const Text("Cargando...");
 
-                                  usuarioActual.loadFromSnapshot(snapshot.data);
+                                  usuario.loadFromSnapshot(snapshot.data);
                                   return Text(
-                                    usuarioActual.viajesCreados.toString(),
+                                    usuario.viajesCreados.toString(),
                                     style: TextStyle(
                                         fontSize: 20.0, color: Colors.white70),
                                   );
