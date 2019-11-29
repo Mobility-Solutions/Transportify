@@ -1,15 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:transportify/modelos/DatosUsuarioActual.dart';
+import 'package:transportify/middleware/UsuarioBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/modelos/Puntos.dart';
 import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Usuario.dart';
-import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
 import 'package:transportify/util/style.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:flutter/src/material/slider.dart';
 
 import '../PuntosDialog.dart';
 
@@ -389,7 +387,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
     );
   }
 
-  Paquete getPaqueteFromControllers() {
+  Future<Paquete> getPaqueteFromControllers() async {
     double _alto = double.parse(altoController.text);
     double _ancho = double.parse(anchoController.text);
     double _largo = double.parse(largoController.text);
@@ -406,7 +404,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
     print(_nombre);
 
-    return new Paquete(
+    return Paquete(
       nombre: _nombre,
       alto: _alto,
       ancho: _ancho,
@@ -417,6 +415,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
       destino: puntos.destino,
       fechaEntrega: fechaPaqueteElegida,
       diasMargen: diasMargenFinal,
+      remitente: await UsuarioBD.obtenerUsuarioActual(),
     );
   }
 
@@ -486,18 +485,18 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   Widget buildButtonContainer(String hintText) {
     return TransportifyFormButton(
       text: hintText,
-      onPressed: () {
-        if (hintText == "ACEPTAR" && widget.miPaquete == null) {
+      onPressed: () async {
+        if (hintText == "ACEPTAR" && !modificando) {
           if (_formKey.currentState.validate()) {
-            Paquete paquete = getPaqueteFromControllers();
+            Paquete paquete = await getPaqueteFromControllers();
             paquete.crearEnBD();
-            Usuario usuarioActual = DatosUsuarioActual.instance.usuario;
-            usuarioActual?.paquetesCreados++;
-            usuarioActual?.updateBD();
+            Usuario remitente = paquete.remitente;
+            remitente?.paquetesCreados++;
+            remitente?.updateBD();
             TransportifyMethods.doneDialog(context, "Paquete creado",
                 content: "El paquete ha sido creado con éxito");
           }
-        } else if (hintText == "ACEPTAR" && widget.miPaquete != null) {
+        } else if (hintText == "ACEPTAR" && modificando) {
           if (_formKey.currentState.validate()) {
             widget.miPaquete.alto = double.parse(altoController.text);
             widget.miPaquete.ancho = double.parse(anchoController.text);

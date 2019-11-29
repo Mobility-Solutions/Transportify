@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:transportify/middleware/UsuarioBD.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/Authentication/Autenticacion.dart';
 import 'package:toast/toast.dart';
-
-final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class EmailPasswordForm extends StatefulWidget {
   @override
@@ -18,8 +18,6 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _success;
-  String _userEmail;
 
   @override
   Widget build(BuildContext context) {
@@ -115,8 +113,8 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
     // (known issue desde hace meses, no parece que estén trabajando activamente en arreglarlo).
     try {
       try {
-        await _auth.signInWithEmailAndPassword(
-          email: _emailController.text,
+        await UsuarioBD.loginConCorreoYPassword(
+          correo: _emailController.text,
           password: _passwordController.text,
         );
       } on PlatformException catch (error) {
@@ -149,16 +147,11 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
     }
 
-    final FirebaseUser user = await _auth.currentUser();
+    final Usuario user = await UsuarioBD.obtenerUsuarioActual();
     if (user != null) {
-      Autenticacion.userSignInCorrectly(context);
-      setState(() {
-        _success = true;
-        _userEmail = user.email;
-      });
+      Autenticacion.userSignInCorrectly(context, user);
     } else {
       Autenticacion.userSignInIncorrectly();
-      _success = false;
     }
   }
 

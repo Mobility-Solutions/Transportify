@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:transportify/modelos/Usuario.dart';
@@ -7,23 +8,19 @@ import 'Datos.dart';
 
 class UsuarioBD {
   static const String coleccion_usuarios = 'usuarios';
+  static const String atributo_uid = 'uid';
   static const String atributo_nombre = 'nombre';
   static const String atributo_nickname = 'nickname';
-  static const String atributo_password = 'password';
-  static const String atributo_correo = 'correo';
   static const String atributo_ciudad = 'ciudad';
   static const String atributo_edad = 'edad';
   static const String atributo_paquetes_creados = 'paquetes_creados';
   static const String atributo_viajes_creados = 'viajes_creados';
 
+  static String obtenerUid(DocumentSnapshot snapshot) => snapshot[atributo_uid];
   static String obtenerNombre(DocumentSnapshot snapshot) =>
       snapshot[atributo_nombre];
   static String obtenerNickname(DocumentSnapshot snapshot) =>
       snapshot[atributo_nickname];
-  static String obtenerPassword(DocumentSnapshot snapshot) =>
-      snapshot[atributo_password];
-  static String obtenerCorreo(DocumentSnapshot snapshot) =>
-      snapshot[atributo_correo];
   static String obtenerCiudad(DocumentSnapshot snapshot) =>
       snapshot[atributo_ciudad];
   static int obtenerEdad(DocumentSnapshot snapshot) => snapshot[atributo_edad];
@@ -81,4 +78,35 @@ class UsuarioBD {
       onTap: onTap,
     );
   }
+
+  static Future<AuthResult> crearUsuario({String correo, String password}) {
+    return FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: correo, password: password);
+  }
+
+  static Future<Usuario> obtenerUsuarioActual() => FirebaseAuth.instance
+      .currentUser()
+      .then((firebaseUser) => obtenerUsuarioConUid(firebaseUser.uid));
+
+  static Future<Usuario> obtenerUsuarioConUid(String uid) {
+    return Datos.obtenerColeccion(coleccion_usuarios)
+        .getDocuments()
+        .then((query) {
+      var listadoUsuarios = query.documents;
+      DocumentSnapshot usuarioSnapshot =
+          listadoUsuarios.firstWhere((snapshot) => obtenerUid(snapshot) == uid);
+      return Usuario.fromSnapshot(usuarioSnapshot);
+    });
+  }
+
+  static Future<AuthResult> loginConCorreoYPassword(
+      {String correo, String password}) {
+    return FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: correo,
+      password: password,
+    );
+  }
+
+  static Future<AuthResult> loginConCredenciales(AuthCredential credential) =>
+      FirebaseAuth.instance.signInWithCredential(credential);
 }

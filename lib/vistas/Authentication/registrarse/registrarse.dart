@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:toast/toast.dart';
+import 'package:transportify/middleware/Datos.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/Authentication/Autenticacion.dart';
 
 import '../../CiudadDialog.dart';
-
-final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class Registrarse extends StatefulWidget {
   final String title = 'Registrarse';
@@ -28,8 +28,6 @@ class RegistrarseState extends State<Registrarse> {
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   String _ciudad;
-  bool _success;
-  String _userEmail;
 
   @override
   Widget build(BuildContext context) {
@@ -238,15 +236,23 @@ class RegistrarseState extends State<Registrarse> {
   // Example code for registration.
   void _register() async {
     try {
+      Usuario usuario = new Usuario(
+        nombre: _nameAndSurnameController.text,
+        nickname: _nicknameController.text,
+        ciudad: _ciudad,
+        edad: int.parse(_ageController.text),
+        correo: _emailController.text,
+        password: _passwordController.text,
+      );
+
       try {
-        await _auth.createUserWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
+        await usuario.crearEnBD();
       } on PlatformException catch (error) {
         print(error);
         throw AuthException(error.code, error.message);
       }
+
+      Autenticacion.userSignInCorrectly(this.context, usuario);
     } on AuthException catch (error) {
       String message;
       switch (error.code) {
@@ -260,35 +266,11 @@ class RegistrarseState extends State<Registrarse> {
           break;
       }
 
-      Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-    }
+      Toast.show(message, context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
 
-    final FirebaseUser user = await _auth.currentUser();
-    if (user != null) {
-      _addUserParameters(user.uid);
-      setState(() {
-        _success = true;
-        _userEmail = user.email;
-      });
-    } else {
       Autenticacion.userSignInIncorrectly();
-      _success = false;
     }
-  }
-
-  void _addUserParameters(String userId) async {
-    String nameAndSurname = _nameAndSurnameController.text;
-    String city = _ciudad;
-    String age = _ageController.text;
-    String nickname = _nicknameController.text;
-
-    await Firestore.instance.collection('usuarios').document(userId).setData(({
-          'nombre': nameAndSurname,
-          'ciudad': city,
-          'edad': age,
-          'nickname': nickname,
-        }));
-    Autenticacion.userSignInCorrectly(context);
   }
 
   bool _isEmailCorrectlyFormed(String email) {

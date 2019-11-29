@@ -2,9 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:transportify/modelos/DatosUsuarioActual.dart';
-import 'package:transportify/modelos/PuntoTransportify.dart';
-import 'package:transportify/modelos/Puntos.dart';
+import 'package:transportify/middleware/UsuarioBD.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
@@ -15,9 +13,7 @@ class CreacionViajeForm extends StatefulWidget {
   CreacionViajeForm([this.viajeModificando, Key key, this.title])
       : super(key: key);
   @override
-  _CreacionViajeFormState createState() =>
-      _CreacionViajeFormState();
-
+  _CreacionViajeFormState createState() => _CreacionViajeFormState();
 
   final String title;
   final Viaje viajeModificando;
@@ -58,7 +54,9 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
         key: _formKey,
         child: Scaffold(
             appBar: AppBar(
-              title: (modificando) ? Text("Modificar Viaje") : Text(TransportifyLabels.nuevoViaje) ,
+              title: (modificando)
+                  ? Text("Modificar Viaje")
+                  : Text(TransportifyLabels.nuevoViaje),
               backgroundColor: TransportifyColors.primarySwatch,
               elevation: 0.0,
             ),
@@ -317,8 +315,10 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
   /// Si viajeModificando estaba inicializado lo actualiza con las modificaciones de la view
   /// y lo devuelve. Si no estaba inicializado, lo inicializa y hace lo mismo.
-  Viaje getViajeFromControllers() {
-    Viaje viaje = modificando ? widget.viajeModificando : new Viaje();
+  Future<Viaje> getViajeFromControllers() async {
+    Viaje viaje = modificando
+        ? widget.viajeModificando
+        : new Viaje(transportista: await UsuarioBD.obtenerUsuarioActual());
 
     viaje.cargaMaxima = double.parse(pesoController.text);
 
@@ -330,7 +330,6 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
         choosenTime.minute,
         0);
 
-
     viaje.fecha = fechaViajeElegida;
 
     viaje.destino = destino;
@@ -340,43 +339,44 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
     return viaje;
   }
 
-    @override
+  @override
   void initState() {
     super.initState();
-      if(widget.viajeModificando != null) {
-        pesoController.text = widget.viajeModificando.cargaMaxima.toString();
-        peso = widget.viajeModificando.cargaMaxima;
-        
-        origenController.text = widget.viajeModificando.origen;
-        origen = widget.viajeModificando.origen;
-        
-        destinoController.text = widget.viajeModificando.destino;
-        destino = widget.viajeModificando.destino;
-        
-        fechaController.text = '${widget.viajeModificando.fecha.day} / ${widget.viajeModificando.fecha.month} / ${widget.viajeModificando.fecha.year}';
-        DateTime fechaModificando = new DateTime(
+    if (widget.viajeModificando != null) {
+      pesoController.text = widget.viajeModificando.cargaMaxima.toString();
+      peso = widget.viajeModificando.cargaMaxima;
+
+      origenController.text = widget.viajeModificando.origen;
+      origen = widget.viajeModificando.origen;
+
+      destinoController.text = widget.viajeModificando.destino;
+      destino = widget.viajeModificando.destino;
+
+      fechaController.text =
+          '${widget.viajeModificando.fecha.day} / ${widget.viajeModificando.fecha.month} / ${widget.viajeModificando.fecha.year}';
+      DateTime fechaModificando = new DateTime(
           widget.viajeModificando.fecha.year,
           widget.viajeModificando.fecha.month,
-          widget.viajeModificando.fecha.day
-        );
-        choosenDate = fechaModificando;
-        
-        horaController.text = '${widget.viajeModificando.fecha.hour}:${widget.viajeModificando.fecha.minute}';
-        DateTime horaModificando = new DateTime(
+          widget.viajeModificando.fecha.day);
+      choosenDate = fechaModificando;
+
+      horaController.text =
+          '${widget.viajeModificando.fecha.hour}:${widget.viajeModificando.fecha.minute}';
+      DateTime horaModificando = new DateTime(
           0,
           0,
           0,
           widget.viajeModificando.fecha.hour,
-          widget.viajeModificando.fecha.minute
-        );
-        choosenTime = horaModificando;
+          widget.viajeModificando.fecha.minute);
+      choosenTime = horaModificando;
     }
   }
 
-   @override
+  @override
   void dispose() {
-    if(widget.viajeModificando != null) {
-      pesoController.dispose();      origenController.dispose();
+    if (widget.viajeModificando != null) {
+      pesoController.dispose();
+      origenController.dispose();
       destinoController.dispose();
       fechaController.dispose();
       origenController.dispose();
@@ -387,25 +387,25 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
   Widget buildButtonContainer(String hintText) {
     return TransportifyFormButton(
       text: hintText,
-      onPressed: () {
+      onPressed: () async {
         if (hintText == "ACEPTAR" && modificando) {
           if (_formKey.currentState.validate()) {
-            Viaje viaje = getViajeFromControllers();
+            Viaje viaje = await getViajeFromControllers();
             viaje.updateBD();
 
             TransportifyMethods.doneDialog(context, "Viaje modificado",
                 content: "El viaje ha sido modificado con éxito");
           }
-        } else if(hintText == "ACEPTAR" && !modificando) {
+        } else if (hintText == "ACEPTAR" && !modificando) {
           if (_formKey.currentState.validate()) {
-            Viaje viaje = getViajeFromControllers();
+            Viaje viaje = await getViajeFromControllers();
             viaje.crearEnBD();
-            Usuario usuarioActual = DatosUsuarioActual.instance.usuario;
-            usuarioActual?.viajesCreados++;
-            usuarioActual?.updateBD();
+            Usuario transportista = viaje.transportista;
+            transportista?.viajesCreados++;
+            transportista?.updateBD();
             TransportifyMethods.doneDialog(context, "Viaje creado",
-                content: "El viaje ha sido creado con éxito");            
-          }       
+                content: "El viaje ha sido creado con éxito");
+          }
         } else {
           Navigator.pop(context);
         }
