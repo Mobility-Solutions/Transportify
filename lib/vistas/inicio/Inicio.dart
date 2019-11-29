@@ -205,7 +205,7 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () async {
-          Paquete paquete = await PaquetesDialog.show(context);
+          Paquete paquete = await PaquetesDialog.show(context, usuario: usuario);
           if (paquete != null) {
             if (paquete is Paquete) {
               Navigator.of(context).push(
@@ -304,7 +304,7 @@ class CrearViajePart extends UserDependantStatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () async {
-          Viaje viaje = await ViajeDialog.show(context);
+          Viaje viaje = await ViajeDialog.show(context, usuario: usuario);
           if (viaje != null) {
             if (viaje is Viaje) {
               Navigator.of(context).push(

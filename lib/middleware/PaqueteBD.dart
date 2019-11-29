@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 import 'package:transportify/modelos/Paquete.dart';
 
@@ -62,12 +63,29 @@ class PaqueteBD {
   static DocumentReference obtenerViaje(DocumentSnapshot snapshot) =>
       snapshot[atributo_viaje_asignado];
 
+  static Future<Iterable<Paquete>> obtenerListadoPaquetes() => Firestore
+      .instance
+      .collection(coleccion_paquetes)
+      .getDocuments()
+      .then((snapshot) =>
+          snapshot.documents.map((document) => Paquete.fromSnapshot(document)));
+
+  static StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(
+      Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
+    return Datos.obtenerStreamBuilderCollectionBD(coleccion_paquetes, builder);
+  }
+
+  static Widget obtenerListadoPaquetesWidget(
+      {Usuario usuario, onSelected(int estado)}) {
+    var builder = _obtenerListaEnviosBuilder(usuario, onSelected);
+    return Datos.obtenerStreamBuilderCollectionBD(coleccion_paquetes, builder);
+  }
+
   static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
       _obtenerListaEnviosBuilder(Usuario usuario, onTapMethod(int estado)) =>
           (context, snapshot) =>
               _obtenerListaPaquetes(context, snapshot, usuario, onTapMethod);
 
-  // para todos los paquetes hasta que se haga diferenciación por usuario
   static Widget _obtenerListaPaquetes(
       BuildContext context,
       AsyncSnapshot<QuerySnapshot> snapshot,
@@ -80,7 +98,7 @@ class PaqueteBD {
         List<Paquete> paquetes = snapshot.data.documents
             .map((document) => Paquete.fromSnapshot(document))
             .where((paquete) =>
-                paquete.viajeAsignado != null && paquete.remitente == usuario)
+                paquete.viajeAsignado != null &&  (usuario == null || paquete.remitente == usuario))
             .toList();
         if (index >= 0 && index < paquetes.length) {
           Paquete paquete = paquetes[index];
@@ -88,9 +106,9 @@ class PaqueteBD {
             future: paquete.waitForInit(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                return ListTile(
-                  title: Text(paquete.nombre),
-                  onTap: () => onTapMethod(paquete.estado.index),
+                return _obtenerListViewItemPaquete(
+                  paquete: paquete,
+                  onSelected: (paquete) => onTapMethod(paquete.estado.index),
                 );
               } else {
                 return const SizedBox();
@@ -104,76 +122,23 @@ class PaqueteBD {
     );
   }
 
-  static Future<Iterable<Paquete>> obtenerListadoPaquetes() => Firestore
-      .instance
-      .collection(coleccion_paquetes)
-      .getDocuments()
-      .then((snapshot) =>
-          snapshot.documents.map((document) => Paquete.fromSnapshot(document)));
-
-  static Widget obtenerListaPaquetes({Usuario usuario, onTap(int estado)}) {
-    var builder = _obtenerListaEnviosBuilder(usuario, onTap);
-    return Datos.obtenerStreamBuilderCollectionBD(coleccion_paquetes, builder);
-  }
-
-  //** MÉTODOS PARA EL DÍALOGO DE MODIFICAR PAQUETE */
-
-  static StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(
-      Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
-    return Datos.obtenerStreamBuilderCollectionBD(coleccion_paquetes, builder);
-  }
-
-  static Widget obtenerPaquetesList({Function(Paquete) onSelected}) {
-    return obtenerStreamBuilderListado(
-        _obtenerListadoViajesBuilder(onSelected));
-  }
-
-  static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
-      _obtenerListadoViajesBuilder(Function(Paquete) onSelected) {
-    return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      return _obtenerPaquetesList(context, snapshot, onSelected);
-    };
-  }
-
-  static Widget _obtenerPaquetesList(BuildContext context,
-      AsyncSnapshot<QuerySnapshot> snapshot, Function(Paquete) onSelected) {
-    if (!snapshot.hasData) return const Text('Cargando...');
-
-    var paquetes = snapshot.data.documents;
-
-    return ListView.builder(
-      itemBuilder: (context, index) {
-        if (index >= 0 && index < paquetes.length) {
-          var paquete = paquetes.elementAt(index);
-          return _obtenerListViewItemPaquete(paquete, onSelected);
-        } else {
-          return null;
-        }
-      },
-    );
-  }
-
   static Widget _obtenerListViewItemPaquete(
-      DocumentSnapshot snapshot, Function(Paquete) onSelected) {
-    Paquete paquete = Paquete.fromSnapshot(snapshot);
-    String ciudadOrigen = paquete.origen.direccion ?? "Sin ciudad",
-        ciudadDestino = paquete.destino.direccion ?? "Sin ciudad";
+      {@required Paquete paquete, Function(Paquete) onSelected}) {
+    String ciudadOrigen = paquete.origen?.ciudad ?? "¿?",
+        ciudadDestino = paquete.destino?.ciudad ?? "¿?";
 
     Function onTap;
     if (onSelected != null) {
       onTap = () => onSelected(paquete);
     }
 
+    String fechaEntregaConFormato =
+        DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, "es_ES")
+            .format(paquete.fechaEntrega);
+
     return ListTile(
-      title: Text("Paquete con nombre: " +
-          paquete.nombre +
-          ", con fecha: " +
-          paquete.fechaEntrega.day.toString() +
-          "/" +
-          paquete.fechaEntrega.month.toString() +
-          "/" +
-          paquete.fechaEntrega.year.toString() +
-          "."),
+      title: Text(
+          "${paquete.nombre} ($fechaEntregaConFormato) ($ciudadOrigen -> $ciudadDestino)"),
       onTap: onTap,
     );
   }

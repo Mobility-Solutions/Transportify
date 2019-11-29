@@ -15,7 +15,7 @@ class SeguimientoForm extends UserDependantStatelessWidget {
         appBar: new AppBar(
           title: const Text("Seguimiento"),
         ),
-        body: Center(child: PaqueteBD.obtenerListaPaquetes(usuario: usuario, onTap: obtenerFuncionVerSeguimiento(context))));
+        body: Center(child: PaqueteBD.obtenerListadoPaquetesWidget(usuario: usuario, onSelected: obtenerFuncionVerSeguimiento(context))));
   }
 
   Function(int) obtenerFuncionVerSeguimiento(BuildContext context) {
