@@ -162,7 +162,7 @@ class TopPart extends UserDependantStatelessWidget {
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute<Null>(
                             builder: (BuildContext context) {
-                          return new SeguimientoForm();
+                          return new SeguimientoForm(usuario);
                         }));
                       },
                       child: Column(

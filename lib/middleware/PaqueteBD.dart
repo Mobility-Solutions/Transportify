@@ -5,6 +5,7 @@ import 'package:transportify/modelos/Paquete.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:transportify/middleware/Datos.dart';
+import 'package:transportify/modelos/Usuario.dart';
 
 import 'PuntosBD.dart';
 import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
@@ -48,7 +49,7 @@ class PaqueteBD {
       snapshot[atributo_peso];
   static double obtenerPrecio(DocumentSnapshot snapshot) =>
       snapshot[atributo_precio];
-  
+
   static Timestamp obtenerFechaEntrega(DocumentSnapshot snapshot) =>
       snapshot[atributo_fecha_entrega];
   static int obtenerDiasMargen(DocumentSnapshot snapshot) =>
@@ -57,24 +58,30 @@ class PaqueteBD {
     int estado = snapshot[atributo_estado];
     return estado == null ? null : EstadoPaquete.values[estado];
   }
+
   static DocumentReference obtenerViaje(DocumentSnapshot snapshot) =>
       snapshot[atributo_viaje_asignado];
 
   static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
-      _obtenerListaEnviosBuilder(Function(int estado) onTapMethod) =>
+      _obtenerListaEnviosBuilder(Usuario usuario, onTapMethod(int estado)) =>
           (context, snapshot) =>
-              _obtenerListaPaquetes(context, snapshot, onTapMethod);
+              _obtenerListaPaquetes(context, snapshot, usuario, onTapMethod);
 
   // para todos los paquetes hasta que se haga diferenciación por usuario
-  static Widget _obtenerListaPaquetes(BuildContext context,
-      AsyncSnapshot<QuerySnapshot> snapshot, onTapMethod(int estado)) {
+  static Widget _obtenerListaPaquetes(
+      BuildContext context,
+      AsyncSnapshot<QuerySnapshot> snapshot,
+      Usuario usuario,
+      onTapMethod(int estado)) {
     if (!snapshot.hasData) return const Text('Cargando...');
 
     return ListView.builder(
       itemBuilder: (context, index) {
         List<Paquete> paquetes = snapshot.data.documents
             .map((document) => Paquete.fromSnapshot(document))
-            .where((paquete) => paquete.viajeAsignado != null).toList();
+            .where((paquete) =>
+                paquete.viajeAsignado != null && paquete.remitente == usuario)
+            .toList();
         if (index >= 0 && index < paquetes.length) {
           Paquete paquete = paquetes[index];
           return FutureBuilder(
@@ -97,11 +104,15 @@ class PaqueteBD {
     );
   }
 
-  static Future<Iterable<Paquete>> obtenerListadoPaquetes()
-    => Firestore.instance.collection(coleccion_paquetes).getDocuments().then((snapshot) => snapshot.documents.map((document) => Paquete.fromSnapshot(document)));
+  static Future<Iterable<Paquete>> obtenerListadoPaquetes() => Firestore
+      .instance
+      .collection(coleccion_paquetes)
+      .getDocuments()
+      .then((snapshot) =>
+          snapshot.documents.map((document) => Paquete.fromSnapshot(document)));
 
-  static Widget obtenerListaPaquetes(Function(int estado) onTapMethod) {
-    var builder = _obtenerListaEnviosBuilder(onTapMethod);
+  static Widget obtenerListaPaquetes({Usuario usuario, onTap(int estado)}) {
+    var builder = _obtenerListaEnviosBuilder(usuario, onTap);
     return Datos.obtenerStreamBuilderCollectionBD(coleccion_paquetes, builder);
   }
 
@@ -140,34 +151,29 @@ class PaqueteBD {
         }
       },
     );
-
-
   }
 
   static Widget _obtenerListViewItemPaquete(
       DocumentSnapshot snapshot, Function(Paquete) onSelected) {
     Paquete paquete = Paquete.fromSnapshot(snapshot);
-    String ciudadOrigen, ciudadDestino;
+    String ciudadOrigen = paquete.origen.direccion ?? "Sin ciudad",
+        ciudadDestino = paquete.destino.direccion ?? "Sin ciudad";
 
     Function onTap;
     if (onSelected != null) {
       onTap = () => onSelected(paquete);
     }
 
-    if(paquete.origen == null) {
-      ciudadOrigen = "Sin ciudad";
-    } else {
-      ciudadOrigen = paquete.origen.direccion.toString();
-    }
-
-    if(paquete.destino == null) {
-      ciudadDestino = "Sin ciudad";
-    } else {
-      ciudadDestino = paquete.destino.direccion.toString();
-    }
-
     return ListTile(
-      title: Text("Paquete con nombre: " + paquete.nombre + ", con fecha: " + paquete.fechaEntrega.day.toString() + "/" + paquete.fechaEntrega.month.toString() + "/" + paquete.fechaEntrega.year.toString() +"."),
+      title: Text("Paquete con nombre: " +
+          paquete.nombre +
+          ", con fecha: " +
+          paquete.fechaEntrega.day.toString() +
+          "/" +
+          paquete.fechaEntrega.month.toString() +
+          "/" +
+          paquete.fechaEntrega.year.toString() +
+          "."),
       onTap: onTap,
     );
   }
