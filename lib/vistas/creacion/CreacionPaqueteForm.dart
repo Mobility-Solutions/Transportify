@@ -468,7 +468,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
   @override
   void dispose() {
-    if (widget.miPaquete != null) {
+    if (modificando) {
       nombreController.dispose();
       pesoController.dispose();
       origenController.dispose();
@@ -478,8 +478,8 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
       altoController.dispose();
       anchoController.dispose();
       largoController.dispose();
-      super.dispose();
     }
+    super.dispose();
   }
 
   Widget buildButtonContainer(String hintText) {

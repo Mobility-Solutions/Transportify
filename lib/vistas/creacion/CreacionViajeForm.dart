@@ -374,14 +374,14 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
   @override
   void dispose() {
-    if (widget.viajeModificando != null) {
+    if (modificando) {
       pesoController.dispose();
       origenController.dispose();
       destinoController.dispose();
       fechaController.dispose();
       origenController.dispose();
-      super.dispose();
     }
+    super.dispose();
   }
 
   Widget buildButtonContainer(String hintText) {
