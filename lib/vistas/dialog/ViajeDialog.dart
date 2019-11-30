@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/middleware/ViajeBD.dart';
+import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
+import 'package:transportify/vistas/inicio/Inicio.dart';
 
-import 'creacion/CreacionViajeForm.dart';
-import 'inicio/Inicio.dart';
 
 class ViajeDialog extends UserDependantStatelessWidget {
   ViajeDialog({Usuario usuario}) : super(usuario);

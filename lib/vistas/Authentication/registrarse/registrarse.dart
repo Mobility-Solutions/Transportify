@@ -5,8 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:toast/toast.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
-
-import '../../CiudadDialog.dart';
+import 'package:transportify/vistas/dialog/CiudadDialog.dart';
 
 class Registrarse extends StatefulWidget {
   final String title = 'Registrarse';

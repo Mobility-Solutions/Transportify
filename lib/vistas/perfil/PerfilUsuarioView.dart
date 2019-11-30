@@ -1,10 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
-
-import '../modelos/Usuario.dart';
-import 'Authentication/iniciarSesion/iniciarSesion.dart';
-import 'CiudadDialog.dart';
+import 'package:transportify/vistas/Authentication/iniciarSesion/iniciarSesion.dart';
+import 'package:transportify/vistas/dialog/CiudadDialog.dart';
 
 class PerfilUsuarioView extends StatefulWidget {
   @override
