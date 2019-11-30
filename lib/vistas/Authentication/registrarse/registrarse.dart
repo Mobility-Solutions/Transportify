@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:toast/toast.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
-import 'package:transportify/vistas/Authentication/Autenticacion.dart';
 
 import '../../CiudadDialog.dart';
 
@@ -249,8 +248,6 @@ class RegistrarseState extends State<Registrarse> {
         print(error);
         throw AuthException(error.code, error.message);
       }
-
-      Autenticacion.userSignInCorrectly(this.context, usuario);
     } on AuthException catch (error) {
       String message;
       switch (error.code) {
@@ -266,8 +263,6 @@ class RegistrarseState extends State<Registrarse> {
 
       Toast.show(message, context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-
-      Autenticacion.userSignInIncorrectly();
     }
   }
 
