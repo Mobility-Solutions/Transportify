@@ -76,15 +76,6 @@ class TopPart extends UserDependantStatelessWidget {
                       onPressed: () {
                         /*!TODO llevar a la pantalla de preferencias.*/
                       }),
-
-                  IconButton(
-                      icon: Icon(
-                        Icons.settings,
-                        color: TransportifyColors.appBackground,
-                      ),
-                      onPressed: () {
-                        /*!TODO llevar a la pantalla de preferencias.*/
-                      }),
                   SizedBox(
                     width: 5,
                   ),
