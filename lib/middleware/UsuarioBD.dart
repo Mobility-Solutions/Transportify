@@ -86,7 +86,8 @@ class UsuarioBD {
 
   static Future<Usuario> obtenerUsuarioActual() => FirebaseAuth.instance
       .currentUser()
-      .then((firebaseUser) => obtenerUsuarioConUid(firebaseUser.uid));
+      .then((firebaseUser) => 
+      firebaseUser == null ? null : obtenerUsuarioConUid(firebaseUser.uid));
 
   static Future<Usuario> obtenerUsuarioConUid(String uid) {
     return Datos.obtenerColeccion(coleccion_usuarios)

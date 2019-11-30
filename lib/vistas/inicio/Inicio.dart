@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:transportify/middleware/Datos.dart';
 import 'package:transportify/middleware/PaqueteBD.dart';
 import 'package:transportify/middleware/ViajeBD.dart';
@@ -18,32 +17,21 @@ import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';
 
 import '../ViajeDialog.dart';
 
-void main() async =>
-    await initializeDateFormatting("es_ES", null).then((_) => runApp(MyApp()));
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(fontFamily: 'Quicksand'),
-      home: MyHomePage(),
-    );
-  }
-}
-
 class MyHomePage extends StatefulWidget {
   final Usuario usuario;
+  final VoidCallback logoutCallback;
 
-  MyHomePage({Key key, this.usuario}) : super(key: key);
+  MyHomePage({Key key, this.usuario, this.logoutCallback}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState(usuario: usuario);
+  _MyHomePageState createState() => _MyHomePageState(usuario: usuario,logoutCallback: this.logoutCallback );
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   final Usuario usuario;
+  final VoidCallback logoutCallback;
 
-  _MyHomePageState({this.usuario});
+  _MyHomePageState({this.usuario,this.logoutCallback});
 
   @override
   Widget build(BuildContext context) {
@@ -88,9 +76,18 @@ class TopPart extends UserDependantStatelessWidget {
                       onPressed: () {
                         /*!TODO llevar a la pantalla de preferencias.*/
                       }),
+
+                  IconButton(
+                      icon: Icon(
+                        Icons.settings,
+                        color: TransportifyColors.appBackground,
+                      ),
+                      onPressed: () {
+                        /*!TODO llevar a la pantalla de preferencias.*/
+                      }),
                   SizedBox(
                     width: 5,
-                  )
+                  ),
                 ],
               ),
               Row(
