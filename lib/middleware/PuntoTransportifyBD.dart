@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:transportify/middleware/Datos.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/util/style.dart';
+import 'package:transportify/vistas/MapaView.dart';
 
 class PuntoTransportifyBD {
   static const String coleccion_puntos = 'puntos_transportify';
@@ -128,7 +129,8 @@ class PuntoTransportifyBD {
   }
 
   static Widget _obtenerSelector<T>(
-      {Widget antesDelListado = const SizedBox(),
+      {BuildContext context,
+      Widget antesDelListado = const SizedBox(),
       Widget listado,
       Widget despuesDelListado = const SizedBox(),
       Function(T) onSelected,
@@ -157,7 +159,12 @@ class PuntoTransportifyBD {
               IconButton(
                 icon: Icon(Icons.map,
                     color: TransportifyColors.primarySwatch[900]),
-                onPressed: () {}, // TODO: onPressed del boton del mapa
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute<Null>(
+                              builder: (BuildContext context) {
+                            return MapaView();
+                          }));
+                }, // TODO: onPressed del boton del mapa
               ),
               Expanded(
                 child: TransportifyFormButton(

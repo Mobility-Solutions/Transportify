@@ -8,6 +8,7 @@ import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:transportify/vistas/MapaView.dart';
 
 import '../PuntosDialog.dart';
 
@@ -208,13 +209,20 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                     "Punto Transportify de origen"),
                 onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
+                  /**
                   PuntoTransportify returnPunto =
                       await PuntosDialog.show(this.context);
-
+                  */
+                  Navigator.of(context).push(MaterialPageRoute<Null>(
+                              builder: (BuildContext context) {
+                            return MapaView();
+                          }));
+                  /** 
                   if (returnPunto != null) {
                     puntos.origen = returnPunto;
                     origenController.text = puntos.origen?.nombre;
                   }
+                  */
                 },
                 validator: (value) => puntos.validate(),
               ),
@@ -226,15 +234,23 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 controller: destinoController,
                 decoration: TransportifyMethods.returnTextFormDecoration(
                     "Punto Transportify de destino"),
-                onTap: () async {
+                onTap: () {
+                  
                   FocusScope.of(context).requestFocus(FocusNode());
+                  /**
                   PuntoTransportify returnPunto =
                       await PuntosDialog.show(this.context);
-
+                  */
+                  Navigator.of(context).push(MaterialPageRoute<Null>(
+                              builder: (BuildContext context) {
+                            return MapaView();
+                          }));
+                  /** 
                   if (returnPunto != null) {
                     puntos.destino = returnPunto;
                     destinoController.text = puntos.destino?.nombre;
                   }
+                  */
                 },
                 validator: (value) => puntos.validate(),
               ),
@@ -464,6 +480,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
         _sliderValue = widget.miPaquete.diasMargen.toDouble();
       }
     }
+    
   }
 
   @override
