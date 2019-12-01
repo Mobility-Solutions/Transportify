@@ -215,7 +215,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                   */
                   Navigator.of(context).push(MaterialPageRoute<Null>(
                               builder: (BuildContext context) {
-                            return MapaView();
+                            return MapaView(true);
                           }));
                   /** 
                   if (returnPunto != null) {
@@ -243,7 +243,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                   */
                   Navigator.of(context).push(MaterialPageRoute<Null>(
                               builder: (BuildContext context) {
-                            return MapaView();
+                            return MapaView(true);
                           }));
                   /** 
                   if (returnPunto != null) {

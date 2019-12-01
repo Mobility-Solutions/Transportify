@@ -6,6 +6,7 @@ import 'package:transportify/middleware/UsuarioBD.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
+import 'package:transportify/vistas/MapaView.dart';
 
 import '../CiudadDialog.dart';
 
@@ -83,6 +84,12 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                         "Ciudad de origen"),
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
+
+                      Navigator.of(context).push(
+                      MaterialPageRoute<Null>(builder: (BuildContext context) {
+                      return new MapaView(false);
+                      }));
+                      /** 
                       String returnCiudad =
                           await CiudadDialog.show(this.context);
 
@@ -90,6 +97,7 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                         origen = returnCiudad;
                         origenController.text = origen;
                       }
+                      */
                     },
                     validator: (value) {
                       if (origen == null || destino == null)
@@ -117,6 +125,12 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                         "Ciudad de destino"),
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
+
+                      Navigator.of(context).push(
+                      MaterialPageRoute<Null>(builder: (BuildContext context) {
+                      return new MapaView(false);
+                      }));
+                      /** 
                       String returnCiudad =
                           await CiudadDialog.show(this.context);
 
@@ -124,6 +138,7 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                         destino = returnCiudad;
                         destinoController.text = destino;
                       }
+                      */
                     },
                     validator: (value) {
                       if (origen == null || destino == null)

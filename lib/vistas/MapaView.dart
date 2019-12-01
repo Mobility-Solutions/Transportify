@@ -6,9 +6,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:transportify/util/style.dart';
 
 class MapaView extends StatefulWidget {
-  MapaView([Key key]):super(key: key);
+  MapaView([this.puntoSelector, Key key]):super(key: key);
   @override
   _MapaViewState createState() => _MapaViewState();
+
+  final bool puntoSelector;
 }
 
 class _MapaViewState extends State<MapaView> {
@@ -25,7 +27,7 @@ void _onMapCreated(GoogleMapController controller) {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Elegir ciudad/Punto Transportify'),
+          title: (widget.puntoSelector == true) ? Text('Elegir Punto Transportify') : Text('Elegir Ciudad'),
           backgroundColor: TransportifyColors.primarySwatch,
           centerTitle: true,
         ),
@@ -53,15 +55,32 @@ void _onMapCreated(GoogleMapController controller) {
                     width: 15.0
                   ),
                   Text(
-                    'Punto Seleccionado: ',
+                    (widget.puntoSelector == true) ? 'Punto Seleccionado:' : 'Ciudad Seleccionada:',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 25
-                  )
-              ),
+                    )
+                  ),
                 ],
               ),
-            ],
+              SizedBox(
+                height: 5.0
+              ),
+               Row(
+                children: <Widget>[
+                  SizedBox(
+                    width: 15.0
+                  ),
+                  Text(
+                    'Calle de la Amargura',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15
+                    )
+                  ),
+                ],
+              ),
+            ],  
           ),
         ),        
         extendBody: false,
