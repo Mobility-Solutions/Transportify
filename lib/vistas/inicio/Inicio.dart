@@ -9,10 +9,11 @@ import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
-import 'package:transportify/vistas/inicio/WidgetInicial.dart';
-import 'package:transportify/vistas/dialog/PaquetesDialog.dart';
+import 'package:transportify/vistas/actividad/MiActividadView.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
+import 'package:transportify/vistas/dialog/PaquetesDialog.dart';
+import 'package:transportify/vistas/inicio/WidgetInicial.dart';
 import 'package:transportify/vistas/perfil/PerfilUsuarioView.dart';
 import 'package:transportify/vistas/seguimiento/SeguimientoForm.dart';
 import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
@@ -137,16 +138,24 @@ class TopPart extends UserDependantStatelessWidget {
                   ),
                   Column(
                     children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.pink)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.all_inclusive,
-                            color: TransportifyColors.primarySwatch[500],
-                            size: 30.0,
+                      GestureDetector(
+                        onTap: () async {
+                          Navigator.of(context).push(MaterialPageRoute<Null>(
+                              builder: (BuildContext context) {
+                            return MiActividadView(usuario);
+                          }));
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.pink)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.all_inclusive,
+                              color: TransportifyColors.primarySwatch[500],
+                              size: 30.0,
+                            ),
                           ),
                         ),
                       ),
