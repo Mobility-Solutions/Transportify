@@ -180,6 +180,58 @@ class _MapaViewState extends State<MapaView> {
         }
       ),
     );
+    ciudadList.add(
+      Marker(
+        markerId: MarkerId("Toledo"),
+        position: new LatLng(39.8581000, -4.0226300),
+        draggable: false,
+        onTap: () {
+          setState(() {
+            lugarSeleccionado = "Toledo";
+          });
+
+        }
+      ),
+    );
+    ciudadList.add(
+      Marker(
+        markerId: MarkerId("Madrid"),
+        position: new LatLng(40.4165000, -3.7025600),
+        draggable: false,
+        onTap: () {
+          setState(() {
+            lugarSeleccionado = "Madrid";
+          });
+
+        }
+      ),
+    );
+    ciudadList.add(
+      Marker(
+        markerId: MarkerId("Segovia"),
+        position: new LatLng(40.9480800, -4.1183900),
+        draggable: false,
+        onTap: () {
+          setState(() {
+            lugarSeleccionado = "Segovia";
+          });
+
+        }
+      ),
+    );
+    ciudadList.add(
+      Marker(
+        markerId: MarkerId("Sevilla"),
+        position: new LatLng(37.3828300, -5.9731700),
+        draggable: false,
+        onTap: () {
+          setState(() {
+            lugarSeleccionado = "Sevilla";
+          });
+
+        }
+      ),
+    );
 
   }
 
