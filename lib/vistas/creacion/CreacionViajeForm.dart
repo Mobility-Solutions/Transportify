@@ -38,6 +38,7 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
   // Ciudades origen y destino
   String origen, destino;
+  String returnCiudad;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -48,6 +49,27 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
   void _remove() {
     if (peso - 1 >= 0.0) pesoController.text = (peso -= 1).toString();
   }
+  //Abre la página del mapa y a la vuelta de la misma, le pasa la ciudad seleccionada al controlador indicado
+  getCiudadSeleccionada(BuildContext context, bool origenLocation) async {
+      final ciudadSeleccionada = await Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => MapaView(false))) as String;
+
+      returnCiudad = ciudadSeleccionada;
+
+      if(origenLocation) {
+        if (returnCiudad != null) {
+          origen = returnCiudad;
+          origenController.text = origen;
+        } 
+    } else {
+        if (returnCiudad != null) {
+          destino = returnCiudad;
+          destinoController.text = destino;
+        }
+    }
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -82,22 +104,11 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                     controller: origenController,
                     decoration: TransportifyMethods.returnTextFormDecoration(
                         "Ciudad de origen"),
-                    onTap: () async {
+                    onTap: () {
                       FocusScope.of(context).requestFocus(FocusNode());
-
-                      Navigator.of(context).push(
-                      MaterialPageRoute<Null>(builder: (BuildContext context) {
-                      return new MapaView(false);
-                      }));
-                      /** 
-                      String returnCiudad =
-                          await CiudadDialog.show(this.context);
-
-                      if (returnCiudad != null) {
-                        origen = returnCiudad;
-                        origenController.text = origen;
-                      }
-                      */
+                      
+                      getCiudadSeleccionada(context, true);
+                      
                     },
                     validator: (value) {
                       if (origen == null || destino == null)
@@ -123,22 +134,14 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                     controller: destinoController,
                     decoration: TransportifyMethods.returnTextFormDecoration(
                         "Ciudad de destino"),
-                    onTap: () async {
+                    onTap: () {
                       FocusScope.of(context).requestFocus(FocusNode());
+                      getCiudadSeleccionada(context, false);
+                      
 
-                      Navigator.of(context).push(
-                      MaterialPageRoute<Null>(builder: (BuildContext context) {
-                      return new MapaView(false);
-                      }));
-                      /** 
-                      String returnCiudad =
-                          await CiudadDialog.show(this.context);
 
-                      if (returnCiudad != null) {
-                        destino = returnCiudad;
-                        destinoController.text = destino;
-                      }
-                      */
+                      
+                      
                     },
                     validator: (value) {
                       if (origen == null || destino == null)

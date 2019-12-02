@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:transportify/util/style.dart';
 
@@ -16,14 +17,20 @@ class MapaView extends StatefulWidget {
 class _MapaViewState extends State<MapaView> {
 
   CameraPosition _initialPosition = CameraPosition(target: LatLng(40.416775, 	-2.8), zoom: 5);
-Completer<GoogleMapController> _controller = Completer();
+  Completer<GoogleMapController> _controller = Completer();
+  List<Marker> puntosList = [];
+  List<Marker> ciudadList = [];
+
+  String lugarSeleccionado;
 
 
-void _onMapCreated(GoogleMapController controller) {
-    _controller.complete(controller);
-}
 
-@override
+  void _onMapCreated(GoogleMapController controller) {
+      _controller.complete(controller);
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -42,6 +49,7 @@ void _onMapCreated(GoogleMapController controller) {
                 height: MediaQuery.of(context).size.height - 250,
                 width: MediaQuery.of(context).size.width,
                 child: GoogleMap(    
+                    markers: (widget.puntoSelector == true) ? Set.from(puntosList) : Set.from(ciudadList),
                     onMapCreated: _onMapCreated,
                     initialCameraPosition: _initialPosition,
                 ),
@@ -72,11 +80,12 @@ void _onMapCreated(GoogleMapController controller) {
                     width: 15.0
                   ),
                   Text(
-                    'Calle de la Amargura',
+                    '$lugarSeleccionado',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 15
-                    )
+                    ),
+                    
                   ),
                 ],
               ),
@@ -115,7 +124,7 @@ void _onMapCreated(GoogleMapController controller) {
                           child: TransportifyFormButton(
                             text: 'Guardar',
                             onPressed: () {
-                              
+                              Navigator.pop(context, this.lugarSeleccionado);
                             },),
                         ),
                         SizedBox(
@@ -128,6 +137,50 @@ void _onMapCreated(GoogleMapController controller) {
               ),
           ],
         ));
+  }
+
+  @override
+  void initState() { 
+    super.initState();
+    if(widget.puntoSelector) {
+      initPuntosTransportify();
+    } else {
+      initCiudades();
+    }            
+  }
+            
+  void initPuntosTransportify() {
+
+  }
+      
+  void initCiudades() {
+    ciudadList.add(
+      Marker(
+        markerId: MarkerId("Valencia"),
+        position: new LatLng(39.4697500, -0.3773900),
+        draggable: false,
+        onTap: () {
+          setState(() {
+            lugarSeleccionado = "Valencia";
+          });
+
+        }
+      ),
+    );
+    ciudadList.add(
+      Marker(
+        markerId: MarkerId("Barcelona"),
+        position: new LatLng(41.3887901, 2.1589899),
+        draggable: false,
+        onTap: () {
+          setState(() {
+            lugarSeleccionado = "Barcelona";
+          });
+
+        }
+      ),
+    );
+
   }
 
 
