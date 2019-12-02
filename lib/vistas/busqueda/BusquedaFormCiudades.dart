@@ -4,6 +4,7 @@ import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/CiudadDialog.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:transportify/vistas/MapaView.dart';
 
 import 'BusquedaForm.dart';
 
@@ -14,13 +15,33 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
   final horaController = TextEditingController();
   final fechaController = TextEditingController();
 
-  String origen, destino;
+  String origen, destino, returnCiudad;
   DateTime choosenDate, choosenTime;
   BusquedaFormCiudadesState({titulo, coleccionBD, textoResultados})
       : super(
             titulo: titulo,
             coleccionBD: coleccionBD,
             textoResultados: textoResultados);
+
+  //Abre la página del mapa y a la vuelta de la misma, le pasa la ciudad seleccionada al controlador indicado
+  getCiudadSeleccionada(BuildContext context, bool origenLocation) async {
+      final ciudadSeleccionada = await Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => MapaView(false))) as String;
+
+      returnCiudad = ciudadSeleccionada;
+
+      if(origenLocation) {
+        if (returnCiudad != null) {
+          origen = returnCiudad;
+          origenController.text = origen;
+        } 
+    } else {
+        if (returnCiudad != null) {
+          destino = returnCiudad;
+          destinoController.text = destino;
+        }
+    }
+  }
 
   @override
   Widget buildSelectorBusqueda(BuildContext context) {
@@ -37,14 +58,9 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
           controller: origenController,
           decoration: TransportifyMethods.returnTextFormDecoration(
               "Ciudad de origen"),
-          onTap: () async {
+          onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
-            String returnCiudad = await CiudadDialog.show(this.context);
-
-            if (returnCiudad != null) {
-              origen = returnCiudad;
-              origenController.text = origen;
-            }
+            getCiudadSeleccionada(context, true);
           },
           validator: (value) {
             if (origen == null || destino == null)
@@ -65,14 +81,9 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
           controller: destinoController,
           decoration: TransportifyMethods.returnTextFormDecoration(
               "Ciudad de destino"),
-          onTap: () async {
+          onTap: ()  {
             FocusScope.of(context).requestFocus(FocusNode());
-            String returnCiudad = await CiudadDialog.show(this.context);
-
-            if (returnCiudad != null) {
-              destino = returnCiudad;
-              destinoController.text = destino;
-            }
+            getCiudadSeleccionada(context, false);
           },
           validator: (value) {
             if (origen == null || destino == null)
