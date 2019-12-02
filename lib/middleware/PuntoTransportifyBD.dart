@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:transportify/Keys.dart';
 import 'package:transportify/middleware/Datos.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/util/style.dart';
@@ -161,6 +162,7 @@ class PuntoTransportifyBD {
               ),
               Expanded(
                 child: TransportifyFormButton(
+                  key: Key(Keys.cancelButton),
                   text: "CANCELAR",
                   onPressed: () => onCanceled(),
                 ),
@@ -170,6 +172,7 @@ class PuntoTransportifyBD {
               ),
               Expanded(
                 child: TransportifyFormButton(
+                  key: Key(Keys.acceptButton),
                   text: "OK",
                   onPressed: () => onSelected(itemSeleccionado),
                 ),
@@ -190,6 +193,7 @@ class PuntoTransportifyBD {
         .toSet();
 
     return ListView.builder(
+      key: Key(Keys.selectorCiudadesListView),
       itemBuilder: (context, index) {
         if (index >= 0 && index < ciudades.length) {
           String ciudad = ciudades.elementAt(index);

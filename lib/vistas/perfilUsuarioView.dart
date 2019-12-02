@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:transportify/Keys.dart';
 import 'package:transportify/util/style.dart';
 
 import '../modelos/Usuario.dart';
@@ -45,6 +46,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
           elevation: 0.0,
           actions: <Widget>[
             IconButton(
+              key: Key(Keys.editButton),
               icon: Icon(Icons.edit),
               iconSize: 40,
               color: colorEditar,
@@ -70,6 +72,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                   ),
 
                     TextFormField(
+                    key: Key(Keys.inputNombre),
                     controller: nombreApellidosText,
                     enabled: editable,
                     maxLines: 1,
@@ -96,6 +99,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                   ),
 
                   TextFormField(
+                    key: Key(Keys.inputCorreo),
                     controller: correoText,
                     enabled: editable,
                     maxLines: 1,
@@ -124,6 +128,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                   ),
 
                   TextFormField(
+                    key: Key(Keys.inputCiudad),
                     controller: ciudadText,
                     enabled: editable,
                     maxLines: 1,
@@ -158,6 +163,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                   ),
                   
                   TextFormField(
+                    key: Key(Keys.inputEdad),
                     controller: edadText,
                     enabled: editable,
                     maxLines: 1,
@@ -191,6 +197,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                     children: <Widget>[
 
                       RaisedButton(
+                        key: Key(Keys.saveButton),
                         color: colorGuardarCambios,
                         textColor: Colors.white,
                         disabledColor: Colors.grey,

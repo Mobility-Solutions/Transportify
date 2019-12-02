@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:transportify/Keys.dart';
 import 'package:transportify/middleware/UsuarioBD.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
@@ -27,6 +28,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           TextFormField(
+            key: Key(Keys.inputCorreo),
             controller: _emailController,
             maxLines: 1,
             keyboardType: TextInputType.emailAddress,
@@ -49,6 +51,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
             ),
           ),
           TextFormField(
+            key: Key(Keys.inputPassword),
             controller: _passwordController,
             maxLines: 1,
             obscureText: true,
@@ -72,6 +75,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             alignment: Alignment.center,
             child: RaisedButton(
+              key: Key(Keys.loginButton),
               color: TransportifyColors.primarySwatch,
               textColor: Colors.white,
               disabledColor: Colors.grey,

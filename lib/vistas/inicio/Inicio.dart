@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:transportify/Keys.dart';
 import 'package:transportify/middleware/Datos.dart';
 import 'package:transportify/middleware/PaqueteBD.dart';
 import 'package:transportify/middleware/ViajeBD.dart';
@@ -81,6 +82,7 @@ class TopPart extends UserDependantStatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   IconButton(
+                      key: Key(Keys.ajustesApp),
                       icon: Icon(
                         Icons.settings,
                         color: TransportifyColors.appBackground,
@@ -99,6 +101,7 @@ class TopPart extends UserDependantStatelessWidget {
                   Column(
                     children: <Widget>[
                       GestureDetector(
+                        key: Key(Keys.ajustesPerfil),
                         onTap: () async {
                           Navigator.of(context).push(MaterialPageRoute<Null>(
                               builder: (BuildContext context) {
@@ -159,6 +162,7 @@ class TopPart extends UserDependantStatelessWidget {
                     ],
                   ),
                   GestureDetector(
+                      key: Key(Keys.ventanaSeguimiento),
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute<Null>(
                             builder: (BuildContext context) {
@@ -204,8 +208,10 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+        key: Key(Keys.crearPaquete),
         onTap: () async {
-          Paquete paquete = await PaquetesDialog.show(context, usuario: usuario);
+          Paquete paquete =
+              await PaquetesDialog.show(context, usuario: usuario);
           if (paquete != null) {
             if (paquete is Paquete) {
               Navigator.of(context).push(
@@ -303,6 +309,7 @@ class CrearViajePart extends UserDependantStatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+        key: Key(Keys.crearViaje),
         onTap: () async {
           Viaje viaje = await ViajeDialog.show(context, usuario: usuario);
           if (viaje != null) {
@@ -447,6 +454,7 @@ class BuscarPart extends StatelessWidget {
                   ),
                   SizedBox(height: 10.0),
                   GestureDetector(
+                    key: Key(Keys.buscarViaje),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute<Null>(
                           builder: (BuildContext context) {
@@ -471,6 +479,7 @@ class BuscarPart extends StatelessWidget {
                   ),
                   SizedBox(height: 10.0),
                   GestureDetector(
+                    key: Key(Keys.buscarPaquete),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute<Null>(
                           builder: (BuildContext context) {
