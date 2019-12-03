@@ -54,7 +54,7 @@ class _RootPageState extends State<RootPage>{
       body: Container(
         alignment: Alignment.center,
         child:
-        CircularProgressIndicator(),
+        const CircularProgressIndicator(),
       ),
     );
   }
