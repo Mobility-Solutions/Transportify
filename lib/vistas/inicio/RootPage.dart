@@ -6,7 +6,7 @@ import 'package:transportify/middleware/UsuarioBD.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/enumerados/AuthStatus.dart';
 
-import 'package:transportify/vistas/Authentication/WidgetInicial.dart';
+import 'package:transportify/vistas/inicio/WidgetInicial.dart';
 
 class RootPage extends StatefulWidget {
   @override

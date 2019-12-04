@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
-import 'package:transportify/vistas/Authentication/iniciarSesion/iniciarSesion.dart';
+import 'package:transportify/vistas/inicio/Authentication/iniciarSesion/iniciarSesion.dart';
 import 'package:transportify/vistas/dialog/CiudadDialog.dart';
 
 class PerfilUsuarioView extends StatefulWidget {

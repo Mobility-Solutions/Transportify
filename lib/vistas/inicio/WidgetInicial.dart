@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/enumerados/AuthStatus.dart';
-import 'package:transportify/vistas/Authentication/WaitingScreen.dart';
-import 'package:transportify/vistas/Authentication/iniciarSesion/iniciarSesion.dart';
+import 'package:transportify/vistas/inicio/WaitingScreen.dart';
+import 'package:transportify/vistas/inicio/Authentication/iniciarSesion/iniciarSesion.dart';
 import 'package:transportify/vistas/inicio/Inicio.dart';
 
 abstract class WidgetInicial extends Widget {

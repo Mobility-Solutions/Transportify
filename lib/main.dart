@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:transportify/vistas/Authentication/iniciarSesion/RootPage.dart';
+import 'package:transportify/vistas/inicio/RootPage.dart';
 
 void main() async =>
     await initializeDateFormatting("es_ES", null).then((_) => runApp(MyApp()));
