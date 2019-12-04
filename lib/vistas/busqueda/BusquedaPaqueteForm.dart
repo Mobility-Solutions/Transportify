@@ -155,7 +155,7 @@ class _BusquedaPaqueteFormState
                                 color: Colors.grey[500], fontSize: 18),
                           ),
                           Text(
-                            ' ${listaResultados[index].precio ?? 'No'}',
+                            ' ${listaResultados[index].precio-listaResultados[index].precio*0.05 ?? 'No'}',
                             textAlign: TextAlign.right,
                             style: TextStyle(color: Colors.black, fontSize: 18),
                           ),

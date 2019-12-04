@@ -22,6 +22,7 @@ class CreacionPaqueteForm extends StatefulWidget {
 class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   final nombreController = TextEditingController();
   final pesoController = TextEditingController();
+  final precioController = TextEditingController();
   final origenController = TextEditingController();
   final destinoController = TextEditingController();
   final fechaController = TextEditingController();
@@ -31,6 +32,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   final horaController = TextEditingController();
 
   double peso = 0.0;
+  double precio = 0.0;
   bool _fragil = false;
   double alto = 0.0;
   double ancho = 0.0;
@@ -47,12 +49,20 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
   final _formKey = GlobalKey<FormState>();
 
-  void _add() {
+  void _addPeso() {
     pesoController.text = (peso += 1).toString();
   }
 
-  void _remove() {
+  void _removePeso() {
     if (peso - 1 >= 0.0) pesoController.text = (peso -= 1).toString();
+  }
+
+  void _addPrecio() {
+    precioController.text = (precio += 1).toString();
+  }
+
+  void _removePrecio() {
+    if (precio - 1 >= 0.0) precioController.text = (precio -= 1).toString();
   }
 
   @override
@@ -81,7 +91,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 decoration:
-                    TransportifyMethods.returnTextFormDecoration("Nombre"),
+                TransportifyMethods.returnTextFormDecoration("Nombre"),
                 controller: nombreController,
                 validator: (value) {
                   if (value.isEmpty)
@@ -122,7 +132,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        _add();
+                        _addPeso();
                       },
                     ),
                   ),
@@ -135,7 +145,58 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        _remove();
+                        _removePeso();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20.0),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextFormField(
+                      maxLines: 1,
+                      keyboardType: TextInputType.number,
+                      autofocus: false,
+                      style: TextStyle(color: TransportifyColors.primarySwatch),
+                      decoration: TransportifyMethods.returnTextFormDecoration(
+                          "Precio(€)"),
+                      onChanged: (text) {
+                        precio = double.parse(text);
+                      },
+                      controller: precioController,
+                      validator: (value) {
+                        if (value.isEmpty || double.parse(value) <= 0)
+                          return 'Precio incorrecto';
+                        else
+                          return null;
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 10.0),
+                  Flexible(
+                    child: RaisedButton(
+                      color: TransportifyColors.primarySwatch[900],
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        _addPrecio();
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Flexible(
+                    child: RaisedButton(
+                      color: TransportifyColors.primarySwatch[900],
+                      child: Icon(
+                        Icons.remove,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        _removePrecio();
                       },
                     ),
                   ),
@@ -147,20 +208,20 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 children: <Widget>[
                   Flexible(
                       child: TextFormField(
-                    maxLines: 1,
-                    keyboardType: TextInputType.number,
-                    autofocus: false,
-                    style: TextStyle(color: TransportifyColors.primarySwatch),
-                    decoration: TransportifyMethods.returnTextFormDecoration(
-                        "Alto(cm)"),
-                    controller: altoController,
-                    validator: (value) {
-                      if (value.isEmpty || double.parse(value) <= 0)
-                        return 'Alto(cm)';
-                      else
-                        return null;
-                    },
-                  )),
+                        maxLines: 1,
+                        keyboardType: TextInputType.number,
+                        autofocus: false,
+                        style: TextStyle(color: TransportifyColors.primarySwatch),
+                        decoration: TransportifyMethods.returnTextFormDecoration(
+                            "Alto(cm)"),
+                        controller: altoController,
+                        validator: (value) {
+                          if (value.isEmpty || double.parse(value) <= 0)
+                            return 'Alto(cm)';
+                          else
+                            return null;
+                        },
+                      )),
                   Flexible(
                     child: TextFormField(
                       maxLines: 1,
@@ -209,7 +270,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
                   PuntoTransportify returnPunto =
-                      await PuntosDialog.show(this.context);
+                  await PuntosDialog.show(this.context);
 
                   if (returnPunto != null) {
                     puntos.origen = returnPunto;
@@ -229,7 +290,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
                   PuntoTransportify returnPunto =
-                      await PuntosDialog.show(this.context);
+                  await PuntosDialog.show(this.context);
 
                   if (returnPunto != null) {
                     puntos.destino = returnPunto;
@@ -254,12 +315,12 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                       maxTime: new DateTime(DateTime.now().year + 3),
                       //onChanged: (date) {print ('change $date');},
                       onConfirm: (date) {
-                    _fechaentrega = date;
-                    String _date = '${date.day} - ${date.month} - ${date.year}';
-                    setState(() {
-                      fechaController.text = _date;
-                    });
-                  }, currentTime: DateTime.now(), locale: LocaleType.es);
+                        _fechaentrega = date;
+                        String _date = '${date.day} - ${date.month} - ${date.year}';
+                        setState(() {
+                          fechaController.text = _date;
+                        });
+                      }, currentTime: DateTime.now(), locale: LocaleType.es);
                 },
                 keyboardType: TextInputType.datetime,
                 autofocus: false,
@@ -285,13 +346,13 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                         containerHeight: 200.0,
                       ),
                       showTitleActions: true, onConfirm: (time) {
-                    print('confirm $time');
-                    _horaEntrega = time;
-                    String _time = DateFormat.Hm().format(time);
-                    setState(() {
-                      horaController.text = _time;
-                    });
-                  }, currentTime: DateTime.now(), locale: LocaleType.es);
+                        print('confirm $time');
+                        _horaEntrega = time;
+                        String _time = DateFormat.Hm().format(time);
+                        setState(() {
+                          horaController.text = _time;
+                        });
+                      }, currentTime: DateTime.now(), locale: LocaleType.es);
                 },
                 decoration: TransportifyMethods.returnTextFormDecoration(
                     "Hora de comienzo del viaje"),
@@ -309,12 +370,12 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 children: <Widget>[
                   Flexible(
                       child: Text(
-                    'Frágil',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18.0,
-                    ),
-                  )),
+                        'Frágil',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        ),
+                      )),
                   Flexible(
                     child: Checkbox(
                       value: _fragil,
@@ -392,6 +453,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
     double _ancho = double.parse(anchoController.text);
     double _largo = double.parse(largoController.text);
     double _peso = double.parse(pesoController.text);
+    double _precio = double.parse(precioController.text);
     int diasMargenFinal = diasMargen.toInt();
     String _nombre = nombreController.text;
     DateTime fechaPaqueteElegida = new DateTime(
@@ -410,6 +472,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
       ancho: _ancho,
       largo: _largo,
       peso: _peso,
+      precio: _precio,
       fragil: _fragil,
       origen: puntos.origen,
       destino: puntos.destino,
@@ -425,7 +488,9 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
     if (widget.miPaquete != null) {
       nombreController.text = widget.miPaquete.nombre;
       pesoController.text = widget.miPaquete.peso.toString();
+      precioController.text = widget.miPaquete.precio.toString();
       peso = widget.miPaquete.peso;
+      precio = widget.miPaquete.precio;
       puntos.origen = widget.miPaquete.origen;
       puntos.destino = widget.miPaquete.destino;
       if (widget.miPaquete.origen != null) {
@@ -441,7 +506,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
       }
 
       fechaController.text =
-          '${widget.miPaquete.fechaEntrega.day} / ${widget.miPaquete.fechaEntrega.month} / ${widget.miPaquete.fechaEntrega.year}';
+      '${widget.miPaquete.fechaEntrega.day} / ${widget.miPaquete.fechaEntrega.month} / ${widget.miPaquete.fechaEntrega.year}';
       DateTime fechaModificando = new DateTime(
           widget.miPaquete.fechaEntrega.year,
           widget.miPaquete.fechaEntrega.month,
@@ -471,6 +536,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
     if (modificando) {
       nombreController.dispose();
       pesoController.dispose();
+      precioController.dispose();
       origenController.dispose();
       destinoController.dispose();
       fechaController.dispose();
@@ -502,6 +568,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
             widget.miPaquete.ancho = double.parse(anchoController.text);
             widget.miPaquete.largo = double.parse(largoController.text);
             widget.miPaquete.peso = double.parse(pesoController.text);
+            widget.miPaquete.precio = double.parse(precioController.text);
             widget.miPaquete.origen = puntos.origen;
             widget.miPaquete.destino = puntos.destino;
             widget.miPaquete.nombre = nombreController.text;
