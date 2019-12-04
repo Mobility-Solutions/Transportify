@@ -8,8 +8,8 @@ class WaitingScreen extends StatelessWidget implements WidgetInicial {
   @override
   Widget build(BuildContext context) {
     // TODO: Pantalla de carga (splash)
-    return Scaffold(
-      body: Center(
+    return const Scaffold(
+      body: const Center(
         child: const CircularProgressIndicator(),
       ),
     );
