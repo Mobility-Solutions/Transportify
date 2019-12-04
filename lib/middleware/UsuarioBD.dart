@@ -110,4 +110,6 @@ class UsuarioBD {
 
   static Future<AuthResult> loginConCredenciales(AuthCredential credential) =>
       FirebaseAuth.instance.signInWithCredential(credential);
+
+  static Future<void> signOut() => FirebaseAuth.instance.signOut();
 }

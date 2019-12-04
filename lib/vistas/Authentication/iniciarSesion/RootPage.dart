@@ -61,10 +61,12 @@ class _RootPageState extends State<RootPage> {
     });
   }
 
-  void logoutCallback() {
-    setState(() {
-      _authStatusController.add(AuthStatus.NOT_LOGGED_IN);
-      _usuarioController.add(null);
+  void logoutCallback() async {
+    await UsuarioBD.signOut().then((_) {
+      setState(() {
+        _authStatusController.add(AuthStatus.NOT_LOGGED_IN);
+        _usuarioController.add(null);
+      });
     });
   }
 
