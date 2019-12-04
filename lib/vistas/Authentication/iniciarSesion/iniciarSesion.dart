@@ -3,9 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/Authentication/registrarse/registrarse.dart';
+import 'package:transportify/vistas/Authentication/WidgetInicial.dart';
 import 'EmailAndPassword.dart';
 
-class IniciarSesionView extends StatefulWidget {
+class IniciarSesionView extends StatefulWidget implements WidgetInicial {
   final String title = 'Iniciar sesión';
   final VoidCallback loginCallback;
   

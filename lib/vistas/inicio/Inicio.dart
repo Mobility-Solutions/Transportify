@@ -7,6 +7,7 @@ import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
+import 'package:transportify/vistas/Authentication/WidgetInicial.dart';
 import 'package:transportify/vistas/dialog/PaquetesDialog.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
@@ -17,7 +18,7 @@ import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';
 
 import '../dialog/ViajeDialog.dart';
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatefulWidget implements WidgetInicial {
   final Usuario usuario;
   final VoidCallback logoutCallback;
 

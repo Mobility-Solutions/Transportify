@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:transportify/middleware/UsuarioBD.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/enumerados/AuthStatus.dart';
-import 'package:transportify/vistas/Authentication/iniciarSesion/iniciarSesion.dart';
-import 'package:transportify/vistas/inicio/Inicio.dart';
+
+import 'package:transportify/vistas/Authentication/WidgetInicial.dart';
 
 class RootPage extends StatefulWidget {
   @override
@@ -70,39 +70,11 @@ class _RootPageState extends State<RootPage> {
     });
   }
 
-  Widget buildWaitingScreen() {
-    ///TODO: Pantalla de carga (splash)
-    return Scaffold(
-      body: Center(
-        child: const CircularProgressIndicator(),
-      ),
-    );
-  }
-
   @override
-  Widget build(BuildContext context) {
-    switch (authStatus) {
-      case AuthStatus.NOT_DETERMINED:
-        return buildWaitingScreen();
-        break;
-      case AuthStatus.NOT_LOGGED_IN:
-        return new IniciarSesionView(
-          loginCallback: loginCallback,
-        );
-        break;
-      case AuthStatus.LOGGED_IN:
-        if (_usuario != null) {
-          return new MyHomePage(
-            usuario: _usuario,
-            logoutCallback: logoutCallback,
-          );
-        } else
-          return buildWaitingScreen();
-        break;
-      default:
-        return buildWaitingScreen();
-    }
-  }
+  Widget build(BuildContext context) => WidgetInicial(authStatus,
+      usuario: _usuario,
+      loginCallback: loginCallback,
+      logoutCallback: logoutCallback);
 
   @override
   void dispose() {
