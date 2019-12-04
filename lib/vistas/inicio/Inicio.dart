@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:transportify/middleware/Datos.dart';
@@ -67,10 +69,20 @@ class TopPart extends UserDependantStatelessWidget {
             bottomLeft: Radius.circular(60.0),
           ),
           child: Column(
-            children: <Widget>[
+            children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Transform.rotate(
+                    angle: pi,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.exit_to_app,
+                        color: TransportifyColors.appBackground,
+                      ),
+                      onPressed: logoutCallback,
+                    ),
+                  ),
                   IconButton(
                       icon: Icon(
                         Icons.settings,
@@ -79,16 +91,6 @@ class TopPart extends UserDependantStatelessWidget {
                       onPressed: () {
                         // TODO: llevar a la pantalla de preferencias.
                       }),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  IconButton(
-                      icon: Icon(
-                        Icons.exit_to_app,
-                        color: TransportifyColors.appBackground,
-                      ),
-                      onPressed: logoutCallback,
-                  ),
                 ],
               ),
               Row(
