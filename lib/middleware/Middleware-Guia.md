@@ -17,7 +17,7 @@ Ejemplo de una función *builder* para el caso de una *colección*:
 ```dart
 static Widget _obtenerWidget(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
     // Mientras la colección o documento aún no estén disponibles, muestras algo que indique al usuario que se está cargando el Widget
-    if (!snapshot.hasData) return const Text('Cargando...');
+    if (!snapshot.hasData) return const Center(child: const CircularProgressIndicator());
 
     // Esta ruta contiene la colección
     List<DocumentSnapshot> coleccion = snapshot.data.documents;
@@ -31,7 +31,7 @@ Ejemplo para el caso de un *documento*:
 ```dart
 static Widget _obtenerWidget(BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
     // Mientras la colección o documento aún no estén disponibles, muestras algo que indique al usuario que se está cargando el Widget
-    if (!snapshot.hasData) return const Text('Cargando...');
+    if (!snapshot.hasData) return const Center(child: const CircularProgressIndicator());
 
     // Esta ruta contiene el documento
     DocumentSnapshot documento = snapshot.data;

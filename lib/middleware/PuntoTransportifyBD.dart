@@ -183,7 +183,7 @@ class PuntoTransportifyBD {
 
   static Widget _obtenerListadoCiudades(AsyncSnapshot<QuerySnapshot> snapshot,
       String ciudadSeleccionada, Function(String) onSelectionChanged) {
-    if (!snapshot.hasData) return const Text('Cargando...');
+    if (!snapshot.hasData) return const Center(child: const CircularProgressIndicator());
 
     Set<String> ciudades = snapshot.data.documents
         .map<String>((doc) => doc[atributo_ciudad])

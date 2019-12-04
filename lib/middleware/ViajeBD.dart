@@ -51,7 +51,7 @@ class ViajeBD {
       AsyncSnapshot<QuerySnapshot> snapshot,
       Function(Viaje) onSelected,
       bool Function(Viaje) filtro, Usuario usuario) {
-    if (!snapshot.hasData) return const Text('Cargando...');
+    if (!snapshot.hasData) return const Center(child: const CircularProgressIndicator());
 
     var viajes = snapshot.data.documents
         .map((snapshot) => Viaje.fromSnapshot(snapshot))

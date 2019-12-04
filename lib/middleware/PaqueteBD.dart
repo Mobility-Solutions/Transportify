@@ -91,7 +91,7 @@ class PaqueteBD {
       AsyncSnapshot<QuerySnapshot> snapshot,
       Usuario usuario,
       onTapMethod(int estado)) {
-    if (!snapshot.hasData) return const Text('Cargando...');
+    if (!snapshot.hasData) return const Center(child: const CircularProgressIndicator());
 
     return ListView.builder(
       itemBuilder: (context, index) {

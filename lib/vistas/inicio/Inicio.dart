@@ -1,6 +1,7 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:transportify/middleware/Datos.dart';
 import 'package:transportify/middleware/PaqueteBD.dart';
 import 'package:transportify/middleware/ViajeBD.dart';
@@ -8,49 +9,39 @@ import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
-import 'package:transportify/vistas/PaquetesDialog.dart';
+import 'package:transportify/vistas/inicio/WidgetInicial.dart';
+import 'package:transportify/vistas/dialog/PaquetesDialog.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
-import 'package:transportify/vistas/perfilUsuarioView.dart';
+import 'package:transportify/vistas/perfil/PerfilUsuarioView.dart';
 import 'package:transportify/vistas/seguimiento/SeguimientoForm.dart';
 import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';
+import 'package:transportify/vistas/dialog/ViajeDialog.dart';
 
-import '../ViajeDialog.dart';
-
-void main() async =>
-    await initializeDateFormatting("es_ES", null).then((_) => runApp(MyApp()));
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(fontFamily: 'Quicksand'),
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatefulWidget implements WidgetInicial {
   final Usuario usuario;
+  final VoidCallback logoutCallback;
 
-  MyHomePage({Key key, this.usuario}) : super(key: key);
+  MyHomePage({Key key, this.usuario, this.logoutCallback}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState(usuario: usuario);
+  _MyHomePageState createState() =>
+      _MyHomePageState(usuario: usuario, logoutCallback: this.logoutCallback);
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   final Usuario usuario;
+  final VoidCallback logoutCallback;
 
-  _MyHomePageState({this.usuario});
+  _MyHomePageState({this.usuario, this.logoutCallback});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: TransportifyColors.homeBackgroundSwatch,
         body: ListView(children: <Widget>[
-          TopPart(usuario: usuario),
+          TopPart(usuario: usuario, logoutCallback: logoutCallback),
           CrearPaquetePart(usuario: usuario),
           CrearViajePart(usuario: usuario),
           BuscarPart(),
@@ -64,7 +55,9 @@ abstract class UserDependantStatelessWidget extends StatelessWidget {
 }
 
 class TopPart extends UserDependantStatelessWidget {
-  TopPart({Usuario usuario}) : super(usuario);
+  final VoidCallback logoutCallback;
+
+  TopPart({Usuario usuario, this.logoutCallback}) : super(usuario);
 
   @override
   Widget build(BuildContext context) {
@@ -76,21 +69,28 @@ class TopPart extends UserDependantStatelessWidget {
             bottomLeft: Radius.circular(60.0),
           ),
           child: Column(
-            children: <Widget>[
+            children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Transform.rotate(
+                    angle: pi,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.exit_to_app,
+                        color: TransportifyColors.appBackground,
+                      ),
+                      onPressed: logoutCallback,
+                    ),
+                  ),
                   IconButton(
                       icon: Icon(
                         Icons.settings,
                         color: TransportifyColors.appBackground,
                       ),
                       onPressed: () {
-                        /*!TODO llevar a la pantalla de preferencias.*/
+                        // TODO: llevar a la pantalla de preferencias.
                       }),
-                  SizedBox(
-                    width: 5,
-                  )
                 ],
               ),
               Row(
@@ -205,7 +205,8 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () async {
-          Paquete paquete = await PaquetesDialog.show(context, usuario: usuario);
+          Paquete paquete =
+              await PaquetesDialog.show(context, usuario: usuario);
           if (paquete != null) {
             if (paquete is Paquete) {
               Navigator.of(context).push(
