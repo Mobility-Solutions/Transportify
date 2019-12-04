@@ -10,7 +10,7 @@ import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/dialog/PaquetesDialog.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
-import 'package:transportify/vistas/perfil/perfilUsuarioView.dart';
+import 'package:transportify/vistas/perfil/PerfilUsuarioView.dart';
 import 'package:transportify/vistas/seguimiento/SeguimientoForm.dart';
 import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';

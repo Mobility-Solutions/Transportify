@@ -243,6 +243,9 @@ class RegistrarseState extends State<Registrarse> {
 
       try {
         await usuario.crearEnBD();
+        Toast.show("Usuario creado con éxito.", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        Navigator.pop(context);
       } on PlatformException catch (error) {
         print(error);
         throw AuthException(error.code, error.message);
