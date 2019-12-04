@@ -24,21 +24,22 @@ class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.usuario, this.logoutCallback}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState(usuario: usuario,logoutCallback: this.logoutCallback );
+  _MyHomePageState createState() =>
+      _MyHomePageState(usuario: usuario, logoutCallback: this.logoutCallback);
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   final Usuario usuario;
   final VoidCallback logoutCallback;
 
-  _MyHomePageState({this.usuario,this.logoutCallback});
+  _MyHomePageState({this.usuario, this.logoutCallback});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: TransportifyColors.homeBackgroundSwatch,
         body: ListView(children: <Widget>[
-          TopPart(usuario: usuario),
+          TopPart(usuario: usuario, logoutCallback: logoutCallback),
           CrearPaquetePart(usuario: usuario),
           CrearViajePart(usuario: usuario),
           BuscarPart(),
@@ -52,7 +53,9 @@ abstract class UserDependantStatelessWidget extends StatelessWidget {
 }
 
 class TopPart extends UserDependantStatelessWidget {
-  TopPart({Usuario usuario}) : super(usuario);
+  final VoidCallback logoutCallback;
+
+  TopPart({Usuario usuario, this.logoutCallback}) : super(usuario);
 
   @override
   Widget build(BuildContext context) {
@@ -74,10 +77,17 @@ class TopPart extends UserDependantStatelessWidget {
                         color: TransportifyColors.appBackground,
                       ),
                       onPressed: () {
-                        /*!TODO llevar a la pantalla de preferencias.*/
+                        // TODO: llevar a la pantalla de preferencias.
                       }),
                   SizedBox(
                     width: 5,
+                  ),
+                  IconButton(
+                      icon: Icon(
+                        Icons.exit_to_app,
+                        color: TransportifyColors.appBackground,
+                      ),
+                      onPressed: logoutCallback,
                   ),
                 ],
               ),
@@ -193,7 +203,8 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () async {
-          Paquete paquete = await PaquetesDialog.show(context, usuario: usuario);
+          Paquete paquete =
+              await PaquetesDialog.show(context, usuario: usuario);
           if (paquete != null) {
             if (paquete is Paquete) {
               Navigator.of(context).push(
