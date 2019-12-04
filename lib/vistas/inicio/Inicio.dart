@@ -205,62 +205,65 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: GestureDetector(
-        onTap: () async {
-          Paquete paquete =
-              await PaquetesDialog.show(context, usuario: usuario);
-          if (paquete != null) {
-            if (paquete is Paquete) {
-              Navigator.of(context).push(
-                  MaterialPageRoute<Null>(builder: (BuildContext context) {
-                return new CreacionPaqueteForm(paquete);
-              }));
-            }
+    return GestureDetector(
+      onTap: () async {
+        Paquete paquete = await PaquetesDialog.show(context, usuario: usuario);
+        if (paquete != null) {
+          if (paquete is Paquete) {
+            Navigator.of(context)
+                .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+              return new CreacionPaqueteForm(paquete);
+            }));
           }
-        },
-        child: InicioPart(
-          usuario: usuario,
-          titulo: "¿Quieres enviar un paquete?",
-          colorExterior: TransportifyColors.primarySwatch[500],
-          colorInterior: TransportifyColors.primarySwatch[50],
-          elementos: <InicioPartItem>[
-            InicioPartItem(
-              icono: Icon(
-                Icons.control_point_duplicate,
-                size: 30,
-                color: Colors.white30,
+        }
+      },
+      child: InicioPart(
+        usuario: usuario,
+        titulo: "¿Quieres enviar un paquete?",
+        colorExterior: TransportifyColors.primarySwatch[500],
+        colorInterior: TransportifyColors.primarySwatch[50],
+        elementos: <InicioPartItem>[
+          InicioPartItem(
+            icono: Icon(
+              Icons.control_point_duplicate,
+              size: 30,
+              color: Colors.white30,
+            ),
+            texto:
+                "Crea un paquete para que un transportista se ocupe de su envío.",
+          ),
+        ],
+        dato: Row(
+          children: [
+            usuario == null
+                ? const Text(
+                    "-",
+                    style: TextStyle(
+                        fontSize: 18.0,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.white70),
+                  )
+                : Datos.obtenerStreamBuilderDocumentBDFromReference(
+                    usuario.reference, (context, snapshot) {
+                    if (!snapshot.hasData) return const Text("Cargando...");
+                    usuario.loadFromSnapshot(snapshot.data);
+                    return Text(
+                      usuario.paquetesCreados.toString(),
+                      style: TextStyle(
+                          fontSize: 18.0,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white70),
+                    );
+                  }),
+            Text(
+              " paquetes enviados.",
+              style: TextStyle(
+                fontSize: 18.0,
+                fontStyle: FontStyle.italic,
+                color: Colors.white70,
               ),
-              texto:
-                  "Crea un paquete para que un transportista se ocupe de su envío.",
             ),
           ],
-          dato: Row(
-            children: [
-              usuario == null
-                  ? const Text(
-                      "-",
-                      style: TextStyle(fontSize: 18.0, fontStyle: FontStyle.italic, color: Colors.white70),
-                    )
-                  : Datos.obtenerStreamBuilderDocumentBDFromReference(
-                      usuario.reference, (context, snapshot) {
-                      if (!snapshot.hasData) return const Text("Cargando...");
-                      usuario.loadFromSnapshot(snapshot.data);
-                      return Text(
-                        usuario.paquetesCreados.toString(),
-                        style: TextStyle(fontSize: 18.0, fontStyle: FontStyle.italic, color: Colors.white70),
-                      );
-                    }),
-              Text(
-                " paquetes enviados.",
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.white70,
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -305,7 +308,10 @@ class CrearViajePart extends UserDependantStatelessWidget {
             usuario == null
                 ? const Text(
                     "-",
-                    style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic, color: Colors.white70),
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.white70),
                   )
                 : Datos.obtenerStreamBuilderDocumentBDFromReference(
                     usuario.reference, (context, snapshot) {
@@ -314,7 +320,10 @@ class CrearViajePart extends UserDependantStatelessWidget {
                     usuario.loadFromSnapshot(snapshot.data);
                     return Text(
                       usuario.viajesCreados.toString(),
-                      style: TextStyle(fontSize: 18.0, fontStyle: FontStyle.italic, color: Colors.white70),
+                      style: TextStyle(
+                          fontSize: 18.0,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white70),
                     );
                   }),
             Text(
