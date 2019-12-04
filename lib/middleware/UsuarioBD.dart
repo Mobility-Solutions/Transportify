@@ -48,7 +48,7 @@ class UsuarioBD {
 
   static Widget _obtenerListadoUsuarios(BuildContext context,
       AsyncSnapshot<QuerySnapshot> snapshot, Function(Usuario) onSelected) {
-    if (!snapshot.hasData) return const Text('Cargando...');
+    if (!snapshot.hasData) return const Center(child: const CircularProgressIndicator());
 
     var usuarios = snapshot.data.documents;
 
