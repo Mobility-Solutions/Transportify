@@ -25,6 +25,7 @@ class PaqueteBD {
   static const String atributo_peso = "peso";
   static const String atributo_precio = "precio";
   static const String atributo_fecha_entrega = "fecha_entrega";
+  static const String atributo_fecha_creacion = "fecha_creacion";
   static const String atributo_dias_margen = "dias_margen";
 
   static const String atributo_estado = 'estado';
@@ -53,6 +54,8 @@ class PaqueteBD {
 
   static Timestamp obtenerFechaEntrega(DocumentSnapshot snapshot) =>
       snapshot[atributo_fecha_entrega];
+  static Timestamp obtenerFechaCreacion(DocumentSnapshot snapshot) =>
+      snapshot[atributo_fecha_creacion];
   static int obtenerDiasMargen(DocumentSnapshot snapshot) =>
       snapshot[atributo_dias_margen];
   static EstadoPaquete obtenerEstado(DocumentSnapshot snapshot) {
