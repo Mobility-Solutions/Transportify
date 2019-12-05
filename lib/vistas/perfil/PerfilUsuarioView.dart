@@ -290,14 +290,6 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                     MaterialPageRoute<Null>(builder: (BuildContext context) {
                   return new IniciarSesionView();
                 }));
-
-                /*
-                                            Navigator.pushAndRemoveUntil(
-                                            context,
-                                            MaterialPageRoute(builder: (context) => IniciarSesionView()),
-                                            (Route<dynamic> route) => false,
-                                            );
-                                            */
               },
             ),
             new FlatButton(
@@ -333,7 +325,8 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
     super.initState();
     nombreText.text = widget.usuario.nombre;
     nicknameText.text = widget.usuario.nickname;
-    ultimoNicknameComprobado = widget.usuario.nickname; // El que tiene ya cuenta como comprobado; sabemos que es correcto
+    ultimoNicknameComprobado = widget.usuario
+        .nickname; // El que tiene ya cuenta como comprobado; sabemos que es correcto
     ciudadText.text = widget.usuario.ciudad;
     edadText.text = widget.usuario.edad.toString();
   }
