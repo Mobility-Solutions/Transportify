@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:toast/toast.dart';
+import 'package:transportify/middleware/UsuarioBD.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/dialog/CiudadDialog.dart';
@@ -64,9 +65,9 @@ class RegistrarseState extends State<Registrarse> {
                       return null;
                     },
                     decoration: InputDecoration(
-                      icon: Icon(Icons.person),
-                      hintText: 'Introduce nickname',
-                      labelText: 'Nickname',
+                      icon: Icon(Icons.person_outline),
+                      hintText: 'Introduce un nombre de usuario',
+                      labelText: 'Nombre de usuario',
                     ),
                   ),
                   TextFormField(
@@ -202,8 +203,18 @@ class RegistrarseState extends State<Registrarse> {
                       ),
                       onPressed: () async {
                         if (_formKey.currentState.validate()) {
-                          FocusScope.of(context).requestFocus(new FocusNode());
-                          _register();
+                          if (await UsuarioBD.existeUsuarioConNickname(
+                              _nicknameController.text)) {
+                            Toast.show(
+                                "Error: El nombre de usuario está en uso. Elija otro.",
+                                context,
+                                duration: Toast.LENGTH_LONG,
+                                gravity: Toast.BOTTOM);
+                          } else {
+                            FocusScope.of(context)
+                                .requestFocus(new FocusNode());
+                            _register();
+                          }
                         }
                       },
                       child: Text(
@@ -229,7 +240,6 @@ class RegistrarseState extends State<Registrarse> {
     super.dispose();
   }
 
-  // Example code for registration.
   void _register() async {
     try {
       Usuario usuario = new Usuario(
@@ -244,7 +254,7 @@ class RegistrarseState extends State<Registrarse> {
       try {
         await usuario.crearEnBD();
         Toast.show("Usuario creado con éxito.", context,
-          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         Navigator.pop(context);
       } on PlatformException catch (error) {
         print(error);
