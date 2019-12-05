@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:transportify/middleware/PaqueteBD.dart';
+import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Usuario.dart';
+import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
 import 'package:transportify/vistas/inicio/Inicio.dart';
 
 import 'CustomStepper.dart';
@@ -18,20 +20,20 @@ class SeguimientoForm extends UserDependantStatelessWidget {
         body: Center(child: PaqueteBD.obtenerListadoPaquetesWidget(usuario: usuario, onSelected: obtenerFuncionVerSeguimiento(context))));
   }
 
-  Function(int) obtenerFuncionVerSeguimiento(BuildContext context) {
-    return (estado) => _verSeguimiento(context, estado);
+  Function(Paquete) obtenerFuncionVerSeguimiento(BuildContext context) {
+    return (paquete) => _verSeguimiento(context, paquete);
   }
 
-  void _verSeguimiento(BuildContext context, int estado) {
+  void _verSeguimiento(BuildContext context, Paquete paquete) {
     Navigator.of(context)
         .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-      return new SeguimientoView(estado);
+      return new SeguimientoView(paquete.estado);
     }));
   }
 }
 
 class SeguimientoView extends StatefulWidget {
-  final int estado;
+  final EstadoPaquete estado;
 
   SeguimientoView(this.estado);
   
@@ -40,7 +42,7 @@ class SeguimientoView extends StatefulWidget {
 }
 
 class _SeguimientoViewState extends State<SeguimientoView> {
-  int estado;
+  EstadoPaquete estado;
   int _currentstep = 0;
 
   _SeguimientoViewState(this.estado);
@@ -51,7 +53,7 @@ class _SeguimientoViewState extends State<SeguimientoView> {
 
   @override
   Widget build(BuildContext context) {
-    _setStep(estado);
+    _setStep(estado?.index ?? 0);
     return new Scaffold(
         appBar: new AppBar(
           title: const Text("Seguimiento"),
