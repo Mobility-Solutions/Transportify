@@ -102,47 +102,45 @@ class _BusquedaViajeFormState
                     ),
                   ],
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      '${listaResultados[index].transportista?.nombre ?? 'No establecido'}',
-                      style: TextStyle(
-                          fontSize: 18, color: Colors.black),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      '${listaResultados[index].cargaMaxima} kg',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.black54,
-                        height: 0.8,
+                Flexible(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        '${listaResultados[index].transportista?.nombre ?? 'No establecido'}',
+                        style: TextStyle(fontSize: 18, color: Colors.black),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+                      Text(
+                        '${listaResultados[index].cargaMaxima} kg',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black54,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                          DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, "es_ES")
-                              .format(listaResultados[index].fecha),
-                          style: TextStyle(
-                              fontSize: 18, color: Colors.black),
-                          textAlign: TextAlign.center,
-                        ),
+                      DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, "es_ES")
+                          .format(listaResultados[index].fecha),
+                      style: TextStyle(fontSize: 18, color: Colors.black),
+                      textAlign: TextAlign.center,
+                    ),
                     Text(
-                          DateFormat.Hm().format(listaResultados[index].fecha),
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.black54,
-                            height: 0.8,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
+                      DateFormat.Hm().format(listaResultados[index].fecha),
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.black54,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ],
                 ),
               ]),
