@@ -164,7 +164,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                         return 'El valor no puede estar vacío';
                       }
                       if (soloNumeros < 18 || soloNumeros > 99) {
-                        return 'Edad incorrecta';
+                        return 'Edad incorrecta. Debe ser mayor de edad (18+)';
                       }
                       return null;
                     },
