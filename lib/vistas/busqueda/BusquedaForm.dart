@@ -145,7 +145,6 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
 
   ListView _buildListado() {
     return ListView.separated(
-      padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
       itemCount: resultados,
       itemBuilder: builderListado,
       separatorBuilder: (BuildContext context, int index) => const Divider(),
