@@ -26,6 +26,9 @@ class RegistrarseState extends State<Registrarse> {
   final TextEditingController _ageController = TextEditingController();
   String _ciudad;
 
+  bool nicknameRepetido = false;
+  String ultimoNicknameComprobado;
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -61,6 +64,9 @@ class RegistrarseState extends State<Registrarse> {
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
+                      }
+                      if (nicknameRepetido) {
+                        return 'Este nombre de usuario ya está en uso. Escoge otro';
                       }
                       return null;
                     },
@@ -202,6 +208,17 @@ class RegistrarseState extends State<Registrarse> {
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),
                       onPressed: () async {
+                        String nuevoNickname = _nicknameController.text;
+                        if (ultimoNicknameComprobado == null ||
+                            ultimoNicknameComprobado != nuevoNickname) {
+                          nicknameRepetido =
+                              await UsuarioBD.existeUsuarioConNickname(
+                                  nuevoNickname);
+
+                          // Guardando el ultimo comprobado evitamos llamar a la base de datos más de la cuenta mediante spamming
+                          ultimoNicknameComprobado = nuevoNickname;
+                        }
+
                         if (_formKey.currentState.validate()) {
                           if (await UsuarioBD.existeUsuarioConNickname(
                               _nicknameController.text)) {

@@ -32,6 +32,9 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
   var ciudadText = TextEditingController();
   var edadText = TextEditingController();
 
+  bool nicknameRepetido = false;
+  String ultimoNicknameComprobado;
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -100,6 +103,9 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
+                      }
+                      if (nicknameRepetido) {
+                        return 'Este nombre de usuario ya está en uso. Escoge otro';
                       }
                       return null;
                     },
@@ -186,15 +192,19 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                         ),
                         onPressed: () {
                           setState(() async {
+                            String nuevoNickname = nicknameText.text;
+                            if (ultimoNicknameComprobado == null ||
+                                ultimoNicknameComprobado != nuevoNickname) {
+                              nicknameRepetido =
+                                  await UsuarioBD.existeUsuarioConNickname(
+                                      nuevoNickname);
+
+                              // Guardando el ultimo comprobado evitamos llamar a la base de datos más de la cuenta mediante spamming
+                              ultimoNicknameComprobado = nuevoNickname;
+                            }
+
                             if (_formKey.currentState.validate()) {
-                              if (await UsuarioBD.existeUsuarioConNickname(
-                                  nicknameText.text)) {
-                                Toast.show(
-                                    "Error: El nombre de usuario está en uso. Elija otro.",
-                                    context,
-                                    duration: Toast.LENGTH_LONG,
-                                    gravity: Toast.BOTTOM);
-                              } else if (editable) {
+                              if (editable) {
                                 cambiarColorEditable();
                                 guardarCambios();
                                 editable = false;
@@ -282,12 +292,12 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                 }));
 
                 /*
-                Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => IniciarSesionView()),
-                (Route<dynamic> route) => false,
-                );
-                */
+                                            Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => IniciarSesionView()),
+                                            (Route<dynamic> route) => false,
+                                            );
+                                            */
               },
             ),
             new FlatButton(
@@ -323,6 +333,7 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
     super.initState();
     nombreText.text = widget.usuario.nombre;
     nicknameText.text = widget.usuario.nickname;
+    ultimoNicknameComprobado = widget.usuario.nickname; // El que tiene ya cuenta como comprobado; sabemos que es correcto
     ciudadText.text = widget.usuario.ciudad;
     edadText.text = widget.usuario.edad.toString();
   }
