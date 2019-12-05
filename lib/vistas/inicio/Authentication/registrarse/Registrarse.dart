@@ -131,7 +131,7 @@ class RegistrarseState extends State<Registrarse> {
                         return 'El valor no puede estar vacío';
                       }
                       if (value.length < 6) {
-                        return 'La contraseña debe tener mas de 6 carácteres';
+                        return 'La contraseña debe tener más de 6 caracteres';
                       }
                       return null;
                     },
@@ -184,7 +184,7 @@ class RegistrarseState extends State<Registrarse> {
                         return 'El valor no puede estar vacío';
                       }
                       if (soloNumeros < 18 || soloNumeros > 99) {
-                        return 'Edad incorrecta';
+                        return 'Edad incorrecta. Debe ser mayor de edad (18+)';
                       }
                       return null;
                     },
