@@ -199,7 +199,7 @@ class _BusquedaPaqueteFormState
                         ),
                       ],
                     ),
-                    !listaResultados[index].fragil ? Text('Frágil', style: TextStyle(color: Colors.red, fontSize: 18),) : const SizedBox(),
+                    listaResultados[index].fragil ? Text('Frágil', style: TextStyle(color: Colors.red, fontSize: 18),) : const SizedBox(),
                   ],
                 )
               ],

@@ -80,7 +80,6 @@ class _BusquedaViajeFormState
   Widget builderListado(BuildContext context, int index) {
     return InkWell(
       child: Container(
-        //height: 80,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.0),
           color: Colors.white,
@@ -130,13 +129,13 @@ class _BusquedaViajeFormState
                   children: <Widget>[
                     Text(
                           DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, "es_ES")
-                              .format(listaResultados[0].fecha),
+                              .format(listaResultados[index].fecha),
                           style: TextStyle(
                               fontSize: 18, color: Colors.black),
                           textAlign: TextAlign.center,
                         ),
                     Text(
-                          DateFormat.Hm().format(listaResultados[0].fecha),
+                          DateFormat.Hm().format(listaResultados[index].fecha),
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.black54,
