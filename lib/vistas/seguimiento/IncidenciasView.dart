@@ -165,7 +165,7 @@ class IncidenciasViewState extends State<IncidenciasView> {
   }
 
   int getPorcentaje() {
-    progreso = (((widget.paquete.fechaEntrega.difference(DateTime.now()).inHours.abs() + paqueteRetraso) / (widget.paquete.fechaEntrega.difference(widget.paquete.fechaCreacion).inHours.abs() + paqueteRetraso)) * 100).truncate().toInt();
+    progreso = 100 - (((widget.paquete.fechaEntrega.difference(DateTime.now()).inHours.abs() + paqueteRetraso) / (widget.paquete.fechaEntrega.difference(widget.paquete.fechaCreacion).inHours.abs() + paqueteRetraso)) * 100).truncate().toInt();
     barraDeProgreso = Colors.redAccent;
     widget.paquete.estado = EstadoPaquete.por_recoger;
 
