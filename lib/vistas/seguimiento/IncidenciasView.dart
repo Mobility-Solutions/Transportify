@@ -21,7 +21,7 @@ class IncidenciasViewState extends State<IncidenciasView> {
   
   final _formKey = GlobalKey<FormState>();
   var incidenciaController = TextEditingController();
-  String comentario = "";
+  var horasRetrasadasController = TextEditingController();
   int progreso, incidencias = 0, paqueteRetraso = 0;
   Color barraDeProgreso;
 
@@ -69,9 +69,7 @@ class IncidenciasViewState extends State<IncidenciasView> {
                       onTap: () {
                         setState(() {
                         if (_formKey.currentState.validate()) {
-                          comentario = incidenciaController.text;
-                          incidenciaController.text = "";
-                          addIncidencia();
+                          showDialogRegistrarIncidencia(incidenciaController.text);
                         }
                         });
                       },
@@ -146,6 +144,7 @@ class IncidenciasViewState extends State<IncidenciasView> {
                             hintText: "Incidencias",
                           ),
               ),
+
               Expanded(
                 child: Container(
                   height: 200,
@@ -153,7 +152,7 @@ class IncidenciasViewState extends State<IncidenciasView> {
                     shrinkWrap: true,
                     itemCount: this.incidencias,
                     itemBuilder: (context, index) => 
-                      addIncidencia(),
+                      addIncidencia(incidenciaController.text, int.tryParse(horasRetrasadasController.text)),
                 ),
               ),
               ),
@@ -166,7 +165,7 @@ class IncidenciasViewState extends State<IncidenciasView> {
   }
 
   int getPorcentaje() {
-    progreso = 100;
+    progreso = (((widget.paquete.fechaEntrega.difference(DateTime.now()).inHours.abs() + paqueteRetraso) / (widget.paquete.fechaEntrega.difference(widget.paquete.fechaCreacion).inHours.abs() + paqueteRetraso)) * 100).truncate().toInt();
     barraDeProgreso = Colors.redAccent;
     widget.paquete.estado = EstadoPaquete.por_recoger;
 
@@ -208,13 +207,76 @@ class IncidenciasViewState extends State<IncidenciasView> {
     return estadoActual;
   }
 
-  ListTile addIncidencia() {
+  ListTile addIncidencia(String incidencia, int paqueteRetrasoActual) {
     this.incidencias += 1;
+    paqueteRetraso += paqueteRetrasoActual;
 
     return ListTile(
             leading: Icon(Icons.warning, color: TransportifyColors.primarySwatch),
-            title: Text(comentario),
-            subtitle: Text("El paquete se retrasará " + paqueteRetraso.toString() + " horas"),
+            title: Text(incidencia),
+            subtitle: Text("El paquete se retrasará " + paqueteRetrasoActual.toString() + " horas"),
           );
+  }
+
+  void showDialogRegistrarIncidencia(String incidencia) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("¿Cuántas horas te retrasaras?"),
+          content: TextFormField(
+            keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value.isEmpty) {
+                return "Porfavor introduzca las horas que te retrasarás";
+              } else if(value.contains("-")) {
+                return "Porfavor solo introduzca números";
+              }
+              return null;
+            },
+            controller: horasRetrasadasController,
+            decoration: InputDecoration(
+              hintStyle: TextStyle(color: TransportifyColors.primarySwatch, fontSize: 14, fontWeight: FontWeight.w800),
+              hintText: "Escriba las horas que te retrasarás...",
+            ),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          ),
+          actions: <Widget>[
+
+            new FlatButton(
+              color: TransportifyColors.primarySwatch,
+              textColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              ),
+              child: new Text("Aceptar"),
+              onPressed: () {
+                setState(() {
+                  addIncidencia(incidencia, int.tryParse(horasRetrasadasController.text));
+                  //incidenciaController.text = "";
+                  //horasRetrasadasController.text = "";
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+
+            new FlatButton(
+              color: TransportifyColors.primarySwatch,
+              textColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              ),
+              child: new Text("Cerrar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+
+          ],
+        );
+      },
+    );
   }
 }
