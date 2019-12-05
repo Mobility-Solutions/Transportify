@@ -220,18 +220,8 @@ class RegistrarseState extends State<Registrarse> {
                         }
 
                         if (_formKey.currentState.validate()) {
-                          if (await UsuarioBD.existeUsuarioConNickname(
-                              _nicknameController.text)) {
-                            Toast.show(
-                                "Error: El nombre de usuario está en uso. Elija otro.",
-                                context,
-                                duration: Toast.LENGTH_LONG,
-                                gravity: Toast.BOTTOM);
-                          } else {
-                            FocusScope.of(context)
-                                .requestFocus(new FocusNode());
-                            _register();
-                          }
+                          FocusScope.of(context).requestFocus(new FocusNode());
+                          _register();
                         }
                       },
                       child: Text(
