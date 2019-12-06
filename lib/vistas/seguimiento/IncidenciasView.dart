@@ -24,6 +24,7 @@ class IncidenciasViewState extends State<IncidenciasView> {
   var horasRetrasadasController = TextEditingController();
   int progreso, paqueteRetraso = 0;
   Color barraDeProgreso;
+  List<Incidencia> incidencias;
 
   @override
   Widget build(BuildContext context) {
@@ -162,10 +163,10 @@ class IncidenciasViewState extends State<IncidenciasView> {
                     height: 200,
                     child: ListView.separated(
                       shrinkWrap: true,
-                      itemCount: widget.paquete.incidencias.length,
+                      itemCount: incidencias.length,
                       itemBuilder: (BuildContext ctxt, int index) {
-                        final item = widget.paquete.incidencias[index];
-                        return new Container(
+                        final item = incidencias[index];
+                        return Container(
                           decoration: BoxDecoration(
                               border: Border.all(
                                   color: TransportifyColors.primarySwatch,
@@ -208,23 +209,18 @@ class IncidenciasViewState extends State<IncidenciasView> {
             .toInt();
     barraDeProgreso = Colors.redAccent;
     widget.paquete.estado = EstadoPaquete.por_recoger;
-
-    if (progreso <= 0) {
-      setState(() {
+    setState(() {
+      if (progreso <= 0) {
         progreso = 0;
-      });
-    } else if (progreso >= 20 && progreso < 100) {
-      setState(() {
+      } else if (progreso >= 20 && progreso < 100) {
         barraDeProgreso = Colors.orangeAccent;
         widget.paquete.estado = EstadoPaquete.en_envio;
-      });
-    } else if (progreso >= 100) {
-      setState(() {
+      } else if (progreso >= 100) {
         progreso = 100;
         barraDeProgreso = Colors.greenAccent;
         widget.paquete.estado = EstadoPaquete.entregado;
-      });
-    }
+      }
+    });
     return progreso;
   }
 
@@ -248,13 +244,13 @@ class IncidenciasViewState extends State<IncidenciasView> {
   }
 
   void addIncidencia(String incidencia, int paqueteRetrasoActual) {
-    Incidencia comentario = new Incidencia(
-        descripcion: incidencia, retrasoHoras: paqueteRetrasoActual);
     setState(() {
+      Incidencia comentario = new Incidencia(
+          descripcion: incidencia, retrasoHoras: paqueteRetrasoActual);
       paqueteRetraso += paqueteRetrasoActual;
       widget.paquete.fechaCreacion.add(Duration(hours: paqueteRetraso));
       widget.paquete.fechaEntrega.add(Duration(hours: paqueteRetraso));
-      widget.paquete.incidencias.add(comentario);
+      incidencias.add(comentario);
       incidenciaController.text = "";
       horasRetrasadasController.text = "";
       widget.paquete.updateBD();
@@ -266,7 +262,7 @@ class IncidenciasViewState extends State<IncidenciasView> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: new Text("¿Cuántas horas te retrasaras?"),
+          title: new Text("¿Cuántas horas te retrasarás?"),
           content: TextFormField(
             autofocus: false,
             keyboardType: TextInputType.number,
@@ -299,10 +295,8 @@ class IncidenciasViewState extends State<IncidenciasView> {
               ),
               child: new Text("Aceptar"),
               onPressed: () {
-                setState(() {
-                  addIncidencia(
-                      incidencia, int.tryParse(horasRetrasadasController.text));
-                });
+                addIncidencia(
+                    incidencia, int.tryParse(horasRetrasadasController.text));
                 Navigator.of(context).pop();
               },
             ),
@@ -321,5 +315,16 @@ class IncidenciasViewState extends State<IncidenciasView> {
         );
       },
     );
+  }
+
+   @override
+  void initState() {
+    super.initState();
+    incidencias = widget.paquete.incidencias;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
