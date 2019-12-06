@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:transportify/middleware/ComponenteBD.dart';
 import 'package:transportify/middleware/PaqueteBD.dart';
+import 'package:transportify/modelos/Incidencia.dart';
 
 import 'PuntoTransportify.dart';
 import 'Usuario.dart';
@@ -15,6 +16,7 @@ class Paquete extends ComponenteBD {
   Usuario remitente;
   DateTime fechaCreacion, fechaEntrega;
   int diasMargen;
+  List<Incidencia> incidencias;
 
   EstadoPaquete estado;
 
@@ -40,6 +42,7 @@ class Paquete extends ComponenteBD {
       this.fechaEntrega,
       this.diasMargen,
       this.fechaCreacion,
+      this.incidencias,
       this.estado
   })  : super(coleccion: PaqueteBD.coleccion_paquetes);
 
@@ -66,6 +69,7 @@ class Paquete extends ComponenteBD {
     this.origen = PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
     this.remitente = Usuario.fromReference(PaqueteBD.obtenerRemitente(snapshot));
     this.diasMargen = PaqueteBD.obtenerDiasMargen(snapshot);
+    this.incidencias = PaqueteBD.obtenerIncidencias(snapshot);
     this.estado = PaqueteBD.obtenerEstado(snapshot);
     
     var viajeBD = PaqueteBD.obtenerViaje(snapshot);
@@ -97,6 +101,7 @@ class Paquete extends ComponenteBD {
     map[PaqueteBD.atributo_precio] = this.precio;
     map[PaqueteBD.atributo_fecha_entrega] = this.fechaEntrega;
     map[PaqueteBD.atributo_fecha_creacion] = this.fechaCreacion;
+    map[PaqueteBD.atributo_incidencias] = this.incidencias;
     map[PaqueteBD.atributo_dias_margen] = this.diasMargen;
     map[PaqueteBD.atributo_estado] = this.estado?.index;
     map[PaqueteBD.atributo_viaje_asignado] = this.viajeAsignado?.reference;

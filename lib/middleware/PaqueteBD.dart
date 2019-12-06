@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:transportify/modelos/Incidencia.dart';
 
 import 'package:transportify/modelos/Paquete.dart';
 
@@ -27,6 +28,7 @@ class PaqueteBD {
   static const String atributo_fecha_entrega = "fecha_entrega";
   static const String atributo_fecha_creacion = "fecha_creacion";
   static const String atributo_dias_margen = "dias_margen";
+  static const String atributo_incidencias = "incidencias";
 
   static const String atributo_estado = 'estado';
   static const String atributo_viaje_asignado = 'viaje';
@@ -56,6 +58,8 @@ class PaqueteBD {
       snapshot[atributo_fecha_entrega];
   static Timestamp obtenerFechaCreacion(DocumentSnapshot snapshot) =>
       snapshot[atributo_fecha_creacion];
+  static List<Incidencia> obtenerIncidencias(DocumentSnapshot snapshot) =>
+      snapshot[atributo_incidencias];
   static int obtenerDiasMargen(DocumentSnapshot snapshot) =>
       snapshot[atributo_dias_margen];
   static EstadoPaquete obtenerEstado(DocumentSnapshot snapshot) {
