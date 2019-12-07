@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -31,6 +30,8 @@ class IncidenciasViewState extends State<IncidenciasView> {
     return Form(
       key: _formKey,
       child: Scaffold(
+        // Permite que el bottomNavigatorBar se mueva al sacar el teclado
+        resizeToAvoidBottomInset: false,
         bottomNavigationBar: Stack(
           children: [
             Container(
@@ -42,8 +43,7 @@ class IncidenciasViewState extends State<IncidenciasView> {
               margin: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom + 10,
                   left: 10,
-                  right: 10,
-                  top: 10),
+                  right: 10),
               child: Row(
                 children: <Widget>[
                   Flexible(
@@ -102,98 +102,97 @@ class IncidenciasViewState extends State<IncidenciasView> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Center(
-                  child: CircularPercentIndicator(
-                    animation: true,
-                    radius: 180.0,
-                    lineWidth: 15.0,
-                    percent: getPorcentaje() / 100,
-                    circularStrokeCap: CircularStrokeCap.round,
-                    header: new Text(widget.paquete.nombre,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w800, fontSize: 20.0)),
-                    footer: Text(getEstadoPaquete(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 17.0)),
-                    center: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        new Icon(
-                          Icons.airport_shuttle,
-                          size: 70.0,
-                          color: TransportifyColors.primarySwatch,
+                Expanded(
+                  flex: 10,
+                  child: ListView(
+                    children: [
+                      CircularPercentIndicator(
+                        animation: true,
+                        radius: 180.0,
+                        lineWidth: 15.0,
+                        percent: getPorcentaje() / 100,
+                        circularStrokeCap: CircularStrokeCap.round,
+                        header: new Text(widget.paquete.nombre,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w800, fontSize: 20.0)),
+                        footer: Text(getEstadoPaquete(),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 17.0)),
+                        center: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            new Icon(
+                              Icons.airport_shuttle,
+                              size: 70.0,
+                              color: TransportifyColors.primarySwatch,
+                            ),
+                            TextFormField(
+                              enabled: false,
+                              autofocus: false,
+                              maxLines: 3,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: TransportifyColors.primarySwatch),
+                              decoration: InputDecoration.collapsed(
+                                hintStyle: TextStyle(
+                                    color: TransportifyColors.primarySwatch,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w900),
+                                hintText: getPorcentaje().toString() + "%",
+                              ),
+                            ),
+                          ],
                         ),
-                        TextFormField(
-                          enabled: false,
-                          autofocus: false,
-                          maxLines: 3,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: TransportifyColors.primarySwatch),
-                          decoration: InputDecoration.collapsed(
-                            hintStyle: TextStyle(
-                                color: TransportifyColors.primarySwatch,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w900),
-                            hintText: getPorcentaje().toString() + "%",
-                          ),
-                        ),
-                      ],
-                    ),
-                    backgroundColor: Colors.grey,
-                    progressColor: barraDeProgreso,
+                        backgroundColor: Colors.grey,
+                        progressColor: barraDeProgreso,
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(
-                  height: 50,
+                  height: 10,
                 ),
-                Expanded(
-                  flex: 1,
-                  child: TextFormField(
-                    enabled: false,
-                    autofocus: false,
-                    maxLines: 3,
-                    textAlign: TextAlign.left,
-                    style: TextStyle(color: TransportifyColors.primarySwatch),
-                    decoration: InputDecoration.collapsed(
-                      hintStyle: TextStyle(
-                          color: TransportifyColors.primarySwatch,
-                          fontSize: 25,
-                          fontWeight: FontWeight.w800),
-                      hintText: "Incidencias",
-                    ),
+                TextFormField(
+                  enabled: false,
+                  autofocus: false,
+                  maxLines: 3,
+                  textAlign: TextAlign.left,
+                  style: TextStyle(color: TransportifyColors.primarySwatch),
+                  decoration: InputDecoration.collapsed(
+                    hintStyle: TextStyle(
+                        color: TransportifyColors.primarySwatch,
+                        fontSize: 25,
+                        fontWeight: FontWeight.w800),
+                    hintText: "Incidencias",
                   ),
                 ),
                 Expanded(
-                  flex: 7,
-                  child: Container(
-                    height: 200,
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: incidencias.length,
-                      itemBuilder: (BuildContext ctxt, int index) {
-                        final item = incidencias[index];
-                        return Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: TransportifyColors.primarySwatch,
-                                  width: 2),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          child: ListTile(
-                            leading: Icon(Icons.warning,
-                                color: TransportifyColors.primarySwatch),
-                            title: Text(item.descripcion),
-                            subtitle: Text("El paquete se retrasará " +
-                                item.retrasoHoras.toString() +
-                                " horas"),
-                          ),
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) =>
-                          const Divider(),
-                    ),
+                  flex: 5,
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: incidencias.length,
+                    itemBuilder: (BuildContext ctxt, int index) {
+                      final item = incidencias[index];
+                      return Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                color: TransportifyColors.primarySwatch,
+                                width: 2),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        child: ListTile(
+                          leading: Icon(Icons.warning,
+                              color: TransportifyColors.primarySwatch),
+                          title: Text(item.descripcion),
+                          subtitle: Text("El paquete se retrasará " +
+                              item.retrasoHoras.toString() +
+                              " horas"),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(),
                   ),
                 ),
               ],
