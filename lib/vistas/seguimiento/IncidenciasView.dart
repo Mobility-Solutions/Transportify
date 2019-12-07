@@ -53,7 +53,7 @@ class IncidenciasViewState extends State<IncidenciasView> {
                         autofocus: false,
                         validator: (value) {
                           if (value.isEmpty) {
-                            return "Porfavor escriba su incidencia";
+                            return "Por favor, introduzca su incidencia";
                           }
                           return null;
                         },
@@ -122,25 +122,24 @@ class IncidenciasViewState extends State<IncidenciasView> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            new Icon(
+                            Icon(
                               Icons.airport_shuttle,
                               size: 70.0,
                               color: TransportifyColors.primarySwatch,
                             ),
-                            TextFormField(
-                              enabled: false,
-                              autofocus: false,
-                              maxLines: 3,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: TransportifyColors.primarySwatch),
-                              decoration: InputDecoration.collapsed(
-                                hintStyle: TextStyle(
+                            Wrap(
+                              direction: Axis.horizontal,
+                              children: <Widget>[
+                                Text(
+                                  "${getPorcentaje()}%",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
                                     color: TransportifyColors.primarySwatch,
                                     fontSize: 30,
-                                    fontWeight: FontWeight.w900),
-                                hintText: getPorcentaje().toString() + "%",
-                              ),
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -153,19 +152,24 @@ class IncidenciasViewState extends State<IncidenciasView> {
                 SizedBox(
                   height: 10,
                 ),
-                TextFormField(
-                  enabled: false,
-                  autofocus: false,
-                  maxLines: 3,
-                  textAlign: TextAlign.left,
-                  style: TextStyle(color: TransportifyColors.primarySwatch),
-                  decoration: InputDecoration.collapsed(
-                    hintStyle: TextStyle(
-                        color: TransportifyColors.primarySwatch,
-                        fontSize: 25,
-                        fontWeight: FontWeight.w800),
-                    hintText: "Incidencias",
-                  ),
+                Row(
+                  children: <Widget>[
+                    Wrap(
+                      direction: Axis.horizontal,
+                      alignment: WrapAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          "Incidencias",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: TransportifyColors.primarySwatch,
+                            fontSize: 25,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 Expanded(
                   flex: 5,
@@ -269,15 +273,15 @@ class IncidenciasViewState extends State<IncidenciasView> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: new Text("¿Cuántas horas te retrasarás?"),
+          title: Text("¿Cuántas horas va a retrasarse?"),
           content: TextFormField(
             autofocus: false,
             keyboardType: TextInputType.number,
             validator: (value) {
               if (value.isEmpty) {
-                return "Porfavor introduzca las horas que te retrasarás";
+                return "Por favor, introduzca las horas que va a retrasarse";
               } else if (value.contains("-")) {
-                return "Porfavor solo introduzca números";
+                return "Por favor, introduzca un valor numérico";
               }
               return null;
             },
@@ -287,7 +291,7 @@ class IncidenciasViewState extends State<IncidenciasView> {
                   color: TransportifyColors.primarySwatch,
                   fontSize: 14,
                   fontWeight: FontWeight.w800),
-              hintText: "Escriba las horas que te retrasarás...",
+              hintText: "Introduzca las horas de retraso...",
             ),
           ),
           shape: RoundedRectangleBorder(
