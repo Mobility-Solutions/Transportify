@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:transportify/util/style.dart';
-import 'package:transportify/vistas/CiudadDialog.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:transportify/vistas/dialog/CiudadDialog.dart';
 
 import 'BusquedaForm.dart';
 

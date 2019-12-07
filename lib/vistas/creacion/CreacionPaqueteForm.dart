@@ -8,8 +8,8 @@ import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:transportify/vistas/dialog/PuntosDialog.dart';
 
-import '../PuntosDialog.dart';
 
 class CreacionPaqueteForm extends StatefulWidget {
   CreacionPaqueteForm({this.miPaquete, this.usuario}) : super();

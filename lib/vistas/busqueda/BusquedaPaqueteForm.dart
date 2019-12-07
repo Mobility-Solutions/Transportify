@@ -30,8 +30,7 @@ class _BusquedaPaqueteFormState
   List<PuntoTransportify> listaPuntosDestino = List<PuntoTransportify>();
 
   @override
-  Future<bool> buscar(
-      BuildContext context, QuerySnapshot snapshot) async {
+  Future<bool> buscar(BuildContext context, QuerySnapshot snapshot) async {
     List<DocumentSnapshot> coleccion = snapshot.documents;
 
     var now = new DateTime.now();
@@ -83,166 +82,126 @@ class _BusquedaPaqueteFormState
   Widget builderListado(BuildContext context, int index) {
     return InkWell(
       child: Container(
-        decoration: new BoxDecoration(
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,
         ),
-        height: 120,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              direction: Axis.horizontal,
+              spacing: 10.0,
+              children: [
+                Text(
+                  listaPuntosOrigen[index].direccion,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black, fontSize: 18),
+                ),
+                Icon(
+                  Icons.arrow_forward,
+                ),
+                Text(
+                  listaPuntosDestino[index].direccion,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black, fontSize: 18),
+                ),
+              ],
+            ),
+            SizedBox(height: 10.0),
+            Wrap(
+              direction: Axis.horizontal,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 5.0,
               children: [
                 Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Dir Origen: ${listaPuntosOrigen[index].direccion}',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.black, fontSize: 18),
-                        ),
-                      ],
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.calendar_today,
+                      color: Colors.lightBlue[200],
+                      size: 35.0,
                     ),
+                    Text(
+                      DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, "es_ES")
+                          .format(listaResultados[index].fechaEntrega),
+                      style: TextStyle(fontSize: 18, color: Colors.black),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+                Wrap(
+                  direction: Axis.vertical,
+                  spacing: 4.0,
+                  children: <Widget>[
                     Row(
                       children: [
                         Text(
-                          'Dir Destino: ${listaPuntosDestino[index].direccion}',
+                          'Precio:',
+                          textAlign: TextAlign.right,
+                          style:
+                              TextStyle(color: Colors.grey[500], fontSize: 18),
+                        ),
+                        Text(
+                          ' ${(listaResultados[index].precio ?? 0) - (listaResultados[index].precio ?? 0) * 0.05 ?? 'No'} €',
                           textAlign: TextAlign.right,
                           style: TextStyle(color: Colors.black, fontSize: 18),
                         ),
                       ],
                     ),
+                    Row(
+                      children: [
+                        Text(
+                          'Peso: ',
+                          textAlign: TextAlign.left,
+                          style:
+                              TextStyle(color: Colors.grey[500], fontSize: 18),
+                        ),
+                        Text(
+                          '${listaResultados[index].peso} kg',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    Wrap(
+                      direction: Axis.horizontal,
+                      spacing: 5.0,
+                      children: <Widget>[
+                        Text(
+                          'Dimensiones: ',
+                          textAlign: TextAlign.left,
+                          style:
+                              TextStyle(color: Colors.grey[500], fontSize: 18),
+                        ),
+                        Text(
+                          '${listaResultados[index].largo}',
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                        Text(
+                          'x',
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                        Text(
+                          '${listaResultados[index].ancho}',
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                        Text(
+                          'x',
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                        Text(
+                          '${listaResultados[index].alto}',
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                        Text(
+                          'cm',
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    listaResultados[index].fragil ? Text('Frágil', style: TextStyle(color: Colors.red, fontSize: 18),) : const SizedBox(),
                   ],
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  //flex: 2,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        Icons.calendar_today,
-                        color: Colors.lightBlue[200],
-                        size: 35.0,
-                      ),
-                      Text(
-                        DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, "es_ES")
-                            .format(listaResultados[index].fechaEntrega),
-                        style: TextStyle(
-                            fontSize: 18, color: Colors.black, height: 1.5),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  //flex: 2,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Precio:',
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 18),
-                          ),
-                          Text(
-                            ' ${listaResultados[index].precio-listaResultados[index].precio*0.05 ?? 'No'}',
-                            textAlign: TextAlign.right,
-                            style: TextStyle(color: Colors.black, fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Peso: ',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 18),
-                          ),
-                          Text(
-                            '${listaResultados[index].peso}',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(color: Colors.black, fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Frágil: ',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 18),
-                          ),
-                          Text(
-                            listaResultados[index].fragil ? 'Sí' : 'No',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(color: Colors.black, fontSize: 18),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  width: 10,
-                ),
-                Expanded(
-                  //flex: 2,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Alto: ',
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 18),
-                          ),
-                          Text(
-                            '${listaResultados[index].alto} cm',
-                            style: TextStyle(color: Colors.black, fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            'Ancho: ',
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 18),
-                          ),
-                          Text(
-                            '${listaResultados[index].ancho} cm',
-                            style: TextStyle(color: Colors.black, fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            'Largo: ',
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 18),
-                          ),
-                          Text(
-                            '${listaResultados[index].largo} cm',
-                            style: TextStyle(color: Colors.black, fontSize: 18),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                )
               ],
             ),
           ],
@@ -328,8 +287,11 @@ class VentanaViaje extends StatefulWidget {
       {this.origen, this.destino, this.fechaPaquete, this.fechaMargen});
 
   @override
-  _VentanaViaje createState() =>
-      new _VentanaViaje(origen: origen, destino: destino, fechaPaquete: fechaPaquete, fechaMargen: fechaMargen);
+  _VentanaViaje createState() => new _VentanaViaje(
+      origen: origen,
+      destino: destino,
+      fechaPaquete: fechaPaquete,
+      fechaMargen: fechaMargen);
 
   static Future<Viaje> show(BuildContext context) async => await showDialog(
       context: context,

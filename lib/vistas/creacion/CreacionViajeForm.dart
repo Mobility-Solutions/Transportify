@@ -6,8 +6,7 @@ import 'package:transportify/middleware/UsuarioBD.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
-
-import '../CiudadDialog.dart';
+import 'package:transportify/vistas/dialog/CiudadDialog.dart';
 
 class CreacionViajeForm extends StatefulWidget {
   CreacionViajeForm({this.viajeModificando, Key key, this.title, this.usuario})

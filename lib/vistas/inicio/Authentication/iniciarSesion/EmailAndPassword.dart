@@ -4,12 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:transportify/middleware/UsuarioBD.dart';
-import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
-import 'package:transportify/vistas/Authentication/Autenticacion.dart';
 import 'package:toast/toast.dart';
 
 class EmailPasswordForm extends StatefulWidget {
+  EmailPasswordForm({this.loginCallback});
+
+  final VoidCallback loginCallback;
+  
   @override
   State<StatefulWidget> createState() => _EmailPasswordFormState();
 }
@@ -117,6 +119,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
           correo: _emailController.text,
           password: _passwordController.text,
         );
+        widget.loginCallback();
       } on PlatformException catch (error) {
         print(error);
         // Como se trata de un error de autenticacion, volvemos a lanzarlo como tal para que lo trate.
@@ -145,13 +148,6 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
       }
       Toast.show(message, context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-    }
-
-    final Usuario user = await UsuarioBD.obtenerUsuarioActual();
-    if (user != null) {
-      Autenticacion.userSignInCorrectly(context, user);
-    } else {
-      Autenticacion.userSignInIncorrectly();
     }
   }
 

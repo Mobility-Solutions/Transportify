@@ -5,9 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:toast/toast.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
-import 'package:transportify/vistas/Authentication/Autenticacion.dart';
-
-import '../../CiudadDialog.dart';
+import 'package:transportify/vistas/dialog/CiudadDialog.dart';
 
 class Registrarse extends StatefulWidget {
   final String title = 'Registrarse';
@@ -245,12 +243,13 @@ class RegistrarseState extends State<Registrarse> {
 
       try {
         await usuario.crearEnBD();
+        Toast.show("Usuario creado con éxito.", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        Navigator.pop(context);
       } on PlatformException catch (error) {
         print(error);
         throw AuthException(error.code, error.message);
       }
-
-      Autenticacion.userSignInCorrectly(this.context, usuario);
     } on AuthException catch (error) {
       String message;
       switch (error.code) {
@@ -266,8 +265,6 @@ class RegistrarseState extends State<Registrarse> {
 
       Toast.show(message, context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-
-      Autenticacion.userSignInIncorrectly();
     }
   }
 
