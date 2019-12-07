@@ -92,14 +92,25 @@ class PuntoTransportifyBD {
             antesDelListado: ciudadSeleccionada == null
                 ? const SizedBox()
                 : Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back),
-                        onPressed: () {
-                          onPuntoChanged(null);
-                          onCiudadChanged(null);
-                        },
+                    children: <Widget>[
+                      Wrap(
+                        direction: Axis.horizontal,
+                        alignment: WrapAlignment.start,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 10.0,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.arrow_back),
+                            onPressed: () {
+                              onPuntoChanged(null);
+                              onCiudadChanged(null);
+                            },
+                          ),
+                          Text(
+                            ciudadSeleccionada,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                     ],
                   ),
