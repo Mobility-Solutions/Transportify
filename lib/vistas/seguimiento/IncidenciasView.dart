@@ -38,8 +38,12 @@ class IncidenciasViewState extends State<IncidenciasView> {
                   border: Border.all(
                       color: TransportifyColors.primarySwatch, width: 2),
                   borderRadius: BorderRadius.all(Radius.circular(20))),
-              height: 60.0,
-              margin: const EdgeInsets.all(10),
+              height: 60,
+              margin: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 10,
+                  left: 10,
+                  right: 10,
+                  top: 10),
               child: Row(
                 children: <Widget>[
                   Flexible(
@@ -144,21 +148,25 @@ class IncidenciasViewState extends State<IncidenciasView> {
                 SizedBox(
                   height: 50,
                 ),
-                TextFormField(
-                  enabled: false,
-                  autofocus: false,
-                  maxLines: 3,
-                  textAlign: TextAlign.left,
-                  style: TextStyle(color: TransportifyColors.primarySwatch),
-                  decoration: InputDecoration.collapsed(
-                    hintStyle: TextStyle(
-                        color: TransportifyColors.primarySwatch,
-                        fontSize: 25,
-                        fontWeight: FontWeight.w800),
-                    hintText: "Incidencias",
+                Expanded(
+                  flex: 1,
+                  child: TextFormField(
+                    enabled: false,
+                    autofocus: false,
+                    maxLines: 3,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(color: TransportifyColors.primarySwatch),
+                    decoration: InputDecoration.collapsed(
+                      hintStyle: TextStyle(
+                          color: TransportifyColors.primarySwatch,
+                          fontSize: 25,
+                          fontWeight: FontWeight.w800),
+                      hintText: "Incidencias",
+                    ),
                   ),
                 ),
                 Expanded(
+                  flex: 7,
                   child: Container(
                     height: 200,
                     child: ListView.separated(
@@ -317,7 +325,7 @@ class IncidenciasViewState extends State<IncidenciasView> {
     );
   }
 
-   @override
+  @override
   void initState() {
     super.initState();
     incidencias = widget.paquete.incidencias;
