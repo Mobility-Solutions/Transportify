@@ -12,11 +12,12 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import '../PuntosDialog.dart';
 
 class CreacionPaqueteForm extends StatefulWidget {
-  CreacionPaqueteForm([this.miPaquete]) : super();
+  CreacionPaqueteForm({this.miPaquete, this.usuario}) : super();
   @override
   _CreacionPaqueteFormState createState() => _CreacionPaqueteFormState();
 
   final Paquete miPaquete;
+  final Usuario usuario;
 }
 
 class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
@@ -270,7 +271,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
                   PuntoTransportify returnPunto =
-                  await PuntosDialog.show(this.context);
+                  await PuntosDialog.show(this.context, ciudadInicial: widget.usuario?.ciudad, puntoInicial: puntos.origen);
 
                   if (returnPunto != null) {
                     puntos.origen = returnPunto;
@@ -290,7 +291,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
                   PuntoTransportify returnPunto =
-                  await PuntosDialog.show(this.context);
+                  await PuntosDialog.show(this.context, puntoInicial: puntos?.destino); // Ciudad inicial del usuario solo en origen
 
                   if (returnPunto != null) {
                     puntos.destino = returnPunto;

@@ -87,29 +87,32 @@ class PuntoTransportifyBD {
       Function(PuntoTransportify) onPuntoChanged,
       Function(PuntoTransportify) onSelected,
       Function onCanceled) {
-    return _obtenerSelector(
-        antesDelListado: ciudadSeleccionada == null
-            ? const SizedBox()
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    onPressed: () {
-                      onPuntoChanged(null);
-                      onCiudadChanged(null);
-                    },
+    return snapshot.hasData
+        ? _obtenerSelector(
+            antesDelListado: ciudadSeleccionada == null
+                ? const SizedBox()
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: () {
+                          onPuntoChanged(null);
+                          onCiudadChanged(null);
+                        },
+                      ),
+                    ],
                   ),
-                ],
-              ),
-        listado: ciudadSeleccionada == null
-            ? _obtenerListadoCiudades(
-                snapshot, ciudadSeleccionada, onCiudadChanged)
-            : _obtenerListadoPuntos(snapshot, ciudadSeleccionada,
-                puntoSeleccionado, onPuntoChanged),
-        onSelected: onSelected,
-        onCanceled: onCanceled,
-        itemSeleccionado: puntoSeleccionado);
+            listado: ciudadSeleccionada == null
+                ? _obtenerListadoCiudades(
+                    snapshot, ciudadSeleccionada, onCiudadChanged)
+                : _obtenerListadoPuntos(snapshot, ciudadSeleccionada,
+                    puntoSeleccionado, onPuntoChanged),
+            onSelected: onSelected,
+            onCanceled: onCanceled,
+            itemSeleccionado: puntoSeleccionado)
+        : const Center(child: const CircularProgressIndicator());
+    ;
   }
 
   static Widget _obtenerSelectorCiudades(
@@ -119,12 +122,14 @@ class PuntoTransportifyBD {
       Function(String) onSelected,
       Function onCanceled,
       String ciudadSeleccionada) {
-    return _obtenerSelector(
-        listado: _obtenerListadoCiudades(
-            snapshot, ciudadSeleccionada, onSelectionChanged),
-        onSelected: onSelected,
-        onCanceled: onCanceled,
-        itemSeleccionado: ciudadSeleccionada);
+    return snapshot.hasData
+        ? _obtenerSelector(
+            listado: _obtenerListadoCiudades(
+                snapshot, ciudadSeleccionada, onSelectionChanged),
+            onSelected: onSelected,
+            onCanceled: onCanceled,
+            itemSeleccionado: ciudadSeleccionada)
+        : const Center(child: const CircularProgressIndicator());
   }
 
   static Widget _obtenerSelector<T>(

@@ -205,12 +205,14 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () async {
-          Paquete paquete = await PaquetesDialog.show(context, usuario: usuario);
+          Paquete paquete =
+              await PaquetesDialog.show(context, usuario: usuario);
           if (paquete != null) {
             if (paquete is Paquete) {
               Navigator.of(context).push(
                   MaterialPageRoute<Null>(builder: (BuildContext context) {
-                return new CreacionPaqueteForm(paquete);
+                return CreacionPaqueteForm(
+                    miPaquete: paquete, usuario: usuario);
               }));
             }
           }
@@ -309,7 +311,8 @@ class CrearViajePart extends UserDependantStatelessWidget {
             if (viaje is Viaje) {
               Navigator.of(context).push(
                   MaterialPageRoute<Null>(builder: (BuildContext context) {
-                return new CreacionViajeForm(viaje);
+                return CreacionViajeForm(
+                    viajeModificando: viaje, usuario: usuario);
               }));
             }
           } else {}

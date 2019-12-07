@@ -2,19 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:transportify/middleware/PuntoTransportifyBD.dart';
 
 class CiudadDialog extends StatefulWidget {
-  @override
-  _CiudadDialogState createState() => new _CiudadDialogState();
+  final String ciudadInicial;
 
-  static Future<String> show(BuildContext context) async =>
+  CiudadDialog({this.ciudadInicial});
+
+  @override
+  _CiudadDialogState createState() => new _CiudadDialogState(ciudadInicial: ciudadInicial);
+
+  static Future<String> show(BuildContext context, {String ciudadInicial}) async =>
       await showDialog(
           context: context,
           builder: (_) {
-            return CiudadDialog();
+            return CiudadDialog(ciudadInicial: ciudadInicial);
           });
 }
 
 class _CiudadDialogState extends State<CiudadDialog> {
   String _ciudadSeleccionada;
+
+  _CiudadDialogState({String ciudadInicial}) : _ciudadSeleccionada = ciudadInicial;
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
