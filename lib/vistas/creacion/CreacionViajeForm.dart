@@ -83,8 +83,9 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                         "Ciudad de origen"),
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
-                      String returnCiudad =
-                          await CiudadDialog.show(this.context, ciudadInicial: origen ?? widget.usuario?.ciudad);
+                      String returnCiudad = await CiudadDialog.show(
+                          this.context,
+                          ciudadInicial: origen ?? widget.usuario?.ciudad);
 
                       if (returnCiudad != null) {
                         origen = returnCiudad;
@@ -117,8 +118,10 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                         "Ciudad de destino"),
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
-                      String returnCiudad =
-                          await CiudadDialog.show(this.context, ciudadInicial: destino); // Ciudad inicial del usuario solo en origen
+                      String returnCiudad = await CiudadDialog.show(
+                          this.context,
+                          ciudadInicial:
+                              destino); // Ciudad inicial del usuario solo en origen
 
                       if (returnCiudad != null) {
                         destino = returnCiudad;
@@ -374,13 +377,11 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
   @override
   void dispose() {
-    if (modificando) {
-      pesoController.dispose();
-      origenController.dispose();
-      destinoController.dispose();
-      fechaController.dispose();
-      origenController.dispose();
-    }
+    pesoController.dispose();
+    origenController.dispose();
+    destinoController.dispose();
+    fechaController.dispose();
+
     super.dispose();
   }
 
