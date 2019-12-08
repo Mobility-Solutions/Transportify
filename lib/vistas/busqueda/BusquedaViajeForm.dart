@@ -2,30 +2,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 
 import 'BusquedaFormCiudades.dart';
 
 class BusquedaViajeForm extends StatefulWidget {
-  BusquedaViajeForm({Key key, this.title}) : super(key: key);
+  BusquedaViajeForm({Key key, this.title, this.usuario}) : super(key: key);
   @override
-  _BusquedaViajeFormState createState() => _BusquedaViajeFormState();
+  _BusquedaViajeFormState createState() => _BusquedaViajeFormState(usuario: usuario);
 
   final String title;
+  final Usuario usuario;
 }
 
 class _BusquedaViajeFormState
     extends BusquedaFormCiudadesState<BusquedaViajeForm, Viaje> {
-  final origenController = TextEditingController();
-  final destinoController = TextEditingController();
-
-  String origen, destino;
-
-  _BusquedaViajeFormState()
+  _BusquedaViajeFormState({Usuario usuario})
       : super(
             titulo: "Buscar Viaje",
             coleccionBD: "viajes",
-            textoResultados: "Viajes encontrados");
+            textoResultados: "Viajes encontrados",
+            usuario: usuario);
 
   @override
   Future<bool> buscar(BuildContext context, QuerySnapshot snapshot) async {

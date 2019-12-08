@@ -10,13 +10,13 @@ import 'package:transportify/util/style.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:transportify/vistas/dialog/PuntosDialog.dart';
 
-
 class CreacionPaqueteForm extends StatefulWidget {
-  CreacionPaqueteForm([this.miPaquete]) : super();
+  CreacionPaqueteForm({this.miPaquete, this.usuario}) : super();
   @override
   _CreacionPaqueteFormState createState() => _CreacionPaqueteFormState();
 
   final Paquete miPaquete;
+  final Usuario usuario;
 }
 
 class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
@@ -91,7 +91,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 autofocus: false,
                 style: TextStyle(color: TransportifyColors.primarySwatch),
                 decoration:
-                TransportifyMethods.returnTextFormDecoration("Nombre"),
+                    TransportifyMethods.returnTextFormDecoration("Nombre"),
                 controller: nombreController,
                 validator: (value) {
                   if (value.isEmpty)
@@ -208,20 +208,20 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 children: <Widget>[
                   Flexible(
                       child: TextFormField(
-                        maxLines: 1,
-                        keyboardType: TextInputType.number,
-                        autofocus: false,
-                        style: TextStyle(color: TransportifyColors.primarySwatch),
-                        decoration: TransportifyMethods.returnTextFormDecoration(
-                            "Alto(cm)"),
-                        controller: altoController,
-                        validator: (value) {
-                          if (value.isEmpty || double.parse(value) <= 0)
-                            return 'Alto(cm)';
-                          else
-                            return null;
-                        },
-                      )),
+                    maxLines: 1,
+                    keyboardType: TextInputType.number,
+                    autofocus: false,
+                    style: TextStyle(color: TransportifyColors.primarySwatch),
+                    decoration: TransportifyMethods.returnTextFormDecoration(
+                        "Alto(cm)"),
+                    controller: altoController,
+                    validator: (value) {
+                      if (value.isEmpty || double.parse(value) <= 0)
+                        return 'Alto(cm)';
+                      else
+                        return null;
+                    },
+                  )),
                   Flexible(
                     child: TextFormField(
                       maxLines: 1,
@@ -269,8 +269,10 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                     "Punto Transportify de origen"),
                 onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
-                  PuntoTransportify returnPunto =
-                  await PuntosDialog.show(this.context);
+                  PuntoTransportify returnPunto = await PuntosDialog.show(
+                      this.context,
+                      ciudadInicial: widget.usuario?.ciudad,
+                      puntoInicial: puntos.origen);
 
                   if (returnPunto != null) {
                     puntos.origen = returnPunto;
@@ -289,8 +291,10 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                     "Punto Transportify de destino"),
                 onTap: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
-                  PuntoTransportify returnPunto =
-                  await PuntosDialog.show(this.context);
+                  PuntoTransportify returnPunto = await PuntosDialog.show(
+                      this.context,
+                      puntoInicial: puntos
+                          ?.destino); // Ciudad inicial del usuario solo en origen
 
                   if (returnPunto != null) {
                     puntos.destino = returnPunto;
@@ -315,12 +319,12 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                       maxTime: new DateTime(DateTime.now().year + 3),
                       //onChanged: (date) {print ('change $date');},
                       onConfirm: (date) {
-                        _fechaentrega = date;
-                        String _date = '${date.day} - ${date.month} - ${date.year}';
-                        setState(() {
-                          fechaController.text = _date;
-                        });
-                      }, currentTime: DateTime.now(), locale: LocaleType.es);
+                    _fechaentrega = date;
+                    String _date = '${date.day} - ${date.month} - ${date.year}';
+                    setState(() {
+                      fechaController.text = _date;
+                    });
+                  }, currentTime: DateTime.now(), locale: LocaleType.es);
                 },
                 keyboardType: TextInputType.datetime,
                 autofocus: false,
@@ -346,13 +350,13 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                         containerHeight: 200.0,
                       ),
                       showTitleActions: true, onConfirm: (time) {
-                        print('confirm $time');
-                        _horaEntrega = time;
-                        String _time = DateFormat.Hm().format(time);
-                        setState(() {
-                          horaController.text = _time;
-                        });
-                      }, currentTime: DateTime.now(), locale: LocaleType.es);
+                    print('confirm $time');
+                    _horaEntrega = time;
+                    String _time = DateFormat.Hm().format(time);
+                    setState(() {
+                      horaController.text = _time;
+                    });
+                  }, currentTime: DateTime.now(), locale: LocaleType.es);
                 },
                 decoration: TransportifyMethods.returnTextFormDecoration(
                     "Hora de comienzo del viaje"),
@@ -370,12 +374,12 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 children: <Widget>[
                   Flexible(
                       child: Text(
-                        'Frágil',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                        ),
-                      )),
+                    'Frágil',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.0,
+                    ),
+                  )),
                   Flexible(
                     child: Checkbox(
                       value: _fragil,
@@ -506,7 +510,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
       }
 
       fechaController.text =
-      '${widget.miPaquete.fechaEntrega.day} / ${widget.miPaquete.fechaEntrega.month} / ${widget.miPaquete.fechaEntrega.year}';
+          '${widget.miPaquete.fechaEntrega.day} / ${widget.miPaquete.fechaEntrega.month} / ${widget.miPaquete.fechaEntrega.year}';
       DateTime fechaModificando = new DateTime(
           widget.miPaquete.fechaEntrega.year,
           widget.miPaquete.fechaEntrega.month,
@@ -533,18 +537,17 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
   @override
   void dispose() {
-    if (modificando) {
-      nombreController.dispose();
-      pesoController.dispose();
-      precioController.dispose();
-      origenController.dispose();
-      destinoController.dispose();
-      fechaController.dispose();
-      horaController.dispose();
-      altoController.dispose();
-      anchoController.dispose();
-      largoController.dispose();
-    }
+    nombreController.dispose();
+    pesoController.dispose();
+    precioController.dispose();
+    origenController.dispose();
+    destinoController.dispose();
+    fechaController.dispose();
+    horaController.dispose();
+    altoController.dispose();
+    anchoController.dispose();
+    largoController.dispose();
+
     super.dispose();
   }
 
