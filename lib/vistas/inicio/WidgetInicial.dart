@@ -9,8 +9,8 @@ abstract class WidgetInicial extends Widget {
   factory WidgetInicial(
     AuthStatus authStatus, {
     Usuario usuario,
-    VoidCallback loginCallback,
-    VoidCallback logoutCallback,
+    Function(Usuario) loginCallback,
+    Function(Usuario) logoutCallback,
   }) {
     switch (authStatus) {
       case AuthStatus.NOT_DETERMINED:
