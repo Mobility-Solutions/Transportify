@@ -53,6 +53,14 @@ class PuntoTransportifyBD {
         onCanceled));
   }
 
+  static Future<Iterable<PuntoTransportify>> obtenerPuntos([bool filtro(PuntoTransportify punto)]) {
+    return Datos.obtenerColeccion(coleccion_puntos).getDocuments().then((query) {
+      var puntos = query.documents.map((snapshot) => PuntoTransportify.fromSnapshot(snapshot));
+      if (filtro != null) puntos = puntos.where(filtro);
+      return puntos;
+    });
+  }
+
   static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
       _obtenerSelectorCiudadesBuilder(
           Function(String) onSelectionChanged,
@@ -118,7 +126,7 @@ class PuntoTransportifyBD {
             listado: ciudadSeleccionada == null
                 ? _obtenerListadoCiudades(
                     snapshot, ciudadSeleccionada, onCiudadChanged)
-                : _obtenerListadoPuntos(snapshot, ciudadSeleccionada,
+                : _obtenerListadoPuntosWidget(snapshot, ciudadSeleccionada,
                     puntoSeleccionado, onPuntoChanged),
             onSelected: onSelected,
             onCanceled: onCanceled,
@@ -227,7 +235,7 @@ class PuntoTransportifyBD {
     );
   }
 
-  static Widget _obtenerListadoPuntos(
+  static Widget _obtenerListadoPuntosWidget(
       AsyncSnapshot<QuerySnapshot> snapshot,
       String ciudadSeleccionada,
       PuntoTransportify puntoSeleccionado,
