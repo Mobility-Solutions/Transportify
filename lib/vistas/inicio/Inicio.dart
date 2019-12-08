@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
           TopPart(usuario: usuario, logoutCallback: logoutCallback),
           CrearPaquetePart(usuario: usuario),
           CrearViajePart(usuario: usuario),
-          BuscarPart(),
+          BuscarPart(usuario: usuario),
         ]));
   }
 }
@@ -221,7 +221,7 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
           if (paquete is Paquete) {
             Navigator.of(context)
                 .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return new CreacionPaqueteForm(paquete);
+              return CreacionPaqueteForm(miPaquete: paquete, usuario: usuario);
             }));
           }
         }
@@ -291,7 +291,8 @@ class CrearViajePart extends UserDependantStatelessWidget {
           if (viaje is Viaje) {
             Navigator.of(context)
                 .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return new CreacionViajeForm(viaje);
+              return CreacionViajeForm(
+                  viajeModificando: viaje, usuario: usuario);
             }));
           }
         }
@@ -350,7 +351,9 @@ class CrearViajePart extends UserDependantStatelessWidget {
   }
 }
 
-class BuscarPart extends StatelessWidget {
+class BuscarPart extends UserDependantStatelessWidget {
+  BuscarPart({Usuario usuario}) : super(usuario);
+
   Widget getNumDocuments(
       BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
     if (!snapshot.hasData) {
@@ -390,7 +393,7 @@ class BuscarPart extends StatelessWidget {
           onTap: () {
             Navigator.of(context)
                 .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return new BusquedaPaqueteForm();
+              return BusquedaPaqueteForm(usuario: usuario);
             }));
           },
         ),
@@ -404,7 +407,7 @@ class BuscarPart extends StatelessWidget {
           onTap: () {
             Navigator.of(context)
                 .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return new BusquedaViajeForm();
+              return BusquedaViajeForm(usuario: usuario);
             }));
           },
         ),

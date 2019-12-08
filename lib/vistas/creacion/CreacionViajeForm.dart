@@ -9,13 +9,14 @@ import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/dialog/CiudadDialog.dart';
 
 class CreacionViajeForm extends StatefulWidget {
-  CreacionViajeForm([this.viajeModificando, Key key, this.title])
+  CreacionViajeForm({this.viajeModificando, Key key, this.title, this.usuario})
       : super(key: key);
   @override
   _CreacionViajeFormState createState() => _CreacionViajeFormState();
 
   final String title;
   final Viaje viajeModificando;
+  final Usuario usuario;
 }
 
 class _CreacionViajeFormState extends State<CreacionViajeForm> {
@@ -82,8 +83,9 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                         "Ciudad de origen"),
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
-                      String returnCiudad =
-                          await CiudadDialog.show(this.context);
+                      String returnCiudad = await CiudadDialog.show(
+                          this.context,
+                          ciudadInicial: origen ?? widget.usuario?.ciudad);
 
                       if (returnCiudad != null) {
                         origen = returnCiudad;
@@ -116,8 +118,10 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                         "Ciudad de destino"),
                     onTap: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
-                      String returnCiudad =
-                          await CiudadDialog.show(this.context);
+                      String returnCiudad = await CiudadDialog.show(
+                          this.context,
+                          ciudadInicial:
+                              destino); // Ciudad inicial del usuario solo en origen
 
                       if (returnCiudad != null) {
                         destino = returnCiudad;
@@ -373,13 +377,11 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
   @override
   void dispose() {
-    if (modificando) {
-      pesoController.dispose();
-      origenController.dispose();
-      destinoController.dispose();
-      fechaController.dispose();
-      origenController.dispose();
-    }
+    pesoController.dispose();
+    origenController.dispose();
+    destinoController.dispose();
+    fechaController.dispose();
+
     super.dispose();
   }
 

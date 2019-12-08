@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:toast/toast.dart';
+import 'package:transportify/middleware/UsuarioBD.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/dialog/CiudadDialog.dart';
@@ -24,6 +25,9 @@ class RegistrarseState extends State<Registrarse> {
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   String _ciudad;
+
+  bool nicknameRepetido = false;
+  String ultimoNicknameComprobado;
 
   @override
   Widget build(BuildContext context) {
@@ -61,12 +65,15 @@ class RegistrarseState extends State<Registrarse> {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
                       }
+                      if (nicknameRepetido) {
+                        return 'Este nombre de usuario ya está en uso. Escoge otro';
+                      }
                       return null;
                     },
                     decoration: InputDecoration(
-                      icon: Icon(Icons.person),
-                      hintText: 'Introduce nickname',
-                      labelText: 'Nickname',
+                      icon: Icon(Icons.person_outline),
+                      hintText: 'Introduce un nombre de usuario',
+                      labelText: 'Nombre de usuario',
                     ),
                   ),
                   TextFormField(
@@ -124,7 +131,7 @@ class RegistrarseState extends State<Registrarse> {
                         return 'El valor no puede estar vacío';
                       }
                       if (value.length < 6) {
-                        return 'La contraseña debe tener mas de 6 carácteres';
+                        return 'La contraseña debe tener más de 6 caracteres';
                       }
                       return null;
                     },
@@ -177,7 +184,7 @@ class RegistrarseState extends State<Registrarse> {
                         return 'El valor no puede estar vacío';
                       }
                       if (soloNumeros < 18 || soloNumeros > 99) {
-                        return 'Edad incorrecta';
+                        return 'Edad incorrecta. Debe ser mayor de edad (18+)';
                       }
                       return null;
                     },
@@ -201,6 +208,17 @@ class RegistrarseState extends State<Registrarse> {
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),
                       onPressed: () async {
+                        String nuevoNickname = _nicknameController.text;
+                        if (ultimoNicknameComprobado == null ||
+                            ultimoNicknameComprobado != nuevoNickname) {
+                          nicknameRepetido =
+                              await UsuarioBD.existeUsuarioConNickname(
+                                  nuevoNickname);
+
+                          // Guardando el ultimo comprobado evitamos llamar a la base de datos más de la cuenta mediante spamming
+                          ultimoNicknameComprobado = nuevoNickname;
+                        }
+
                         if (_formKey.currentState.validate()) {
                           FocusScope.of(context).requestFocus(new FocusNode());
                           _register();
@@ -229,7 +247,6 @@ class RegistrarseState extends State<Registrarse> {
     super.dispose();
   }
 
-  // Example code for registration.
   void _register() async {
     try {
       Usuario usuario = new Usuario(
@@ -244,7 +261,7 @@ class RegistrarseState extends State<Registrarse> {
       try {
         await usuario.crearEnBD();
         Toast.show("Usuario creado con éxito.", context,
-          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         Navigator.pop(context);
       } on PlatformException catch (error) {
         print(error);

@@ -2,29 +2,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 
 import 'BusquedaFormCiudades.dart';
 
 class BusquedaViajeForm extends StatefulWidget {
-  BusquedaViajeForm({Key key, this.title}) : super(key: key);
+  BusquedaViajeForm({Key key, this.title, this.usuario}) : super(key: key);
   @override
-  _BusquedaViajeFormState createState() => _BusquedaViajeFormState();
+  _BusquedaViajeFormState createState() => _BusquedaViajeFormState(usuario: usuario);
 
   final String title;
+  final Usuario usuario;
 }
 
-class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeForm, Viaje> {
-  final origenController = TextEditingController();
-  final destinoController = TextEditingController();
-
-  String origen, destino;
-
-  _BusquedaViajeFormState()
+class _BusquedaViajeFormState
+    extends BusquedaFormCiudadesState<BusquedaViajeForm, Viaje> {
+  _BusquedaViajeFormState({Usuario usuario})
       : super(
             titulo: "Buscar Viaje",
             coleccionBD: "viajes",
-            textoResultados: "Viajes encontrados");
+            textoResultados: "Viajes encontrados",
+            usuario: usuario);
 
   @override
   Future<bool> buscar(BuildContext context, QuerySnapshot snapshot) async {
@@ -33,25 +32,13 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
 
     var now = new DateTime.now();
     DateTime fechaElegida;
-    if(choosenDate != null && choosenTime != null){
-    fechaElegida = new DateTime(
-        choosenDate.year,
-        choosenDate.month,
-        choosenDate.day,
-        choosenTime.hour,
-        choosenTime.minute,
-        0);
-    }
-    else if (choosenTime == null && choosenDate != null){
+    if (choosenDate != null && choosenTime != null) {
+      fechaElegida = new DateTime(choosenDate.year, choosenDate.month,
+          choosenDate.day, choosenTime.hour, choosenTime.minute, 0);
+    } else if (choosenTime == null && choosenDate != null) {
       fechaElegida = new DateTime(
-        choosenDate.year,
-        choosenDate.month,
-        choosenDate.day,
-        0,
-        0,
-        0);
-    }
-    else{
+          choosenDate.year, choosenDate.month, choosenDate.day, 0, 0, 0);
+    } else {
       fechaElegida = now;
     }
 
@@ -61,17 +48,25 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
       await viaje.waitForInit();
 
       var date = viaje.fecha;
-      var fechaBusqueda =false;
+      var fechaBusqueda = false;
       var diff = date.isAfter(now);
 
-      if(date.day == fechaElegida.day && date.month == fechaElegida.month && date.year == fechaElegida.year && choosenTime==null || choosenDate == null) {
-         fechaBusqueda = true;
+      if (date.day == fechaElegida.day &&
+              date.month == fechaElegida.month &&
+              date.year == fechaElegida.year &&
+              choosenTime == null ||
+          choosenDate == null) {
+        fechaBusqueda = true;
+      } else if (choosenTime != null &&
+          date.hour == fechaElegida.hour &&
+          date.minute == fechaElegida.minute) {
+        fechaBusqueda = true;
       }
 
-      else if(choosenTime != null && date.hour == fechaElegida.hour && date.minute == fechaElegida.minute){ fechaBusqueda = true;} 
-
-
-      if (origen == viaje.origen && destino == viaje.destino && fechaBusqueda && diff) {
+      if (origen == viaje.origen &&
+          destino == viaje.destino &&
+          fechaBusqueda &&
+          diff) {
         listaResultados.add(viaje);
       }
     }
@@ -83,21 +78,20 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
   Widget builderListado(BuildContext context, int index) {
     return InkWell(
       child: Container(
-        height: 80,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.0),
           color: Colors.white,
         ),
-        child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Expanded(
-                flex: 2,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Row(
                   children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 7.0),
+                    SizedBox(
+                      width: 7.0,
                     ),
                     Icon(
                       Icons.airport_shuttle,
@@ -106,75 +100,49 @@ class _BusquedaViajeFormState extends BusquedaFormCiudadesState<BusquedaViajeFor
                     ),
                   ],
                 ),
-              ),
-              Expanded(
-                  flex: 3,
+                Flexible(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            '${listaResultados[index].transportista?.nombre ?? 'No establecido'}',
-                            style: TextStyle(
-                                fontSize: 18, color: Colors.black, height: 2.5),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                      Text(
+                        '${listaResultados[index].transportista?.nombre ?? 'No establecido'}',
+                        style: TextStyle(fontSize: 18, color: Colors.black),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            '${listaResultados[index].cargaMaxima} kg',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.black54,
-                              height: 0.8,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                      Text(
+                        '${listaResultados[index].cargaMaxima} kg',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black54,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
-                  )),
-              Expanded(
-                flex: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, "es_ES")
-                              .format(listaResultados[0].fecha),
-                          style: TextStyle(
-                              fontSize: 18, color: Colors.black, height: 2.5),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                    Text(
+                      DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, "es_ES")
+                          .format(listaResultados[index].fecha),
+                      style: TextStyle(fontSize: 18, color: Colors.black),
+                      textAlign: TextAlign.center,
                     ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          DateFormat.Hm()
-                              .format(listaResultados[0].fecha),
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.black54,
-                            height: 0.8,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                    Text(
+                      DateFormat.Hm().format(listaResultados[index].fecha),
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.black54,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
-              ),
-            ]),
+              ]),
+        ),
       ),
       onTap: () {
         print('Has seleccionado un viaje');

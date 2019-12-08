@@ -35,12 +35,12 @@ class ViajeDialog extends UserDependantStatelessWidget {
  
             )),
         actions: <Widget>[
-          new FlatButton(
-            child: new Text("Crear Viaje"),
+          FlatButton(
+            child: Text("Crear Viaje"),
             onPressed: () {
             Navigator.of(context)
               .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return new CreacionViajeForm();
+              return CreacionViajeForm(usuario: usuario);
               }));
           },
           )
