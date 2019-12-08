@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
+import 'package:transportify/middleware/UsuarioBD.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/inicio/Authentication/iniciarSesion/iniciarSesion.dart';
@@ -12,11 +14,9 @@ class PerfilUsuarioView extends StatefulWidget {
   PerfilUsuarioView(this.usuario) : super();
 
   final Usuario usuario;
-
 }
 
 class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
-  
   final _formKey = GlobalKey<FormState>();
 
   bool editable = false;
@@ -27,14 +27,16 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
 
   String ciudad;
 
-  var nombreApellidosText = TextEditingController();
-  var correoText = TextEditingController();
+  var nombreText = TextEditingController();
+  var nicknameText = TextEditingController();
   var ciudadText = TextEditingController();
   var edadText = TextEditingController();
 
+  bool nicknameRepetido = false;
+  String ultimoNicknameComprobado;
+
   @override
   Widget build(BuildContext context) {
-    
     return Form(
       key: _formKey,
       child: Scaffold(
@@ -49,27 +51,26 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
               color: colorEditar,
               onPressed: () {
                 setState(() {
-                cambiarColorEditable();
-                editable = !editable;
+                  cambiarColorEditable();
+                  editable = !editable;
                 });
               },
             ),
           ],
         ),
-          backgroundColor: Colors.grey[200],
-          body: Padding(
-            padding: EdgeInsets.only(left:15.0, right: 15.0, bottom: 30.0, top: 15.0),
-            child: Container (
-              child: SingleChildScrollView(
-                child: Column(
-                children: <Widget> [
-
+        backgroundColor: Colors.grey[200],
+        body: Padding(
+          padding:
+              EdgeInsets.only(left: 15.0, right: 15.0, bottom: 30.0, top: 15.0),
+          child: Container(
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
                   SizedBox(
-                  height: 20.0,
+                    height: 20.0,
                   ),
-
-                    TextFormField(
-                    controller: nombreApellidosText,
+                  TextFormField(
+                    controller: nombreText,
                     enabled: editable,
                     maxLines: 1,
                     keyboardType: TextInputType.text,
@@ -86,19 +87,16 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                       icon: Icon(Icons.person),
                       hintText: 'Introduce tu nombre y apellidos',
                       labelText: 'NOMBRE Y APELLIDOS',
-
                     ),
                   ),
-
                   SizedBox(
-                  height: 20.0,
+                    height: 20.0,
                   ),
-
                   TextFormField(
-                    controller: correoText,
+                    controller: nicknameText,
                     enabled: editable,
                     maxLines: 1,
-                    keyboardType: TextInputType.emailAddress,
+                    keyboardType: TextInputType.text,
                     autofocus: false,
                     style: TextStyle(color: TransportifyColors.primarySwatch),
                     maxLength: 50,
@@ -106,22 +104,20 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                       if (value.isEmpty) {
                         return 'El valor no puede estar vacío';
                       }
-                      if (!_isEmailCorrectlyFormed(value)) {
-                        return 'El formato es invalido';
+                      if (nicknameRepetido) {
+                        return 'Este nombre de usuario ya está en uso. Escoge otro';
                       }
                       return null;
                     },
                     decoration: InputDecoration(
-                      icon: Icon(Icons.mail_outline),
-                      hintText: 'Introduce tu correo',
-                      labelText: 'CORREO',
+                      icon: Icon(Icons.person_outline),
+                      hintText: 'Introduce tu nombre de usuario',
+                      labelText: 'USUARIO',
                     ),
                   ),
-
                   SizedBox(
-                  height: 20.0,
+                    height: 20.0,
                   ),
-
                   TextFormField(
                     controller: ciudadText,
                     enabled: editable,
@@ -151,11 +147,9 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                       labelText: 'CIUDAD',
                     ),
                   ),
-
                   SizedBox(
-                  height: 20.0,
+                    height: 20.0,
                   ),
-                  
                   TextFormField(
                     controller: edadText,
                     enabled: editable,
@@ -169,8 +163,8 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                       if (soloNumeros == null) {
                         return 'El valor no puede estar vacío';
                       }
-                      if(soloNumeros < 18 || soloNumeros > 99) {
-                        return 'Edad incorrecta';
+                      if (soloNumeros < 18 || soloNumeros > 99) {
+                        return 'Edad incorrecta. Debe ser mayor de edad (18+)';
                       }
                       return null;
                     },
@@ -180,15 +174,12 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                       labelText: 'EDAD',
                     ),
                   ),
-
                   SizedBox(
-                  height: 20.0,
+                    height: 20.0,
                   ),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-
                       RaisedButton(
                         color: colorGuardarCambios,
                         textColor: Colors.white,
@@ -200,27 +191,35 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                           borderRadius: BorderRadius.all(Radius.circular(10.0)),
                         ),
                         onPressed: () {
-                          setState(() {
-                            if(_formKey.currentState.validate()) {
-                              if(editable) {
+                          setState(() async {
+                            String nuevoNickname = nicknameText.text;
+                            if (ultimoNicknameComprobado == null ||
+                                ultimoNicknameComprobado != nuevoNickname) {
+                              nicknameRepetido =
+                                  await UsuarioBD.existeUsuarioConNickname(
+                                      nuevoNickname);
+
+                              // Guardando el ultimo comprobado evitamos llamar a la base de datos más de la cuenta mediante spamming
+                              ultimoNicknameComprobado = nuevoNickname;
+                            }
+
+                            if (_formKey.currentState.validate()) {
+                              if (editable) {
                                 cambiarColorEditable();
                                 guardarCambios();
                                 editable = false;
                               }
                             }
-                          }
-                        );
-                      },
+                          });
+                        },
                         child: Text(
                           "Guardar cambios",
                           style: TextStyle(fontSize: 20.0),
                         ),
                       ),
-
                       SizedBox(
                         width: 20.0,
                       ),
-
                       RaisedButton(
                         color: Colors.red,
                         textColor: Colors.white,
@@ -234,36 +233,32 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                         onPressed: () {
                           setState(() {
                             showDialogBorrarPerfil();
-                          }
-                        );
-                      },
+                          });
+                        },
                         child: Text(
                           "Borrar perfil",
                           style: TextStyle(fontSize: 20.0),
                         ),
                       ),
-
                     ],
                   ),
-                  
                 ],
-              ),
               ),
             ),
           ),
+        ),
       ),
     );
-    
   }
 
   void cambiarColorEditable() {
-    if(editable) {
-      colorEditar = Colors.grey; 
-      colorGuardarCambios = Colors.grey; 
+    if (editable) {
+      colorEditar = Colors.grey;
+      colorGuardarCambios = Colors.grey;
       colorInternoGuardarCambios = Colors.grey;
     } else {
-      colorEditar = Colors.lightBlueAccent; 
-      colorGuardarCambios = TransportifyColors.primarySwatch; 
+      colorEditar = Colors.lightBlueAccent;
+      colorGuardarCambios = TransportifyColors.primarySwatch;
       colorInternoGuardarCambios = Colors.blueAccent;
     }
   }
@@ -279,7 +274,6 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
           actions: <Widget>[
-
             new FlatButton(
               color: TransportifyColors.primarySwatch,
               textColor: Colors.white,
@@ -291,22 +285,13 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                 Navigator.of(context).pop();
                 print("Perfil eliminado");
                 widget.usuario.deleteFromBD();
-                
-                Navigator.of(context)
-                .pushReplacement(MaterialPageRoute<Null>(builder: (BuildContext context) {
-                return new IniciarSesionView();
-                }));
 
-                /*
-                Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => IniciarSesionView()),
-                (Route<dynamic> route) => false,
-                );
-                */
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute<Null>(builder: (BuildContext context) {
+                  return new IniciarSesionView();
+                }));
               },
             ),
-
             new FlatButton(
               color: TransportifyColors.primarySwatch,
               textColor: Colors.white,
@@ -318,7 +303,6 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
                 Navigator.of(context).pop();
               },
             ),
-
           ],
         );
       },
@@ -326,35 +310,33 @@ class PerfilUsuarioViewState extends State<PerfilUsuarioView> {
   }
 
   void guardarCambios() {
-    widget.usuario.nombre = nombreApellidosText.text;
-    widget.usuario.correo = correoText.text;
+    widget.usuario.nombre = nombreText.text;
+    widget.usuario.nickname = nicknameText.text;
     widget.usuario.ciudad = ciudadText.text;
     widget.usuario.edad = int.parse(edadText.text);
     widget.usuario.updateBD();
-  }
 
-  bool _isEmailCorrectlyFormed(String email) {
-    return RegExp(
-            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-        .hasMatch(email);
+    Toast.show("Los datos han sido actualizados", context,
+        duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
   }
 
   @override
   void initState() {
     super.initState();
-    nombreApellidosText.text = widget.usuario.nombre;
-    correoText.text = widget.usuario.correo;
+    nombreText.text = widget.usuario.nombre;
+    nicknameText.text = widget.usuario.nickname;
+    ultimoNicknameComprobado = widget.usuario
+        .nickname; // El que tiene ya cuenta como comprobado; sabemos que es correcto
     ciudadText.text = widget.usuario.ciudad;
     edadText.text = widget.usuario.edad.toString();
   }
 
   @override
   void dispose() {
-    nombreApellidosText.dispose();
-    correoText.dispose();
+    nombreText.dispose();
+    nicknameText.dispose();
     ciudadText.dispose();
     edadText.dispose();
     super.dispose();
   }
-  
 }
