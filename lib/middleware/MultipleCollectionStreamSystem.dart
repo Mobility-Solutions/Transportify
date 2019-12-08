@@ -4,33 +4,29 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Hay que llamar al método `dispose()` en el método `dispose()` de tu Widget o State.
 class MultipleCollectionStreamSystem {
-  final List<QuerySnapshot> _currentSnapshots = List<QuerySnapshot>();
+  final Map<Type, QuerySnapshot> _currentSnapshots = Map<Type, QuerySnapshot>();
 
-  final StreamController<List<QuerySnapshot>> _snapshotsController =
+  final StreamController<Map<Type, QuerySnapshot>> _snapshotsController =
       StreamController.broadcast();
 
-  Stream<List<QuerySnapshot>> get snapshots => _snapshotsController.stream;
+  Stream<Map<Type, QuerySnapshot>> get snapshots => _snapshotsController.stream;
 
-  final List<Stream<QuerySnapshot>> _collectionStreams =
-      List<Stream<QuerySnapshot>>();
+  final Map<Type, Stream<QuerySnapshot>> _collectionStreams =
+      Map<Type, Stream<QuerySnapshot>>();
 
-  MultipleCollectionStreamSystem([Iterable<Stream<QuerySnapshot>> streams]) {
-    if (streams != null) {
-      for (var stream in streams) {
-        add(stream);
-      }
-    }
+  MultipleCollectionStreamSystem([Map<Type, Stream<QuerySnapshot>> streams]) {
+    streams?.forEach(add);
   }
 
-  void add(Stream<QuerySnapshot> collectionStream) {
+  void add(Type type, Stream<QuerySnapshot> collectionStream) {
     int index = _collectionStreams.length;
-    _collectionStreams.add(collectionStream);
-    collectionStream.listen((snapshot) => _updateSnapshot(snapshot, index));
+    _collectionStreams[type] = collectionStream;
+    collectionStream.listen((snapshot) => _updateSnapshot(snapshot, type, index));
   }
 
-  void _updateSnapshot(QuerySnapshot snapshot, int index) {
+  void _updateSnapshot(QuerySnapshot snapshot, Type type, int index) {
     // Reemplaza el elemento de la lista por el nuevo
-    _currentSnapshots.replaceRange(index, index + 1, [snapshot]);
+    _currentSnapshots[type] = snapshot;
 
     // Avisa del cambio
     _snapshotsController.add(_currentSnapshots);

@@ -15,16 +15,16 @@ class Datos {
   }
 
   static MultipleCollectionStreamSystem obtenerStreamsCollectionsBD(
-          Iterable<String> collectionPaths) =>
+          Map<Type, String> collectionPaths) =>
       MultipleCollectionStreamSystem(collectionPaths.map(
-          (collectionPath) => obtenerColeccion(collectionPath).snapshots()));
+          (type, collectionPath) => MapEntry(type, obtenerColeccion(collectionPath).snapshots())));
 
-  static StreamBuilder<List<QuerySnapshot>>
+  static StreamBuilder<Map<Type, QuerySnapshot>>
       obtenerStreamBuilderFromMultipleCollectionStreamSystem(
           MultipleCollectionStreamSystem multipleCollectionStreamSystem,
-          Widget Function(BuildContext, AsyncSnapshot<List<QuerySnapshot>>)
+          Widget Function(BuildContext, AsyncSnapshot<Map<Type, QuerySnapshot>>)
               builder) {
-    return StreamBuilder<List<QuerySnapshot>>(
+    return StreamBuilder<Map<Type, QuerySnapshot>>(
       stream: multipleCollectionStreamSystem.snapshots,
       builder: builder,
     );
