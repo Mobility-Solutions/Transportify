@@ -23,7 +23,7 @@ import 'InicioPart.dart';
 
 class MyHomePage extends StatefulWidget implements WidgetInicial {
   final Usuario usuario;
-  final VoidCallback logoutCallback;
+  final Function(Usuario) logoutCallback;
 
   MyHomePage({Key key, this.usuario, this.logoutCallback}) : super(key: key);
 
@@ -34,7 +34,7 @@ class MyHomePage extends StatefulWidget implements WidgetInicial {
 
 class _MyHomePageState extends State<MyHomePage> {
   final Usuario usuario;
-  final VoidCallback logoutCallback;
+  final Function(Usuario) logoutCallback;
 
   _MyHomePageState({this.usuario, this.logoutCallback});
 
@@ -57,7 +57,7 @@ abstract class UserDependantStatelessWidget extends StatelessWidget {
 }
 
 class TopPart extends UserDependantStatelessWidget {
-  final VoidCallback logoutCallback;
+  final Function(Usuario) logoutCallback;
 
   TopPart({Usuario usuario, this.logoutCallback}) : super(usuario);
 
@@ -82,7 +82,7 @@ class TopPart extends UserDependantStatelessWidget {
                         Icons.exit_to_app,
                         color: TransportifyColors.appBackground,
                       ),
-                      onPressed: logoutCallback,
+                      onPressed: () => logoutCallback(usuario),
                     ),
                   ),
                   IconButton(

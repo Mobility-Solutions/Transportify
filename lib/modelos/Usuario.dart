@@ -10,12 +10,18 @@ import 'Paquete.dart';
 import 'Viaje.dart';
 
 class Usuario extends ComponenteBD {
-  String _uid, nombre, nickname, password, correo, ciudad;
+  FirebaseUser _userAuth;
+  String _uid;
+
+  String nombre, nickname, password, correo, ciudad;
   int edad;
 
   int paquetesCreados, viajesCreados;
 
-  String get uid => _uid;
+  String get uid => _uid ?? _userAuth?.uid;
+  bool get conectado => _userAuth != null;
+
+  bool _datosObtenidos;
 
   Usuario({
     this.nombre,
@@ -29,10 +35,15 @@ class Usuario extends ComponenteBD {
         super(coleccion: UsuarioBD.coleccion_usuarios);
 
   Usuario.fromReference(DocumentReference reference, {bool init = true})
-      : super.fromReference(reference, init: init);
+      : _datosObtenidos = init,
+        super.fromReference(reference, init: init);
 
   Usuario.fromSnapshot(DocumentSnapshot snapshot)
-      : super.fromSnapshot(snapshot);
+      : _datosObtenidos = true,
+        super.fromSnapshot(snapshot);
+
+  Usuario.fromEmailAndPassword({this.correo, this.password})
+      : _datosObtenidos = false;
 
   @override
   Future<void> loadFromSnapshot(DocumentSnapshot snapshot) async {
@@ -59,24 +70,53 @@ class Usuario extends ComponenteBD {
     return map;
   }
 
+  Future<AuthResult> conectar() async {
+    AuthResult result = await UsuarioBD.loginConCorreoYPassword(
+        correo: correo, password: password);
+    _actualizarUsuarioAuth(result);
+
+    if (!_datosObtenidos) {
+      await loadFromSnapshot(
+          await UsuarioBD.obtenerSnapshotUsuarioConUid(_uid));
+      _datosObtenidos = true;
+    }
+
+    return result;
+  }
+
+  Future<void> desconectar() async {
+    if (conectado) {
+      await UsuarioBD.signOut();
+      _userAuth = null;
+    }
+  }
+
   @override
   Future<void> crearEnBD() async {
     AuthResult result = await UsuarioBD.crearUsuario(
         correo: this.correo, password: this.password);
+    _actualizarUsuarioAuth(result);
+    return super.crearEnBD();
+  }
 
+  void _actualizarUsuarioAuth(AuthResult result) {
     final FirebaseUser user = result.user;
     if (user != null) {
+      this._userAuth = user;
       this._uid = user.uid;
     }
-
-    return super.crearEnBD();
   }
 
   /// Además del usuario, elimina todos sus paquetes y viajes publicados
   @override
-  Future<void> deleteFromBD() {
-    _eliminarTodosMisViajesYPaquetesPublicados();
-    return super.deleteFromBD();
+  Future<void> deleteFromBD() async {
+    if (conectado) {
+      await _userAuth.delete();
+      await _eliminarTodosMisViajesYPaquetesPublicados();
+      return super.deleteFromBD();
+    } else {
+      throw StateError("El usuario debe estar conectado para poder borrarse");
+    }
   }
 
   Future<void> _eliminarTodosMisViajesYPaquetesPublicados() => Future.wait([

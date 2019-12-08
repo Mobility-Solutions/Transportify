@@ -90,13 +90,17 @@ class UsuarioBD {
           firebaseUser == null ? null : obtenerUsuarioConUid(firebaseUser.uid));
 
   static Future<Usuario> obtenerUsuarioConUid(String uid) {
+    return obtenerSnapshotUsuarioConUid(uid)
+        .then((snapshot) => Usuario.fromSnapshot(snapshot));
+  }
+
+  static Future<DocumentSnapshot> obtenerSnapshotUsuarioConUid(String uid) {
     return Datos.obtenerColeccion(coleccion_usuarios)
         .getDocuments()
         .then((query) {
       var listadoUsuarios = query.documents;
-      DocumentSnapshot usuarioSnapshot =
-          listadoUsuarios.firstWhere((snapshot) => obtenerUid(snapshot) == uid);
-      return Usuario.fromSnapshot(usuarioSnapshot);
+      return listadoUsuarios
+          .firstWhere((snapshot) => obtenerUid(snapshot) == uid);
     });
   }
 

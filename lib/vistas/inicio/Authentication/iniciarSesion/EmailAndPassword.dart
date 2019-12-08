@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:transportify/middleware/UsuarioBD.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
 import 'package:toast/toast.dart';
 
 class EmailPasswordForm extends StatefulWidget {
   EmailPasswordForm({this.loginCallback});
 
-  final VoidCallback loginCallback;
+  final Function(Usuario) loginCallback;
   
   @override
   State<StatefulWidget> createState() => _EmailPasswordFormState();
@@ -115,11 +115,12 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
     // (known issue desde hace meses, no parece que estén trabajando activamente en arreglarlo).
     try {
       try {
-        await UsuarioBD.loginConCorreoYPassword(
+        Usuario usuario = Usuario.fromEmailAndPassword(
           correo: _emailController.text,
           password: _passwordController.text,
         );
-        widget.loginCallback();
+        await usuario.conectar();
+        widget.loginCallback(usuario);
       } on PlatformException catch (error) {
         print(error);
         // Como se trata de un error de autenticacion, volvemos a lanzarlo como tal para que lo trate.
