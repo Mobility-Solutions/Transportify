@@ -69,7 +69,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
   getPuntoSeleccionado(BuildContext context, bool origenLocation) async {
     final puntoSeleccionado = await Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => MapaView(true)))
+            .push(MaterialPageRoute(builder: (context) => MapaView(true, widget.usuario)))
         as PuntoTransportify;
 
     returnPunto = puntoSeleccionado;

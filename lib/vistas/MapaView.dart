@@ -7,14 +7,16 @@ import 'package:flutter/scheduler.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:transportify/middleware/PuntoTransportifyBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
 
 class MapaView extends StatefulWidget {
-  MapaView([this.puntoSelector, Key key]):super(key: key);
+  MapaView([this.puntoSelector, this.usuario, Key key,]):super(key: key);
   @override
   _MapaViewState createState() => _MapaViewState();
 
   final bool puntoSelector;
+  final Usuario usuario;
 }
 
 class _MapaViewState extends State<MapaView> {
@@ -286,7 +288,15 @@ class _MapaViewState extends State<MapaView> {
     
       }
     
-      void setCameraPosition() {}
+      void setCameraPosition() {
+        for(var i in ciudadList) {
+          if(i.markerId.value.compareTo(widget.usuario?.ciudad) == 0) {
+            setState(() {
+              _initialPosition = CameraPosition(target: i.position, zoom: 8);
+            });
+          }
+        }
+      }
 
 
 }

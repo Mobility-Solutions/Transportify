@@ -53,7 +53,7 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
   //Abre la página del mapa y a la vuelta de la misma, le pasa la ciudad seleccionada al controlador indicado
   getCiudadSeleccionada(BuildContext context, bool origenLocation) async {
     final ciudadSeleccionada = await Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => MapaView(false)))
+            .push(MaterialPageRoute(builder: (context) => MapaView(false, widget.usuario)))
         as String;
 
     returnCiudad = ciudadSeleccionada;
