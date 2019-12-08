@@ -132,7 +132,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
       String message;
       switch (error.code) {
         case "ERROR_USER_NOT_FOUND":
-          message = "Usuario no válido";
+          message = "El usuario no existe";
           break;
         case "ERROR_WRONG_PASSWORD":
           message = "Contraseña incorrecta";

@@ -237,7 +237,7 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
           children: [
             usuario == null
                 ? const Text(
-                    "-",
+                    '-',
                     style: TextStyle(
                         fontSize: 18.0,
                         fontStyle: FontStyle.italic,
@@ -246,9 +246,9 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
                 : Datos.obtenerStreamBuilderDocumentBDFromReference(
                     usuario.reference, (context, snapshot) {
                     if (!snapshot.hasData) return const Text("Cargando...");
-                    usuario.loadFromSnapshot(snapshot.data);
+                    if (snapshot.data.exists) usuario.loadFromSnapshot(snapshot.data);
                     return Text(
-                      usuario.paquetesCreados.toString(),
+                      usuario?.paquetesCreados?.toString() ?? '-',
                       style: TextStyle(
                           fontSize: 18.0,
                           fontStyle: FontStyle.italic,
@@ -307,7 +307,7 @@ class CrearViajePart extends UserDependantStatelessWidget {
           children: [
             usuario == null
                 ? const Text(
-                    "-",
+                    '-',
                     style: TextStyle(
                         fontSize: 20.0,
                         fontStyle: FontStyle.italic,
@@ -316,10 +316,9 @@ class CrearViajePart extends UserDependantStatelessWidget {
                 : Datos.obtenerStreamBuilderDocumentBDFromReference(
                     usuario.reference, (context, snapshot) {
                     if (!snapshot.hasData) return const Text("Cargando...");
-
-                    usuario.loadFromSnapshot(snapshot.data);
+                    if (snapshot.data.exists) usuario.loadFromSnapshot(snapshot.data);
                     return Text(
-                      usuario.viajesCreados.toString(),
+                      usuario?.viajesCreados?.toString() ?? '-',
                       style: TextStyle(
                           fontSize: 18.0,
                           fontStyle: FontStyle.italic,
