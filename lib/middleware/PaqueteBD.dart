@@ -142,4 +142,57 @@ class PaqueteBD {
       onTap: onTap,
     );
   }
+
+  static Widget obtenerListaCardsPaquetes(
+      BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    if (!snapshot.hasData)
+      return const Center(child: const CircularProgressIndicator());
+
+    var paquetes = snapshot.data.documents;
+
+    return ListView.builder(itemBuilder: (context, index) {
+      if (index >= 0 && index < paquetes.length) {
+        var paquete = paquetes.elementAt(index);
+        return _obtenerCardPaquete(paquete);
+      } else {
+        return null;
+      }
+    });
+  }
+
+  static Widget _obtenerCardPaquete(DocumentSnapshot snapshot) {
+    Paquete paquete = Paquete.fromSnapshot(snapshot);
+
+    return Card(
+      elevation: 5,
+      child: Row(
+        children: <Widget>[
+          Container(
+            height: 100.0,
+            width: 70.0,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(5),
+                    topLeft: Radius.circular(5)),
+                image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(
+                        "https://www.shareicon.net/data/512x512/2015/09/30/648924_boxes_512x512.png"))),
+          ),
+          Container(
+            height: 100,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(paquete.nombre),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
 }
