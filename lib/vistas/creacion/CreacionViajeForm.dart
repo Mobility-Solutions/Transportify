@@ -98,37 +98,40 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                   ),
                   Row(
                     children: <Widget>[
-                      TextFormField(
-                        maxLines: 1,
-                        keyboardType: TextInputType.text,
-                        autofocus: false,
-                        style:
-                            TextStyle(color: TransportifyColors.primarySwatch),
-                        controller: origenController,
-                        decoration:
-                            TransportifyMethods.returnTextFormDecoration(
-                                "Ciudad de origen"),
-                        onTap: () async {
-                          FocusScope.of(context).requestFocus(FocusNode());
-                          String returnCiudad = await CiudadDialog.show(
-                              this.context,
-                              ciudadInicial: origen ?? widget.usuario?.ciudad);
+                      Container(
+                        width: 250.0,
+                        child: TextFormField(
+                          maxLines: 1,
+                          keyboardType: TextInputType.text,
+                          autofocus: false,
+                          style:
+                              TextStyle(color: TransportifyColors.primarySwatch),
+                          controller: origenController,
+                          decoration:
+                              TransportifyMethods.returnTextFormDecoration(
+                                  "Ciudad de origen"),
+                          onTap: () async {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            String returnCiudad = await CiudadDialog.show(
+                                this.context,
+                                ciudadInicial: origen ?? widget.usuario?.ciudad);
 
-                          if (returnCiudad != null) {
-                            origen = returnCiudad;
-                            origenController.text = origen;
-                          }
-                        },
-                        validator: (value) {
-                          if (origen == null || destino == null)
-                            return 'Introduzca las ciudades origen y destino';
-                          else if (origen == destino)
-                            return 'Las ciudades no deben coincidir.';
-                          else
-                            return null;
-                        },
+                            if (returnCiudad != null) {
+                              origen = returnCiudad;
+                              origenController.text = origen;
+                            }
+                          },
+                          validator: (value) {
+                            if (origen == null || destino == null)
+                              return 'Introduzca las ciudades origen y destino';
+                            else if (origen == destino)
+                              return 'Las ciudades no deben coincidir.';
+                            else
+                              return null;
+                          },
+                        ),
                       ),
-                      SizedBox(width: 5.0),
+                      SizedBox(width: 10.0),
                       IconButton(
                         color: TransportifyColors.primarySwatch,
                         icon: Icon(Icons.map, color: Colors.white),
@@ -149,35 +152,38 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                  * */
                   Row(
                     children: <Widget>[
-                      TextFormField(
-                        maxLines: 1,
-                        autofocus: false,
-                        style: TextStyle(color: TransportifyColors.primarySwatch),
-                        controller: destinoController,
-                        decoration: TransportifyMethods.returnTextFormDecoration(
-                            "Ciudad de destino"),
-                        onTap: () async {
-                          FocusScope.of(context).requestFocus(FocusNode());
-                          String returnCiudad = await CiudadDialog.show(
-                              this.context,
-                              ciudadInicial:
-                                  destino); // Ciudad inicial del usuario solo en origen
+                      Container(
+                        width: 250.0,
+                        child: TextFormField(
+                          maxLines: 1,
+                          autofocus: false,
+                          style: TextStyle(color: TransportifyColors.primarySwatch),
+                          controller: destinoController,
+                          decoration: TransportifyMethods.returnTextFormDecoration(
+                              "Ciudad de destino"),
+                          onTap: () async {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            String returnCiudad = await CiudadDialog.show(
+                                this.context,
+                                ciudadInicial:
+                                    destino); // Ciudad inicial del usuario solo en origen
 
-                          if (returnCiudad != null) {
-                            destino = returnCiudad;
-                            destinoController.text = destino;
-                          }
-                        },
-                        validator: (value) {
-                          if (origen == null || destino == null)
-                            return 'Introduzca las ciudades origen y destino';
-                          else if (origen == destino)
-                            return 'Las ciudades no deben coincidir.';
-                          else
-                            return null;
-                        },
+                            if (returnCiudad != null) {
+                              destino = returnCiudad;
+                              destinoController.text = destino;
+                            }
+                          },
+                          validator: (value) {
+                            if (origen == null || destino == null)
+                              return 'Introduzca las ciudades origen y destino';
+                            else if (origen == destino)
+                              return 'Las ciudades no deben coincidir.';
+                            else
+                              return null;
+                          },
+                        ),
                       ),
-                      SizedBox(width: 5.0),
+                      SizedBox(width: 10.0),
                       IconButton(
                         color: TransportifyColors.primarySwatch,
                         icon: Icon(Icons.map, color: Colors.white),

@@ -46,6 +46,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   DateTime _fechaentrega;
   DateTime _horaEntrega;
 
+  PuntoTransportify returnPunto;
   bool get modificando => widget.miPaquete != null;
 
   final _formKey = GlobalKey<FormState>();
@@ -64,6 +65,26 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
   void _removePrecio() {
     if (precio - 1 >= 0.0) precioController.text = (precio -= 1).toString();
+  }
+
+  getPuntoSeleccionado(BuildContext context, bool origenLocation) async {
+    final puntoSeleccionado = await Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => MapaView(true)))
+        as PuntoTransportify;
+
+    returnPunto = puntoSeleccionado;
+
+    if (origenLocation) {
+      if (returnPunto != null) {
+        puntos.origen = returnPunto;
+        origenController.text = puntos.origen?.nombre;
+      }
+    } else {
+      if (returnPunto != null) {
+        puntos.destino = returnPunto;
+        destinoController.text = puntos.destino?.direccion;
+      }
+    }
   }
 
   @override
@@ -262,38 +283,38 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
               SizedBox(height: 20.0),
               Row(
                 children: <Widget>[
-                  TextFormField(
-                    maxLines: 1,
-                    keyboardType: TextInputType.text,
-                    autofocus: false,
-                    style: TextStyle(color: TransportifyColors.primarySwatch),
-                    controller: origenController,
-                    decoration: TransportifyMethods.returnTextFormDecoration(
-                        "Punto Transportify de origen"),
-                    onTap: () async {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      PuntoTransportify returnPunto = await PuntosDialog.show(
-                          this.context,
-                          ciudadInicial: widget.usuario?.ciudad,
-                          puntoInicial: puntos.origen);
+                  Container(
+                    width: 250.0,
+                    child: TextFormField(
+                      maxLines: 1,
+                      keyboardType: TextInputType.text,
+                      autofocus: false,
+                      style: TextStyle(color: TransportifyColors.primarySwatch),
+                      controller: origenController,
+                      decoration: TransportifyMethods.returnTextFormDecoration(
+                          "Punto Transportify de origen"),
+                      onTap: () async {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        PuntoTransportify returnPunto = await PuntosDialog.show(
+                            this.context,
+                            ciudadInicial: widget.usuario?.ciudad,
+                            puntoInicial: puntos.origen);
 
-                      if (returnPunto != null) {
-                        puntos.origen = returnPunto;
-                        origenController.text = puntos.origen?.nombre;
-                      }
-                    },
-                    validator: (value) => puntos.validate(),
+                        if (returnPunto != null) {
+                          puntos.origen = returnPunto;
+                          origenController.text = puntos.origen?.nombre;
+                        }
+                      },
+                      validator: (value) => puntos.validate(),
+                    ),
                   ),
-                  SizedBox(width: 5.0),
+                  SizedBox(width: 10.0),
                   IconButton(
                     color: TransportifyColors.primarySwatch,
                     icon: Icon(Icons.map, color: Colors.white),
                     onPressed: () {
                       FocusScope.of(context).requestFocus(FocusNode());
-                      Navigator.of(context).push(MaterialPageRoute<Null>(
-                          builder: (BuildContext context) {
-                        return MapaView(true);
-                      }));
+                      getPuntoSeleccionado(context, true);
                     },
                   ),
                 ],
@@ -301,37 +322,37 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
               SizedBox(height: 20.0),
               Row(
                 children: <Widget>[
-                  TextFormField(
-                    maxLines: 1,
-                    autofocus: false,
-                    style: TextStyle(color: TransportifyColors.primarySwatch),
-                    controller: destinoController,
-                    decoration: TransportifyMethods.returnTextFormDecoration(
-                        "Punto Transportify de destino"),
-                    onTap: () async {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      PuntoTransportify returnPunto = await PuntosDialog.show(
-                          this.context,
-                          puntoInicial: puntos
-                              ?.destino); // Ciudad inicial del usuario solo en origen
+                  Container(
+                    width: 250.0,
+                    child: TextFormField(
+                      maxLines: 1,
+                      autofocus: false,
+                      style: TextStyle(color: TransportifyColors.primarySwatch),
+                      controller: destinoController,
+                      decoration: TransportifyMethods.returnTextFormDecoration(
+                          "Punto Transportify de destino"),
+                      onTap: () async {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        PuntoTransportify returnPunto = await PuntosDialog.show(
+                            this.context,
+                            puntoInicial: puntos
+                                ?.destino); // Ciudad inicial del usuario solo en origen
 
-                      if (returnPunto != null) {
-                        puntos.destino = returnPunto;
-                        destinoController.text = puntos.destino?.nombre;
-                      }
-                    },
-                    validator: (value) => puntos.validate(),
+                        if (returnPunto != null) {
+                          puntos.destino = returnPunto;
+                          destinoController.text = puntos.destino?.nombre;
+                        }
+                      },
+                      validator: (value) => puntos.validate(),
+                    ),
                   ),
-                  SizedBox(width: 5.0),
+                  SizedBox(width: 10.0),
                   IconButton(
                     color: TransportifyColors.primarySwatch,
                     icon: Icon(Icons.map, color: Colors.white),
                     onPressed: () {
                       FocusScope.of(context).requestFocus(FocusNode());
-                      Navigator.of(context).push(MaterialPageRoute<Null>(
-                          builder: (BuildContext context) {
-                        return MapaView(true);
-                      }));
+                      getPuntoSeleccionado(context, false);
                     },
                   ),
                 ],

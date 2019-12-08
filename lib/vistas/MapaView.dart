@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:transportify/middleware/PuntoTransportifyBD.dart';
+import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/util/style.dart';
 
 class MapaView extends StatefulWidget {
@@ -18,15 +21,23 @@ class _MapaViewState extends State<MapaView> {
 
   CameraPosition _initialPosition = CameraPosition(target: LatLng(40.416775, 	-2.8), zoom: 5);
   Completer<GoogleMapController> _controller = Completer();
+  LatLng userLocation;
+  String userCity;
   List<Marker> puntosList = [];
   List<Marker> ciudadList = [];
 
   String lugarSeleccionado;
+  List<PuntoTransportify> listaPuntosTransportify;
+  PuntoTransportify puntoSeleccionado;
 
 
 
   void _onMapCreated(GoogleMapController controller) {
       _controller.complete(controller);
+
+      setState(() {
+        lugarSeleccionado = "";
+    });
   }
 
 
@@ -48,8 +59,9 @@ class _MapaViewState extends State<MapaView> {
               Container(
                 height: MediaQuery.of(context).size.height - 250,
                 width: MediaQuery.of(context).size.width,
-                child: GoogleMap(    
-                    markers: (widget.puntoSelector == true) ? Set.from(puntosList) : Set.from(ciudadList),
+                child: GoogleMap(
+                  
+                    markers: (widget.puntoSelector == true) ? Set<Marker>.of(puntosList) : Set.from(ciudadList),
                     onMapCreated: _onMapCreated,
                     initialCameraPosition: _initialPosition,
                 ),
@@ -124,7 +136,8 @@ class _MapaViewState extends State<MapaView> {
                           child: TransportifyFormButton(
                             text: 'Guardar',
                             onPressed: () {
-                              Navigator.pop(context, this.lugarSeleccionado);
+                              if(this.lugarSeleccionado == "") { lugarSeleccionado = null; }
+                              (widget.puntoSelector == false) ? Navigator.pop(context, this.lugarSeleccionado) : Navigator.pop(context, this.puntoSeleccionado);
                             },),
                         ),
                         SizedBox(
@@ -144,96 +157,136 @@ class _MapaViewState extends State<MapaView> {
     super.initState();
     if(widget.puntoSelector) {
       initPuntosTransportify();
-    } else {
-      initCiudades();
-    }            
-  }
-            
-  void initPuntosTransportify() {
-
-  }
+    }
+    setState(() {
       
-  void initCiudades() {
-    ciudadList.add(
-      Marker(
-        markerId: MarkerId("Valencia"),
-        position: new LatLng(39.4697500, -0.3773900),
-        draggable: false,
-        onTap: () {
-          setState(() {
-            lugarSeleccionado = "Valencia";
-          });
-
+    });
+    initCiudades();
+    setCameraPosition();            
+      }
+                
+      void initPuntosTransportify() async {
+        Iterable<PuntoTransportify> puntos = await PuntoTransportifyBD.obtenerPuntos();
+        listaPuntosTransportify = puntos.toList();
+        //puntos.then((element) => setState(() {listaPuntos = element.toList();}));
+        
+        for(var i in listaPuntosTransportify) {
+          if(i.direccion != null && i.apodo != null && i.ciudad != null && i.latitud != null && i.longitud != null) {
+            puntosList.add(
+              Marker(
+                markerId: MarkerId(i.direccion),
+                position: new LatLng(i.latitud, i.longitud),
+                    draggable: false,
+                    onTap:() {
+                      setState(() {
+                        lugarSeleccionado = i.direccion;
+                        puntoSeleccionado = i;
+                      });
+                    }
+                )
+            );
+          }
         }
-      ),
-    );
-    ciudadList.add(
-      Marker(
-        markerId: MarkerId("Barcelona"),
-        position: new LatLng(41.3887901, 2.1589899),
-        draggable: false,
-        onTap: () {
-          setState(() {
-            lugarSeleccionado = "Barcelona";
-          });
 
-        }
-      ),
-    );
-    ciudadList.add(
-      Marker(
-        markerId: MarkerId("Toledo"),
-        position: new LatLng(39.8581000, -4.0226300),
-        draggable: false,
-        onTap: () {
-          setState(() {
-            lugarSeleccionado = "Toledo";
-          });
+      }
+          
+      void initCiudades() {
+        ciudadList.add(
+          Marker(
+            markerId: MarkerId("Valencia"),
+            position: new LatLng(39.4697500, -0.3773900),
+            draggable: false,
+            onTap: () {
+              setState(() {
 
-        }
-      ),
-    );
-    ciudadList.add(
-      Marker(
-        markerId: MarkerId("Madrid"),
-        position: new LatLng(40.4165000, -3.7025600),
-        draggable: false,
-        onTap: () {
-          setState(() {
-            lugarSeleccionado = "Madrid";
-          });
-
-        }
-      ),
-    );
-    ciudadList.add(
-      Marker(
-        markerId: MarkerId("Segovia"),
-        position: new LatLng(40.9480800, -4.1183900),
-        draggable: false,
-        onTap: () {
-          setState(() {
-            lugarSeleccionado = "Segovia";
-          });
-
-        }
-      ),
-    );
-    ciudadList.add(
-      Marker(
-        markerId: MarkerId("Sevilla"),
-        position: new LatLng(37.3828300, -5.9731700),
-        draggable: false,
-        onTap: () {
-          setState(() {
-            lugarSeleccionado = "Sevilla";
-          });
-
-        }
-      ),
-    );
-
-  }
+                lugarSeleccionado = "Valencia";
+              });
+    
+            }
+          ),
+        );
+        ciudadList.add(
+          Marker(
+            markerId: MarkerId("Barcelona"),
+            position: new LatLng(41.3887901, 2.1589899),
+            draggable: false,
+            onTap: () {
+              setState(() {
+                lugarSeleccionado = "Barcelona";
+              });
+    
+            }
+          ),
+        );
+        ciudadList.add(
+          Marker(
+            markerId: MarkerId("Toledo"),
+            position: new LatLng(39.8581000, -4.0226300),
+            draggable: false,
+            onTap: () {
+              setState(() {
+                lugarSeleccionado = "Toledo";
+              });
+    
+            }
+          ),
+        );
+        ciudadList.add(
+          Marker(
+            markerId: MarkerId("Madrid"),
+            position: new LatLng(40.4165000, -3.7025600),
+            draggable: false,
+            onTap: () {
+              setState(() {
+                lugarSeleccionado = "Madrid";
+              });
+    
+            }
+          ),
+        );
+        ciudadList.add(
+          Marker(
+            markerId: MarkerId("Segovia"),
+            position: new LatLng(40.9480800, -4.1183900),
+            draggable: false,
+            onTap: () {
+              setState(() {
+                lugarSeleccionado = "Segovia";
+              });
+    
+            }
+          ),
+        );
+        ciudadList.add(
+          Marker(
+            markerId: MarkerId("Sevilla"),
+            position: new LatLng(37.3828300, -5.9731700),
+            draggable: false,
+            onTap: () {
+              setState(() {
+                lugarSeleccionado = "Sevilla";
+              });
+    
+            }
+          ),
+        );
+        ciudadList.add(
+          Marker(
+            markerId: MarkerId("Santiago de Compostela"),
+            position: new LatLng(42.890528, -8.526583),
+            draggable: false,
+            onTap: () {
+              setState(() {
+                lugarSeleccionado = "Santiago de Compostela";
+              });
+    
+            }
+          ),
+        );
+    
+      }
+    
+      void setCameraPosition() {}
 
 
 }
