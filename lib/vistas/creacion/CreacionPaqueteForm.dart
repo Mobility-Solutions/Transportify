@@ -199,61 +199,100 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 ],
               ),
               SizedBox(height: 20.0),
-              TextFormField(
-                maxLines: 1,
-                keyboardType: TextInputType.text,
-                autofocus: false,
-                style: TextStyle(color: TransportifyColors.primarySwatch),
-                controller: origenController,
-                decoration: TransportifyMethods.returnTextFormDecoration(
-                    "Punto Transportify de origen"),
-                onTap: () async {
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  /**
-                  PuntoTransportify returnPunto =
-                      await PuntosDialog.show(this.context);
-                  */
-                  Navigator.of(context).push(MaterialPageRoute<Null>(
-                              builder: (BuildContext context) {
-                            return MapaView(true);
-                          }));
-                  /** 
-                  if (returnPunto != null) {
-                    puntos.origen = returnPunto;
-                    origenController.text = puntos.origen?.nombre;
-                  }
-                  */
-                },
-                validator: (value) => puntos.validate(),
-              ),
+              Row(
+                children: <Widget>[
+                  Container(
+                    width: 250.0,
+                    child:
+                      TextFormField(
+                        maxLines: 1,
+                        keyboardType: TextInputType.text,
+                        autofocus: false,
+                        style: TextStyle(color: TransportifyColors.primarySwatch),
+                        controller: origenController,
+                        decoration: TransportifyMethods.returnTextFormDecoration(
+                            "Punto de origen"),
+                        onTap: () async {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          /**
+                          PuntoTransportify returnPunto =
+                              await PuntosDialog.show(this.context);
+                          */
+                          Navigator.of(context).push(MaterialPageRoute<Null>(
+                                      builder: (BuildContext context) {
+                                    return MapaView(true);
+                                  }));
+                          /** 
+                          if (returnPunto != null) {
+                            puntos.origen = returnPunto;
+                            origenController.text = puntos.origen?.nombre;
+                          }
+                          */
+                        },
+                        validator: (value) => puntos.validate(),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 20.0,
+                  ),
+                  IconButton(
+                    color: TransportifyColors.primarySwatch,
+                    icon: Icon(Icons.map,
+                        color: Colors.white),
+                        onPressed: () {
+                            
+                        }, 
+                  ),
+                ],
+              ),             
               SizedBox(height: 20.0),
-              TextFormField(
-                maxLines: 1,
-                autofocus: false,
-                style: TextStyle(color: TransportifyColors.primarySwatch),
-                controller: destinoController,
-                decoration: TransportifyMethods.returnTextFormDecoration(
-                    "Punto Transportify de destino"),
-                onTap: () {
-                  
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  /**
-                  PuntoTransportify returnPunto =
-                      await PuntosDialog.show(this.context);
-                  */
-                  Navigator.of(context).push(MaterialPageRoute<Null>(
-                              builder: (BuildContext context) {
-                            return MapaView(true);
-                          }));
-                  /** 
-                  if (returnPunto != null) {
-                    puntos.destino = returnPunto;
-                    destinoController.text = puntos.destino?.nombre;
-                  }
-                  */
-                },
-                validator: (value) => puntos.validate(),
+              Row(
+                children: <Widget>[
+                  Container(
+                    width: 250.0,
+                    child:
+                      TextFormField(
+                        maxLines: 1,
+                        autofocus: false,
+                        style: TextStyle(color: TransportifyColors.primarySwatch),
+                        controller: destinoController,
+                        decoration: TransportifyMethods.returnTextFormDecoration(
+                            "Punto de destino"),
+                        onTap: () {
+                          
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          /**
+                          PuntoTransportify returnPunto =
+                              await PuntosDialog.show(this.context);
+                          */
+                          Navigator.of(context).push(MaterialPageRoute<Null>(
+                                      builder: (BuildContext context) {
+                                    return MapaView(true);
+                                  }));
+                          /** 
+                          if (returnPunto != null) {
+                            puntos.destino = returnPunto;
+                            destinoController.text = puntos.destino?.nombre;
+                          }
+                          */
+                        },
+                        validator: (value) => puntos.validate(),
+                      ),
+                  ),
+                  SizedBox(
+                        width: 20.0,
+                  ), 
+                  IconButton(
+                    color: TransportifyColors.primarySwatch,
+                    icon: Icon(Icons.map,
+                        color: Colors.white),
+                        onPressed: () {
+                            
+                        }, 
+                  ),
+                ],
               ),
+              
               SizedBox(height: 20.0),
               TextFormField(
                 maxLines: 1,

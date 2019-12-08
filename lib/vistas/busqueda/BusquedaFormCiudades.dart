@@ -61,6 +61,16 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
             getCiudadSeleccionada(context, true);
+
+            /** 
+             String returnCiudad =
+                await CiudadDialog.show(this.context, ciudadInicial: origen);
+
+            if (returnCiudad != null) {
+              origen = returnCiudad;
+              origenController.text = origen;
+            }
+            */
           },
           validator: (value) {
             if (origen == null || destino == null)
@@ -84,6 +94,16 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
           onTap: ()  {
             FocusScope.of(context).requestFocus(FocusNode());
             getCiudadSeleccionada(context, false);
+
+            /** 
+            String returnCiudad =
+                await CiudadDialog.show(this.context, ciudadInicial: destino);
+
+            if (returnCiudad != null) {
+              destino = returnCiudad;
+              destinoController.text = destino;
+            }
+            */
           },
           validator: (value) {
             if (origen == null || destino == null)

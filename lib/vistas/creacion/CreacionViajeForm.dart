@@ -96,29 +96,48 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                   SizedBox(
                     height: 15.0,
                   ),
-                  TextFormField(
-                    maxLines: 1,
-                    keyboardType: TextInputType.text,
-                    autofocus: false,
-                    style: TextStyle(color: TransportifyColors.primarySwatch),
-                    controller: origenController,
-                    decoration: TransportifyMethods.returnTextFormDecoration(
-                        "Ciudad de origen"),
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      
-                      getCiudadSeleccionada(context, true);
-                      
-                    },
-                    validator: (value) {
-                      if (origen == null || destino == null)
-                        return 'Introduzca las ciudades origen y destino';
-                      else if (origen == destino)
-                        return 'Las ciudades no deben coincidir.';
-                      else
-                        return null;
-                    },
-                  ),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        width: 250.0,
+                        child:
+                          TextFormField(
+                            maxLines: 1,
+                            keyboardType: TextInputType.text,
+                            autofocus: false,
+                            style: TextStyle(color: TransportifyColors.primarySwatch),
+                            controller: origenController,
+                            decoration: TransportifyMethods.returnTextFormDecoration(
+                                "Ciudad de origen"),
+                            onTap: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              
+                              getCiudadSeleccionada(context, true);
+                              
+                            },
+                            validator: (value) {
+                              if (origen == null || destino == null)
+                                return 'Introduzca las ciudades origen y destino';
+                              else if (origen == destino)
+                                return 'Las ciudades no deben coincidir.';
+                              else
+                                return null;
+                            },
+                          ),                        
+                      ),
+                      SizedBox(
+                        width: 20.0,
+                      ),                      
+                      IconButton(
+                        color: TransportifyColors.primarySwatch,
+                        icon: Icon(Icons.map,
+                            color: Colors.white),
+                        onPressed: () {
+                            
+                        }, 
+                    ),                      
+                  ],
+                  ),                  
                   SizedBox(
                     height: 20.0,
                   ),
@@ -127,31 +146,46 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                  * SELECTOR DE PUNTO DESTINO *
                  * ***************************
                  * */
-                  TextFormField(
-                    maxLines: 1,
-                    autofocus: false,
-                    style: TextStyle(color: TransportifyColors.primarySwatch),
-                    controller: destinoController,
-                    decoration: TransportifyMethods.returnTextFormDecoration(
-                        "Ciudad de destino"),
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      getCiudadSeleccionada(context, false);
-                      
-
-
-                      
-                      
-                    },
-                    validator: (value) {
-                      if (origen == null || destino == null)
-                        return 'Introduzca las ciudades origen y destino';
-                      else if (origen == destino)
-                        return 'Las ciudades no deben coincidir.';
-                      else
-                        return null;
-                    },
-                  ),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        width: 250.0,
+                        child: 
+                          TextFormField(
+                            maxLines: 1,
+                            autofocus: false,
+                            style: TextStyle(color: TransportifyColors.primarySwatch),
+                            controller: destinoController,
+                            decoration: TransportifyMethods.returnTextFormDecoration(
+                                "Ciudad de destino"),
+                            onTap: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              getCiudadSeleccionada(context, false); 
+                              
+                            },
+                            validator: (value) {
+                              if (origen == null || destino == null)
+                                return 'Introduzca las ciudades origen y destino';
+                              else if (origen == destino)
+                                return 'Las ciudades no deben coincidir.';
+                              else
+                                return null;
+                            },
+                          ),
+                      ),
+                      SizedBox(
+                        width: 20.0,
+                      ),
+                      IconButton(
+                        color: TransportifyColors.primarySwatch,
+                        icon: Icon(Icons.map,
+                            color: Colors.white),
+                        onPressed: () {
+                          
+                        }, 
+                    ),                                           
+                   ],
+                  ),                  
                   SizedBox(
                     height: 20.0,
                   ),

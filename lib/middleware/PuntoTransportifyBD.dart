@@ -160,11 +160,13 @@ class PuntoTransportifyBD {
                 icon: Icon(Icons.map,
                     color: TransportifyColors.primarySwatch[900]),
                 onPressed: () {
+                  /** 
                   Navigator.of(context).push(MaterialPageRoute<Null>(
                               builder: (BuildContext context) {
                             return MapaView();
                           }));
-                }, // TODO: onPressed del boton del mapa
+                          */
+                }, 
               ),
               Expanded(
                 child: TransportifyFormButton(
