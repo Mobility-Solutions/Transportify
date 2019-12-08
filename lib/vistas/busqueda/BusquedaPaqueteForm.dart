@@ -5,26 +5,31 @@ import 'package:transportify/middleware/ViajeBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:intl/intl.dart';
 import 'package:transportify/modelos/Paquete.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
 import 'package:transportify/util/style.dart';
 
 import 'BusquedaFormCiudades.dart';
 
-class BusquedaPaqueteForm extends StatefulWidget {
+class BusquedaPaqueteForm extends StatefulWidget {  
+  final Usuario usuario;
+
+  BusquedaPaqueteForm({Key key, this.usuario}) : super(key: key);
+
   @override
-  _BusquedaPaqueteFormState createState() => _BusquedaPaqueteFormState();
+  _BusquedaPaqueteFormState createState() => _BusquedaPaqueteFormState(usuario: usuario);
 }
 
 enum ConfirmAction { ACCEPT, CANCEL }
 
 class _BusquedaPaqueteFormState
     extends BusquedaFormCiudadesState<BusquedaPaqueteForm, Paquete> {
-  _BusquedaPaqueteFormState()
+  _BusquedaPaqueteFormState({Usuario usuario})
       : super(
             titulo: "Buscar Paquete",
             coleccionBD: "paquetes",
-            textoResultados: "Paquetes encontrados");
+            textoResultados: "Paquetes encontrados", usuario: usuario);
 
   List<PuntoTransportify> listaPuntosOrigen = List<PuntoTransportify>();
   List<PuntoTransportify> listaPuntosDestino = List<PuntoTransportify>();

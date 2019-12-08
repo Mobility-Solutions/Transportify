@@ -35,7 +35,7 @@ class PaquetesDialog extends UserDependantStatelessWidget {
           onPressed: () {
             Navigator.of(context)
                 .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return new CreacionPaqueteForm();
+              return CreacionPaqueteForm(usuario: usuario);
             }));
           },
         )
