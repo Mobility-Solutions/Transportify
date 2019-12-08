@@ -48,7 +48,8 @@ class UsuarioBD {
 
   static Widget _obtenerListadoUsuarios(BuildContext context,
       AsyncSnapshot<QuerySnapshot> snapshot, Function(Usuario) onSelected) {
-    if (!snapshot.hasData) return const Text('Cargando...');
+    if (!snapshot.hasData)
+      return const Center(child: const CircularProgressIndicator());
 
     var usuarios = snapshot.data.documents;
 
@@ -84,9 +85,9 @@ class UsuarioBD {
         .createUserWithEmailAndPassword(email: correo, password: password);
   }
 
-  static Future<Usuario> obtenerUsuarioActual() => FirebaseAuth.instance
-      .currentUser()
-      .then((firebaseUser) => obtenerUsuarioConUid(firebaseUser.uid));
+  static Future<Usuario> obtenerUsuarioActual() =>
+      FirebaseAuth.instance.currentUser().then((firebaseUser) =>
+          firebaseUser == null ? null : obtenerUsuarioConUid(firebaseUser.uid));
 
   static Future<Usuario> obtenerUsuarioConUid(String uid) {
     return Datos.obtenerColeccion(coleccion_usuarios)
@@ -109,4 +110,11 @@ class UsuarioBD {
 
   static Future<AuthResult> loginConCredenciales(AuthCredential credential) =>
       FirebaseAuth.instance.signInWithCredential(credential);
+
+  static Future<void> signOut() => FirebaseAuth.instance.signOut();
+
+  static Future<bool> existeUsuarioConNickname(String nickname) =>
+      Datos.obtenerColeccion(coleccion_usuarios).getDocuments().then((query) =>
+          query.documents
+              .any((snapshot) => obtenerNickname(snapshot) == nickname));
 }
