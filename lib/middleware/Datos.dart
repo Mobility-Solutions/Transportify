@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:transportify/middleware/MultipleCollectionStreamSystem.dart';
 import 'package:transportify/util/style.dart';
 
 import 'ComponenteBD.dart';
@@ -11,6 +12,22 @@ class Datos {
       Widget Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
     return obtenerStreamBuilderCollectionBDFromReference(
         obtenerColeccion(collectionPath), builder);
+  }
+
+  static MultipleCollectionStreamSystem obtenerStreamsCollectionsBD(
+          Iterable<String> collectionPaths) =>
+      MultipleCollectionStreamSystem(collectionPaths.map(
+          (collectionPath) => obtenerColeccion(collectionPath).snapshots()));
+
+  static StreamBuilder<List<DocumentSnapshot>>
+      obtenerStreamBuilderFromMultipleCollectionStreamSystem(
+          MultipleCollectionStreamSystem multipleCollectionStreamSystem,
+          Widget Function(BuildContext, AsyncSnapshot<List<DocumentSnapshot>>)
+              builder) {
+    return StreamBuilder<List<DocumentSnapshot>>(
+      stream: multipleCollectionStreamSystem.snapshots,
+      builder: builder,
+    );
   }
 
   static StreamBuilder<QuerySnapshot>
@@ -41,8 +58,10 @@ class Datos {
     );
   }
 
-  static CollectionReference obtenerColeccion(String collectionPath) => Firestore.instance.collection(collectionPath);
-  static DocumentReference obtenerDocumento(String documentPath) => Firestore.instance.document(documentPath); 
+  static CollectionReference obtenerColeccion(String collectionPath) =>
+      Firestore.instance.collection(collectionPath);
+  static DocumentReference obtenerDocumento(String documentPath) =>
+      Firestore.instance.document(documentPath);
 
   static Future<DocumentReference> crearDocument(
       String collectionPath, Map<String, dynamic> data) {
@@ -76,5 +95,4 @@ class Datos {
       ),
     );
   }
-
 }
