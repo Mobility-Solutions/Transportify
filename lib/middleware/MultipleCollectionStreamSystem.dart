@@ -4,12 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Hay que llamar al método `dispose()` en el método `dispose()` de tu Widget o State.
 class MultipleCollectionStreamSystem {
-  final List<DocumentSnapshot> _currentSnapshots = List<DocumentSnapshot>();
+  final List<QuerySnapshot> _currentSnapshots = List<QuerySnapshot>();
 
-  final StreamController<List<DocumentSnapshot>> _snapshotsController =
+  final StreamController<List<QuerySnapshot>> _snapshotsController =
       StreamController.broadcast();
 
-  Stream<List<DocumentSnapshot>> get snapshots => _snapshotsController.stream;
+  Stream<List<QuerySnapshot>> get snapshots => _snapshotsController.stream;
 
   final List<Stream<QuerySnapshot>> _collectionStreams =
       List<Stream<QuerySnapshot>>();
@@ -30,7 +30,7 @@ class MultipleCollectionStreamSystem {
 
   void _updateSnapshot(QuerySnapshot snapshot, int index) {
     // Reemplaza el elemento de la lista por el nuevo
-    _currentSnapshots.replaceRange(index, index + 1, snapshot.documents);
+    _currentSnapshots.replaceRange(index, index + 1, [snapshot]);
 
     // Avisa del cambio
     _snapshotsController.add(_currentSnapshots);

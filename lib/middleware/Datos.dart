@@ -19,12 +19,12 @@ class Datos {
       MultipleCollectionStreamSystem(collectionPaths.map(
           (collectionPath) => obtenerColeccion(collectionPath).snapshots()));
 
-  static StreamBuilder<List<DocumentSnapshot>>
+  static StreamBuilder<List<QuerySnapshot>>
       obtenerStreamBuilderFromMultipleCollectionStreamSystem(
           MultipleCollectionStreamSystem multipleCollectionStreamSystem,
-          Widget Function(BuildContext, AsyncSnapshot<List<DocumentSnapshot>>)
+          Widget Function(BuildContext, AsyncSnapshot<List<QuerySnapshot>>)
               builder) {
-    return StreamBuilder<List<DocumentSnapshot>>(
+    return StreamBuilder<List<QuerySnapshot>>(
       stream: multipleCollectionStreamSystem.snapshots,
       builder: builder,
     );
