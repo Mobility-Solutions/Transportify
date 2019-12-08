@@ -112,25 +112,11 @@ class Usuario extends ComponenteBD {
   Future<void> deleteFromBD() async {
     if (conectado) {
       await _userAuth.delete();
-      await _eliminarTodosMisViajesYPaquetesPublicados();
       return super.deleteFromBD();
     } else {
       throw StateError("El usuario debe estar conectado para poder borrarse");
     }
   }
-
-  Future<void> _eliminarTodosMisViajesYPaquetesPublicados() => Future.wait([
-        _eliminarTodosMisViajesPublicados(),
-        _eliminarTodosMisPaquetesPublicados()
-      ]);
-
-  Future<void> _eliminarTodosMisViajesPublicados() =>
-      obtenerMisViajesPublicados()
-          .then((listado) => Datos.eliminarTodosLosComponentes(listado));
-
-  Future<void> _eliminarTodosMisPaquetesPublicados() =>
-      obtenerMisPaquetesPublicados()
-          .then((listado) => Datos.eliminarTodosLosComponentes(listado));
 
   Future<Iterable<Viaje>> obtenerMisViajesPublicados() =>
       ViajeBD.obtenerListadoViajes().then(
