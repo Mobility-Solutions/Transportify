@@ -24,6 +24,7 @@ class _MapaViewState extends State<MapaView> {
   CameraPosition _initialPosition = CameraPosition(target: LatLng(40.416775, 	-2.8), zoom: 5);
   Completer<GoogleMapController> _controller = Completer();
   LatLng userLocation;
+  MapType type;
   String userCity;
   List<Marker> puntosList = [];
   List<Marker> ciudadList = [];
@@ -58,15 +59,47 @@ class _MapaViewState extends State<MapaView> {
             mainAxisSize: MainAxisSize.max,
             //mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Container(
-                height: MediaQuery.of(context).size.height - 250,
-                width: MediaQuery.of(context).size.width,
-                child: GoogleMap(
-                  
-                    markers: (widget.puntoSelector == true) ? Set<Marker>.of(puntosList) : Set.from(ciudadList),
-                    onMapCreated: _onMapCreated,
-                    initialCameraPosition: _initialPosition,
-                ),
+              Stack(
+                children: <Widget>[
+                  Container(
+                    height: MediaQuery.of(context).size.height - 250,
+                    width: MediaQuery.of(context).size.width,
+                    child: GoogleMap(
+                        markers: (widget.puntoSelector == true) ? Set<Marker>.of(puntosList) : Set.from(ciudadList),
+                        mapType: type,
+                        onMapCreated: _onMapCreated,
+                        initialCameraPosition: _initialPosition,
+                    ),
+                  ),
+                  Positioned(
+                    top: 30.0,
+                    right: 10.0,
+                    child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            type = (type == MapType.hybrid) ?  MapType.normal : MapType.hybrid;
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: TransportifyColors.primarySwatch[900],
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color:
+                                      TransportifyColors.primarySwatch)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.terrain,
+                              color: Colors.white,
+                              size: 30.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      
+                    ),
+                ],
               ),
               SizedBox(
                 height: 5.0
@@ -164,6 +197,8 @@ class _MapaViewState extends State<MapaView> {
       
     });
     initCiudades();
+
+    type = MapType.normal;
     setCameraPosition();            
       }
                 
