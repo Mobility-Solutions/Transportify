@@ -16,10 +16,10 @@ import 'package:transportify/vistas/dialog/PaquetesDialog.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
 import 'package:transportify/vistas/perfil/PerfilUsuarioView.dart';
-import 'package:transportify/vistas/seguimiento/SeguimientoForm.dart';
 import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';
 import 'package:transportify/vistas/dialog/ViajeDialog.dart';
+import 'package:transportify/vistas/seguimiento/IncidenciasView.dart';
 
 import 'InicioPart.dart';
 
@@ -166,9 +166,16 @@ class TopPart extends UserDependantStatelessWidget {
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute<Null>(
                             builder: (BuildContext context) {
-                              List<Incidencia> incidenciasList = [];
-                              Paquete paquete = new Paquete(fechaCreacion: DateTime(2019,12,1), fechaEntrega: DateTime(2019, 12, 10), diasMargen: 1, estado: EstadoPaquete.en_envio, nombre: "Tarjeta gráfica", incidencias: incidenciasList);
-                          return new IncidenciasView(usuario, paquete);
+                          List<Incidencia> incidenciasList = [];
+                          Paquete paquete = new Paquete(
+                            fechaCreacion: DateTime(2019, 12, 1),
+                            fechaEntrega: DateTime(2019, 12, 10),
+                            diasMargen: 1,
+                            estado: EstadoPaquete.en_envio,
+                            nombre: "Tarjeta gráfica",
+                            incidencias: incidenciasList,
+                          );
+                          return IncidenciasView(usuario, paquete);
                         }));
                       },
                       child: Column(
