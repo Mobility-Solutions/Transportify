@@ -10,65 +10,127 @@ import 'package:transportify/util/style.dart';
 
 abstract class MapaView extends StatefulWidget {
   final Usuario usuario;
-  final String titulo;
+  final String titulo, mensajeSeleccion;
 
-  MapaView._({Key key, this.usuario, this.titulo}) : super(key: key);
+  MapaView._({Key key, this.usuario, this.titulo, this.mensajeSeleccion})
+      : super(key: key);
 
   factory MapaView({
     bool puntoSelector,
     Usuario usuario,
     Key key,
   }) {
-    if (puntoSelector) return MapaViewPuntos();
-    else return MapaViewCiudades();
+    if (puntoSelector)
+      return MapaViewPuntos();
+    else
+      return MapaViewCiudades();
   }
 }
 
 class MapaViewPuntos extends MapaView {
-  static const String titulo_puntos = 'Elegir Punto Transportify';
+  static const String titulo_puntos = 'Elegir Punto Transportify',
+      mensaje_seleccion = 'Punto seleccionado:';
 
   final PuntoTransportify puntoInicial;
 
-  MapaViewPuntos({Key key, Usuario usuario, this.puntoInicial}) : super._(key: key, titulo: titulo_puntos, usuario: usuario);
+  MapaViewPuntos({Key key, Usuario usuario, this.puntoInicial})
+      : super._(
+            key: key,
+            titulo: titulo_puntos,
+            mensajeSeleccion: mensaje_seleccion,
+            usuario: usuario);
 
   @override
-  State<StatefulWidget> createState() => _MapaViewStatePuntos(puntoInicial: puntoInicial); 
+  State<StatefulWidget> createState() =>
+      _MapaViewStatePuntos(puntoInicial: puntoInicial);
 }
 
 class MapaViewCiudades extends MapaView {
-  static const String titulo_ciudades = 'Elegir Ciudad';
+  static const String titulo_ciudades = 'Elegir Ciudad',
+      mensaje_seleccion = 'Ciudad seleccionada:';
 
   final String ciudadInicial;
 
-  MapaViewCiudades({Key key, Usuario usuario, this.ciudadInicial}) : super._(key: key, titulo: titulo_ciudades, usuario: usuario);
+  MapaViewCiudades({Key key, Usuario usuario, this.ciudadInicial})
+      : super._(
+            key: key,
+            titulo: titulo_ciudades,
+            mensajeSeleccion: mensaje_seleccion,
+            usuario: usuario);
 
   @override
-  State<StatefulWidget> createState() => _MapaViewStateCiudades(ciudadInicial: ciudadInicial);
+  State<StatefulWidget> createState() =>
+      _MapaViewStateCiudades(ciudadInicial: ciudadInicial);
 }
 
-class _MapaViewStatePuntos extends _MapaViewState<MapaViewPuntos> {
-  _MapaViewStatePuntos({PuntoTransportify puntoInicial}) : super(puntoSeleccionado: puntoInicial);
+class _MapaViewStatePuntos
+    extends _MapaViewState<MapaViewPuntos, PuntoTransportify> {
+  List<Marker> puntosList = [];
+  List<PuntoTransportify> listaPuntosTransportify;
+  PuntoTransportify puntoSeleccionado;
+
+  @override
+  PuntoTransportify get seleccion => puntoSeleccionado;
+
+  _MapaViewStatePuntos({PuntoTransportify puntoInicial});
+
+  @override
+  Set<Marker> obtenerMarkers() => Set<Marker>.of(puntosList);
+
+  @override
+  void initState() async {
+    await _initPuntosTransportify();
+    super.initState();
+  }
+
+  Future<void> _initPuntosTransportify() async {
+    Iterable<PuntoTransportify> puntos =
+        await PuntoTransportifyBD.obtenerPuntos();
+    listaPuntosTransportify = puntos.toList();
+
+    for (var i in listaPuntosTransportify) {
+      if (i.direccion != null &&
+          i.apodo != null &&
+          i.ciudad != null &&
+          i.latitud != null &&
+          i.longitud != null) {
+        puntosList.add(Marker(
+            markerId: MarkerId(i.direccion),
+            position: new LatLng(i.latitud, i.longitud),
+            draggable: false,
+            onTap: () {
+              setState(() {
+                lugarSeleccionado = i.direccion;
+                puntoSeleccionado = i;
+              });
+            }));
+      }
+    }
+  }
 }
 
-class _MapaViewStateCiudades extends _MapaViewState<MapaViewCiudades> {
-  _MapaViewStateCiudades({String ciudadInicial}) : super(lugarSeleccionado: ciudadInicial);
+class _MapaViewStateCiudades extends _MapaViewState<MapaViewCiudades, String> {
+  @override
+  String get seleccion => lugarSeleccionado;
+
+  _MapaViewStateCiudades({String ciudadInicial});
+
+  @override
+  Set<Marker> obtenerMarkers() => Set.from(ciudadList);
 }
 
-abstract class _MapaViewState<T extends MapaView> extends State<T> {
+abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
   CameraPosition _initialPosition =
       CameraPosition(target: LatLng(40.416775, -2.8), zoom: 5);
   Completer<GoogleMapController> _controller = Completer();
   LatLng userLocation;
   MapType type;
-  String userCity;
-  List<Marker> puntosList = [];
+
   List<Marker> ciudadList = [];
-
   String lugarSeleccionado;
-  List<PuntoTransportify> listaPuntosTransportify;
-  PuntoTransportify puntoSeleccionado;
 
-  _MapaViewState({this.lugarSeleccionado, this.puntoSeleccionado});
+  K get seleccion;
+  String get ciudadUsuario => widget.usuario?.ciudad;
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
@@ -77,6 +139,8 @@ abstract class _MapaViewState<T extends MapaView> extends State<T> {
       lugarSeleccionado = "";
     });
   }
+
+  Set<Marker> obtenerMarkers();
 
   @override
   Widget build(BuildContext context) {
@@ -98,9 +162,7 @@ abstract class _MapaViewState<T extends MapaView> extends State<T> {
                     height: MediaQuery.of(context).size.height - 250,
                     width: MediaQuery.of(context).size.width,
                     child: GoogleMap(
-                      markers: (widget is MapaViewPuntos)
-                          ? Set<Marker>.of(puntosList)
-                          : Set.from(ciudadList),
+                      markers: obtenerMarkers(),
                       mapType: type,
                       onMapCreated: _onMapCreated,
                       initialCameraPosition: _initialPosition,
@@ -140,10 +202,7 @@ abstract class _MapaViewState<T extends MapaView> extends State<T> {
               Row(
                 children: <Widget>[
                   SizedBox(width: 15.0),
-                  Text(
-                      (widget is MapaViewPuntos)
-                          ? 'Punto Seleccionado:'
-                          : 'Ciudad Seleccionada:',
+                  Text(widget.mensajeSeleccion,
                       style: TextStyle(color: Colors.white, fontSize: 25)),
                 ],
               ),
@@ -194,10 +253,7 @@ abstract class _MapaViewState<T extends MapaView> extends State<T> {
                             if (this.lugarSeleccionado == "") {
                               lugarSeleccionado = null;
                             }
-                            (widget is MapaViewCiudades)
-                                ? Navigator.pop(context, this.lugarSeleccionado)
-                                : Navigator.pop(
-                                    context, this.puntoSeleccionado);
+                            Navigator.pop(context, this.seleccion);
                           },
                         ),
                       ),
@@ -212,40 +268,12 @@ abstract class _MapaViewState<T extends MapaView> extends State<T> {
   }
 
   @override
-  void initState() async {
+  void initState() {
     super.initState();
-    if (widget is MapaViewPuntos) {
-      await initPuntosTransportify();
-    }
     initCiudades();
 
     type = MapType.normal;
     setCameraPosition();
-  }
-
-  Future<void> initPuntosTransportify() async {
-    Iterable<PuntoTransportify> puntos =
-        await PuntoTransportifyBD.obtenerPuntos();
-    listaPuntosTransportify = puntos.toList();
-
-    for (var i in listaPuntosTransportify) {
-      if (i.direccion != null &&
-          i.apodo != null &&
-          i.ciudad != null &&
-          i.latitud != null &&
-          i.longitud != null) {
-        puntosList.add(Marker(
-            markerId: MarkerId(i.direccion),
-            position: new LatLng(i.latitud, i.longitud),
-            draggable: false,
-            onTap: () {
-              setState(() {
-                lugarSeleccionado = i.direccion;
-                puntoSeleccionado = i;
-              });
-            }));
-      }
-    }
   }
 
   void initCiudades() {
@@ -330,7 +358,7 @@ abstract class _MapaViewState<T extends MapaView> extends State<T> {
 
   void setCameraPosition() {
     for (var i in ciudadList) {
-      if (i.markerId.value.compareTo(widget.usuario?.ciudad) == 0) {
+      if (i.markerId.value.compareTo(ciudadUsuario) == 0) {
         setState(() {
           _initialPosition = CameraPosition(target: i.position, zoom: 8);
         });
