@@ -21,7 +21,6 @@ class MiActividadBusqueda extends StatefulWidget {
 
 class _MiActividadBusquedaState extends State<MiActividadBusqueda> {
   bool _loading;
-  List resultados = new List();
   MultipleCollectionStreamSystem multipleCollection;
   Map colecciones;
 
@@ -35,6 +34,7 @@ class _MiActividadBusquedaState extends State<MiActividadBusqueda> {
         colecciones[Paquete] = PaqueteBD.coleccion_paquetes;
         colecciones[Viaje] = ViajeBD.coleccion_viajes;
         multipleCollection = Datos.obtenerStreamsCollectionsBD(colecciones);
+        _loading = false;
         break;
       case EstadoActividad.ENCURSO:
         break;
