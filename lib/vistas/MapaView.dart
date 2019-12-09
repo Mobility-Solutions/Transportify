@@ -32,9 +32,11 @@ class MapaViewPuntos extends MapaView {
   static const String titulo_puntos = 'Elegir Punto Transportify',
       mensaje_seleccion = 'Punto seleccionado:';
 
+  final String ciudadInicial;
   final PuntoTransportify puntoInicial;
 
-  MapaViewPuntos({Key key, Usuario usuario, this.puntoInicial})
+  MapaViewPuntos(
+      {Key key, Usuario usuario, this.ciudadInicial, this.puntoInicial})
       : super._(
             key: key,
             titulo: titulo_puntos,
@@ -42,8 +44,9 @@ class MapaViewPuntos extends MapaView {
             usuario: usuario);
 
   @override
-  State<StatefulWidget> createState() =>
-      _MapaViewStatePuntos(puntoInicial: puntoInicial ?? usuario?.ciudad);
+  State<StatefulWidget> createState() => puntoInicial == null
+      ? _MapaViewStatePuntos.fromCiudad(usuario?.ciudad)
+      : _MapaViewStatePuntos(puntoInicial: puntoInicial);
 }
 
 class MapaViewCiudades extends MapaView {
@@ -72,6 +75,13 @@ class _MapaViewStatePuntos
       : super(
             latitudInicial: puntoInicial?.latitud,
             longitudInicial: puntoInicial?.longitud);
+
+  _MapaViewStatePuntos.fromCiudad(String ciudadInicial)
+      : super(
+            latitudInicial:
+                _MapaViewStateCiudades.mapCoordenadas[ciudadInicial]?.latitude,
+            longitudInicial: _MapaViewStateCiudades
+                .mapCoordenadas[ciudadInicial]?.longitude);
 
   @override
   Iterable<PuntoTransportify> obtenerListado(
@@ -125,7 +135,10 @@ class _MapaViewStateCiudades extends _MapaViewState<MapaViewCiudades, String> {
     "Santiago de Compostela": LatLng(42.890528, -8.526583),
   };
 
-  _MapaViewStateCiudades({String ciudadInicial}) : super(latitudInicial: mapCoordenadas[ciudadInicial]?.latitude, longitudInicial: mapCoordenadas[ciudadInicial]?.longitude);
+  _MapaViewStateCiudades({String ciudadInicial})
+      : super(
+            latitudInicial: mapCoordenadas[ciudadInicial]?.latitude,
+            longitudInicial: mapCoordenadas[ciudadInicial]?.longitude);
 
   @override
   Iterable<String> obtenerListado(Iterable<DocumentSnapshot> snapshots) {
