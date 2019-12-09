@@ -19,12 +19,11 @@ class MultipleCollectionStreamSystem {
   }
 
   void add(Type type, Stream<QuerySnapshot> collectionStream) {
-    int index = _collectionStreams.length;
     _collectionStreams[type] = collectionStream;
-    collectionStream.listen((snapshot) => _updateSnapshot(snapshot, type, index));
+    collectionStream.listen((snapshot) => _updateSnapshot(snapshot, type));
   }
 
-  void _updateSnapshot(QuerySnapshot snapshot, Type type, int index) {
+  void _updateSnapshot(QuerySnapshot snapshot, Type type) {
     // Reemplaza el elemento de la lista por el nuevo
     _currentSnapshots[type] = snapshot;
 

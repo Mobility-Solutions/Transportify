@@ -123,7 +123,6 @@ class PuntoTransportifyBD {
             onCanceled: onCanceled,
             itemSeleccionado: puntoSeleccionado)
         : const Center(child: const CircularProgressIndicator());
-    ;
   }
 
   static Widget _obtenerSelectorCiudades(
