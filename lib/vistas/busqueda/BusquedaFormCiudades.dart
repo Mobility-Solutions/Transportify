@@ -63,8 +63,7 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
         ),
         Row(
           children: <Widget>[
-            Container(
-              width: 250.0,
+            Expanded(
               child: TextFormField(
                 maxLines: 1,
                 keyboardType: TextInputType.text,
@@ -111,8 +110,7 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
         ),
         Row(
           children: <Widget>[
-            Container(
-              width: 250.0,
+            Expanded(
               child: TextFormField(
                 maxLines: 1,
                 autofocus: false,

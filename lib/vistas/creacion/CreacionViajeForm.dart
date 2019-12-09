@@ -96,8 +96,7 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                   ),
                   Row(
                     children: <Widget>[
-                      Container(
-                        width: 250.0,
+                      Expanded(
                         child: TextFormField(
                           maxLines: 1,
                           keyboardType: TextInputType.text,
@@ -151,8 +150,7 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                  * */
                   Row(
                     children: <Widget>[
-                      Container(
-                        width: 250.0,
+                      Expanded(
                         child: TextFormField(
                           maxLines: 1,
                           autofocus: false,

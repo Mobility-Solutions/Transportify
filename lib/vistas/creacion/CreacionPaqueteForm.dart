@@ -286,8 +286,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
               SizedBox(height: 20.0),
               Row(
                 children: <Widget>[
-                  Container(
-                    width: 250.0,
+                  Expanded(
                     child: TextFormField(
                       maxLines: 1,
                       keyboardType: TextInputType.text,
@@ -325,8 +324,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
               SizedBox(height: 20.0),
               Row(
                 children: <Widget>[
-                  Container(
-                    width: 250.0,
+                  Expanded(
                     child: TextFormField(
                       maxLines: 1,
                       autofocus: false,
