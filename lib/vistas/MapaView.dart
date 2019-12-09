@@ -43,7 +43,7 @@ class MapaViewPuntos extends MapaView {
 
   @override
   State<StatefulWidget> createState() =>
-      _MapaViewStatePuntos(puntoInicial: puntoInicial);
+      _MapaViewStatePuntos(puntoInicial: puntoInicial ?? usuario?.ciudad);
 }
 
 class MapaViewCiudades extends MapaView {
@@ -61,7 +61,7 @@ class MapaViewCiudades extends MapaView {
 
   @override
   State<StatefulWidget> createState() =>
-      _MapaViewStateCiudades(ciudadInicial: ciudadInicial);
+      _MapaViewStateCiudades(ciudadInicial: ciudadInicial ?? usuario?.ciudad);
 }
 
 class _MapaViewStatePuntos
@@ -100,7 +100,7 @@ class _MapaViewStatePuntos
           punto.longitud != null) {
         puntosList.add(Marker(
             markerId: MarkerId(punto.direccion),
-            position: new LatLng(punto.latitud, punto.longitud),
+            position: LatLng(punto.latitud, punto.longitud),
             draggable: false,
             onTap: () {
               setState(() {
@@ -114,10 +114,18 @@ class _MapaViewStatePuntos
 }
 
 class _MapaViewStateCiudades extends _MapaViewState<MapaViewCiudades, String> {
-  // TODO: Añadir super() con coordenadas ciudad inicial
-  _MapaViewStateCiudades({String ciudadInicial}) {
-    _initMapCoordenadas();
-  }
+  // TODO: Quitar este map y guardar las coordenadas en la BD
+  static const Map<String, LatLng> mapCoordenadas = const {
+    "Valencia": LatLng(39.4697500, -0.3773900),
+    "Barcelona": LatLng(41.3887901, 2.1589899),
+    "Toledo": LatLng(39.8581000, -4.0226300),
+    "Madrid": LatLng(40.4165000, -3.7025600),
+    "Segovia": LatLng(40.9480800, -4.1183900),
+    "Sevilla": LatLng(37.3828300, -5.9731700),
+    "Santiago de Compostela": LatLng(42.890528, -8.526583),
+  };
+
+  _MapaViewStateCiudades({String ciudadInicial}) : super(latitudInicial: mapCoordenadas[ciudadInicial].latitude, longitudInicial: mapCoordenadas[ciudadInicial].longitude);
 
   @override
   Iterable<String> obtenerListado(Iterable<DocumentSnapshot> snapshots) {
@@ -125,8 +133,6 @@ class _MapaViewStateCiudades extends _MapaViewState<MapaViewCiudades, String> {
         .map((snapshot) => PuntoTransportify.fromSnapshot(snapshot))
         .map((punto) => punto.ciudad);
   }
-
-  Map<String, LatLng> mapCoordenadas = Map<String, LatLng>();
 
   @override
   Set<Marker> obtenerMarkers(Iterable<String> ciudades) {
@@ -148,17 +154,6 @@ class _MapaViewStateCiudades extends _MapaViewState<MapaViewCiudades, String> {
           itemSeleccionado = ciudad;
         });
       });
-
-  // TODO: Quitar este método y guardar las coordenadas en la BD
-  void _initMapCoordenadas() {
-    mapCoordenadas["Valencia"] = LatLng(39.4697500, -0.3773900);
-    mapCoordenadas["Barcelona"] = LatLng(41.3887901, 2.1589899);
-    mapCoordenadas["Toledo"] = LatLng(39.8581000, -4.0226300);
-    mapCoordenadas["Madrid"] = LatLng(40.4165000, -3.7025600);
-    mapCoordenadas["Segovia"] = LatLng(40.9480800, -4.1183900);
-    mapCoordenadas["Sevilla"] = LatLng(37.3828300, -5.9731700);
-    mapCoordenadas["Santiago de Compostela"] = LatLng(42.890528, -8.526583);
-  }
 }
 
 abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
@@ -167,9 +162,7 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
   MapType type;
 
   K itemSeleccionado;
-  String get ciudadUsuario => widget.usuario?.ciudad;
 
-  // TODO: Añadir coordenadas ciudad usuario si no se indican
   _MapaViewState({double latitudInicial, double longitudInicial})
       : _initialPosition = CameraPosition(
             target:
