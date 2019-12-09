@@ -4,6 +4,7 @@ import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:transportify/vistas/MapaView.dart';
 import 'package:transportify/vistas/dialog/CiudadDialog.dart';
 
 import 'BusquedaForm.dart';
@@ -31,6 +32,28 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
     if (origen != null) origenController.text = origen;
   }
 
+  //Abre la página del mapa y a la vuelta de la misma, le pasa la ciudad seleccionada al controlador indicado
+  getCiudadSeleccionada(BuildContext context, bool origenLocation) async {
+    final String ciudadSeleccionada =
+        await Navigator.of(context).push<String>(MaterialPageRoute(
+            builder: (context) => MapaViewCiudades(
+                  usuario: usuario,
+                  ciudadInicial: origenLocation ? origen : destino,
+                )));
+
+    if (origenLocation) {
+      if (ciudadSeleccionada != null) {
+        origen = ciudadSeleccionada;
+        origenController.text = origen;
+      }
+    } else {
+      if (ciudadSeleccionada != null) {
+        destino = ciudadSeleccionada;
+        destinoController.text = destino;
+      }
+    }
+  }
+
   @override
   Widget buildSelectorBusqueda(BuildContext context) {
     return Column(
@@ -38,61 +61,95 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
         SizedBox(
           height: 20.0,
         ),
-        TextFormField(
-          maxLines: 1,
-          keyboardType: TextInputType.text,
-          autofocus: false,
-          style: TextStyle(color: TransportifyColors.primarySwatch),
-          controller: origenController,
-          decoration:
-              TransportifyMethods.returnTextFormDecoration("Ciudad de origen"),
-          onTap: () async {
-            FocusScope.of(context).requestFocus(FocusNode());
-            String returnCiudad =
-                await CiudadDialog.show(this.context, ciudadInicial: origen);
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: TextFormField(
+                maxLines: 1,
+                keyboardType: TextInputType.text,
+                autofocus: false,
+                style: TextStyle(color: TransportifyColors.primarySwatch),
+                controller: origenController,
+                decoration:
+                    TransportifyMethods.returnTextFormDecoration("Ciudad de origen"),
+                onTap: () async {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  String returnCiudad =
+                      await CiudadDialog.show(this.context, ciudadInicial: origen);
 
-            if (returnCiudad != null) {
-              origen = returnCiudad;
-              origenController.text = origen;
-            }
-          },
-          validator: (value) {
-            if (origen == null)
-              return 'Introduzca la ciudad de origen';
-            else if (origen == destino)
-              return 'Las ciudades no deben coincidir.';
-            else
-              return null;
-          },
+                  if (returnCiudad != null) {
+                    origen = returnCiudad;
+                    origenController.text = origen;
+                  }
+                },
+                validator: (value) {
+                  if (origen == null)
+                    return 'Introduzca la ciudad de origen';
+                  else if (origen == destino)
+                    return 'Las ciudades no deben coincidir.';
+                  else
+                    return null;
+                },
+              ),
+            ),
+            SizedBox(
+              width: 10.0,
+            ),
+            IconButton(
+              color: TransportifyColors.primarySwatch,
+              icon: Icon(Icons.map, color: Colors.white),
+              onPressed: () {
+                FocusScope.of(context).requestFocus(FocusNode());
+                getCiudadSeleccionada(context, true);
+              },
+            ),
+          ],
         ),
         SizedBox(
           height: 20.0,
         ),
-        TextFormField(
-          maxLines: 1,
-          autofocus: false,
-          style: TextStyle(color: TransportifyColors.primarySwatch),
-          controller: destinoController,
-          decoration:
-              TransportifyMethods.returnTextFormDecoration("Ciudad de destino"),
-          onTap: () async {
-            FocusScope.of(context).requestFocus(FocusNode());
-            String returnCiudad =
-                await CiudadDialog.show(this.context, ciudadInicial: destino);
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: TextFormField(
+                maxLines: 1,
+                autofocus: false,
+                style: TextStyle(color: TransportifyColors.primarySwatch),
+                controller: destinoController,
+                decoration:
+                    TransportifyMethods.returnTextFormDecoration("Ciudad de destino"),
+                onTap: () async {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  String returnCiudad =
+                      await CiudadDialog.show(this.context, ciudadInicial: destino);
 
-            if (returnCiudad != null) {
-              destino = returnCiudad;
-              destinoController.text = destino;
-            }
-          },
-          validator: (value) {
-            if (destino == null)
-              return 'Introduzca la ciudad de destino';
-            else if (origen == destino)
-              return 'Las ciudades no deben coincidir.';
-            else
-              return null;
-          },
+                  if (returnCiudad != null) {
+                    destino = returnCiudad;
+                    destinoController.text = destino;
+                  }
+                },
+                validator: (value) {
+                  if (destino == null)
+                    return 'Introduzca la ciudad de destino';
+                  else if (origen == destino)
+                    return 'Las ciudades no deben coincidir.';
+                  else
+                    return null;
+                },
+              ),
+            ),
+            SizedBox(
+              width: 10.0,
+            ),
+            IconButton(
+              color: TransportifyColors.primarySwatch,
+              icon: Icon(Icons.map, color: Colors.white),
+              onPressed: () {
+                FocusScope.of(context).requestFocus(FocusNode());
+                getCiudadSeleccionada(context, false);
+              },
+            ),
+          ],
         ),
         SizedBox(
           height: 20.0,

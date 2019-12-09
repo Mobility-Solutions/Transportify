@@ -41,8 +41,10 @@ class Datos {
     );
   }
 
-  static CollectionReference obtenerColeccion(String collectionPath) => Firestore.instance.collection(collectionPath);
-  static DocumentReference obtenerDocumento(String documentPath) => Firestore.instance.document(documentPath); 
+  static CollectionReference obtenerColeccion(String collectionPath) =>
+      Firestore.instance.collection(collectionPath);
+  static DocumentReference obtenerDocumento(String documentPath) =>
+      Firestore.instance.document(documentPath);
 
   static Future<DocumentReference> crearDocument(
       String collectionPath, Map<String, dynamic> data) {
@@ -66,15 +68,19 @@ class Datos {
     return Container(
       color: selected ? TransportifyColors.primarySwatch : null,
       child: ListTile(
-        title: Text(
-          displayName,
-          style: TextStyle(
-            color: selected ? Colors.white : Colors.black,
-          ),
+        title: Wrap(
+          direction: Axis.horizontal,
+          children: <Widget>[
+            Text(
+              displayName,
+              style: TextStyle(
+                color: selected ? Colors.white : Colors.black,
+              ),
+            ),
+          ],
         ),
         onTap: onTap,
       ),
     );
   }
-
 }

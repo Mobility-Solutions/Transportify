@@ -54,13 +54,10 @@ class UsuarioBD {
     var usuarios = snapshot.data.documents;
 
     return ListView.builder(
+      itemCount: usuarios.length,
       itemBuilder: (context, index) {
-        if (index >= 0 && index < usuarios.length) {
-          var usuario = usuarios.elementAt(index);
-          return _obtenerListViewItemUsuario(usuario, onSelected);
-        } else {
-          return null;
-        }
+        var usuario = usuarios.elementAt(index);
+        return _obtenerListViewItemUsuario(usuario, onSelected);
       },
     );
   }

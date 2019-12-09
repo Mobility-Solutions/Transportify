@@ -8,6 +8,7 @@ import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:transportify/vistas/MapaView.dart';
 import 'package:transportify/vistas/dialog/PuntosDialog.dart';
 
 class CreacionPaqueteForm extends StatefulWidget {
@@ -63,6 +64,30 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
   void _removePrecio() {
     if (precio - 1 >= 0.0) precioController.text = (precio -= 1).toString();
+  }
+
+  getPuntoSeleccionado(BuildContext context, bool origenLocation) async {
+    PuntoTransportify puntoInicial =
+        origenLocation ? puntos.origen : puntos.destino;
+        
+    final PuntoTransportify puntoSeleccionado =
+        await Navigator.of(context).push<PuntoTransportify>(MaterialPageRoute(
+            builder: (context) => MapaViewPuntos(
+                  usuario: widget.usuario,
+                  puntoInicial: puntoInicial,
+                )));
+
+    if (origenLocation) {
+      if (puntoSeleccionado != null) {
+        puntos.origen = puntoSeleccionado;
+        origenController.text = puntos.origen?.nombre;
+      }
+    } else {
+      if (puntoSeleccionado != null) {
+        puntos.destino = puntoSeleccionado;
+        destinoController.text = puntos.destino?.direccion;
+      }
+    }
   }
 
   @override
@@ -259,49 +284,79 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 ],
               ),
               SizedBox(height: 20.0),
-              TextFormField(
-                maxLines: 1,
-                keyboardType: TextInputType.text,
-                autofocus: false,
-                style: TextStyle(color: TransportifyColors.primarySwatch),
-                controller: origenController,
-                decoration: TransportifyMethods.returnTextFormDecoration(
-                    "Punto Transportify de origen"),
-                onTap: () async {
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  PuntoTransportify returnPunto = await PuntosDialog.show(
-                      this.context,
-                      ciudadInicial: widget.usuario?.ciudad,
-                      puntoInicial: puntos.origen);
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextFormField(
+                      maxLines: 1,
+                      keyboardType: TextInputType.text,
+                      autofocus: false,
+                      style: TextStyle(color: TransportifyColors.primarySwatch),
+                      controller: origenController,
+                      decoration: TransportifyMethods.returnTextFormDecoration(
+                          "Punto Transportify de origen"),
+                      onTap: () async {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        PuntoTransportify returnPunto = await PuntosDialog.show(
+                            this.context,
+                            ciudadInicial: widget.usuario?.ciudad,
+                            puntoInicial: puntos.origen);
 
-                  if (returnPunto != null) {
-                    puntos.origen = returnPunto;
-                    origenController.text = puntos.origen?.nombre;
-                  }
-                },
-                validator: (value) => puntos.validate(),
+                        if (returnPunto != null) {
+                          puntos.origen = returnPunto;
+                          origenController.text = puntos.origen?.nombre;
+                        }
+                      },
+                      validator: (value) => puntos.validate(),
+                    ),
+                  ),
+                  SizedBox(width: 10.0),
+                  IconButton(
+                    color: TransportifyColors.primarySwatch,
+                    icon: Icon(Icons.map, color: Colors.white),
+                    onPressed: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      getPuntoSeleccionado(context, true);
+                    },
+                  ),
+                ],
               ),
               SizedBox(height: 20.0),
-              TextFormField(
-                maxLines: 1,
-                autofocus: false,
-                style: TextStyle(color: TransportifyColors.primarySwatch),
-                controller: destinoController,
-                decoration: TransportifyMethods.returnTextFormDecoration(
-                    "Punto Transportify de destino"),
-                onTap: () async {
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  PuntoTransportify returnPunto = await PuntosDialog.show(
-                      this.context,
-                      puntoInicial: puntos
-                          ?.destino); // Ciudad inicial del usuario solo en origen
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextFormField(
+                      maxLines: 1,
+                      autofocus: false,
+                      style: TextStyle(color: TransportifyColors.primarySwatch),
+                      controller: destinoController,
+                      decoration: TransportifyMethods.returnTextFormDecoration(
+                          "Punto Transportify de destino"),
+                      onTap: () async {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        PuntoTransportify returnPunto = await PuntosDialog.show(
+                            this.context,
+                            puntoInicial: puntos
+                                ?.destino); // Ciudad inicial del usuario solo en origen
 
-                  if (returnPunto != null) {
-                    puntos.destino = returnPunto;
-                    destinoController.text = puntos.destino?.nombre;
-                  }
-                },
-                validator: (value) => puntos.validate(),
+                        if (returnPunto != null) {
+                          puntos.destino = returnPunto;
+                          destinoController.text = puntos.destino?.nombre;
+                        }
+                      },
+                      validator: (value) => puntos.validate(),
+                    ),
+                  ),
+                  SizedBox(width: 10.0),
+                  IconButton(
+                    color: TransportifyColors.primarySwatch,
+                    icon: Icon(Icons.map, color: Colors.white),
+                    onPressed: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      getPuntoSeleccionado(context, false);
+                    },
+                  ),
+                ],
               ),
               SizedBox(height: 20.0),
               TextFormField(
