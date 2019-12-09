@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -65,12 +66,7 @@ class MapaViewCiudades extends MapaView {
 
 class _MapaViewStatePuntos
     extends _MapaViewState<MapaViewPuntos, PuntoTransportify> {
-  List<Marker> puntosList = [];
   List<PuntoTransportify> listaPuntosTransportify;
-  PuntoTransportify puntoSeleccionado;
-
-  @override
-  PuntoTransportify get seleccion => puntoSeleccionado;
 
   _MapaViewStatePuntos({PuntoTransportify puntoInicial})
       : super(
@@ -78,19 +74,24 @@ class _MapaViewStatePuntos
             longitudInicial: puntoInicial?.longitud);
 
   @override
-  Set<Marker> obtenerMarkers() => Set<Marker>.of(puntosList);
+  Iterable<PuntoTransportify> obtenerListado(
+      Iterable<DocumentSnapshot> snapshots) {
+    var listado =
+        snapshots.map((snapshot) => PuntoTransportify.fromSnapshot(snapshot));
 
-  @override
-  void initState() {
-    _initPuntosTransportify();
-    super.initState();
+    // Actualiza el Punto seleccionado (si lo hubiera)
+    if (itemSeleccionado != null) {
+      itemSeleccionado = listado.firstWhere((item) => item == itemSeleccionado,
+          orElse: () => null);
+    }
+
+    return listado;
   }
 
-  Future<void> _initPuntosTransportify() async {
-    Iterable<PuntoTransportify> puntos =
-        await PuntoTransportifyBD.obtenerPuntos();
-    listaPuntosTransportify = puntos.toList();
-
+  @override
+  Set<Marker> obtenerMarkers(
+      Iterable<PuntoTransportify> listaPuntosTransportify) {
+    List<Marker> puntosList = List<Marker>();
     for (var punto in listaPuntosTransportify) {
       if (punto.direccion != null &&
           punto.apodo != null &&
@@ -103,24 +104,61 @@ class _MapaViewStatePuntos
             draggable: false,
             onTap: () {
               setState(() {
-                lugarSeleccionado = punto.nombreCompleto;
-                puntoSeleccionado = punto;
+                itemSeleccionado = punto;
               });
             }));
       }
     }
+    return Set<Marker>.of(puntosList);
   }
 }
 
 class _MapaViewStateCiudades extends _MapaViewState<MapaViewCiudades, String> {
-  @override
-  String get seleccion => lugarSeleccionado;
-
   // TODO: Añadir super() con coordenadas ciudad inicial
-  _MapaViewStateCiudades({String ciudadInicial});
+  _MapaViewStateCiudades({String ciudadInicial}) {
+    _initMapCoordenadas();
+  }
 
   @override
-  Set<Marker> obtenerMarkers() => Set.from(ciudadList);
+  Iterable<String> obtenerListado(Iterable<DocumentSnapshot> snapshots) {
+    return snapshots
+        .map((snapshot) => PuntoTransportify.fromSnapshot(snapshot))
+        .map((punto) => punto.ciudad);
+  }
+
+  Map<String, LatLng> mapCoordenadas = Map<String, LatLng>();
+
+  @override
+  Set<Marker> obtenerMarkers(Iterable<String> ciudades) {
+    List<Marker> ciudadList = List<Marker>();
+    for (String ciudad in ciudades) {
+      if (mapCoordenadas.containsKey(ciudad)) {
+        ciudadList.add(_crearMarker(ciudad));
+      }
+    }
+    return Set.of(ciudadList);
+  }
+
+  Marker _crearMarker(String ciudad) => Marker(
+      markerId: MarkerId(ciudad),
+      position: mapCoordenadas[ciudad],
+      draggable: false,
+      onTap: () {
+        setState(() {
+          itemSeleccionado = ciudad;
+        });
+      });
+
+  // TODO: Quitar este método y guardar las coordenadas en la BD
+  void _initMapCoordenadas() {
+    mapCoordenadas["Valencia"] = LatLng(39.4697500, -0.3773900);
+    mapCoordenadas["Barcelona"] = LatLng(41.3887901, 2.1589899);
+    mapCoordenadas["Toledo"] = LatLng(39.8581000, -4.0226300);
+    mapCoordenadas["Madrid"] = LatLng(40.4165000, -3.7025600);
+    mapCoordenadas["Segovia"] = LatLng(40.9480800, -4.1183900);
+    mapCoordenadas["Sevilla"] = LatLng(37.3828300, -5.9731700);
+    mapCoordenadas["Santiago de Compostela"] = LatLng(42.890528, -8.526583);
+  }
 }
 
 abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
@@ -128,10 +166,7 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
   Completer<GoogleMapController> _controller = Completer();
   MapType type;
 
-  List<Marker> ciudadList = [];
-  String lugarSeleccionado;
-
-  K get seleccion;
+  K itemSeleccionado;
   String get ciudadUsuario => widget.usuario?.ciudad;
 
   // TODO: Añadir coordenadas ciudad usuario si no se indican
@@ -143,13 +178,10 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
-
-    setState(() {
-      lugarSeleccionado = "";
-    });
   }
 
-  Set<Marker> obtenerMarkers();
+  Iterable<K> obtenerListado(Iterable<DocumentSnapshot> snapshots);
+  Set<Marker> obtenerMarkers(Iterable<K> items);
 
   @override
   Widget build(BuildContext context) {
@@ -161,79 +193,87 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
         ),
         body: Container(
           color: TransportifyColors.primarySwatch,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Flexible(
-                flex: 2,
-                fit: FlexFit.tight,
-                child: Stack(
-                  children: <Widget>[
-                    Container(
-                      child: GoogleMap(
-                        markers: obtenerMarkers(),
-                        mapType: type,
-                        onMapCreated: _onMapCreated,
-                        initialCameraPosition: _initialPosition,
+          child: PuntoTransportifyBD.obtenerStreamBuilderListado(
+              (context, snapshot) {
+            if (!snapshot.hasData)
+              return const Center(child: const CircularProgressIndicator());
+
+            Iterable<K> listado = obtenerListado(snapshot.data.documents);
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Flexible(
+                  flex: 2,
+                  fit: FlexFit.tight,
+                  child: Stack(
+                    children: <Widget>[
+                      Container(
+                        child: GoogleMap(
+                          markers: obtenerMarkers(listado),
+                          mapType: type,
+                          onMapCreated: _onMapCreated,
+                          initialCameraPosition: _initialPosition,
+                        ),
                       ),
-                    ),
-                    Positioned(
-                      top: 30.0,
-                      right: 10.0,
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            type = (type == MapType.hybrid)
-                                ? MapType.normal
-                                : MapType.hybrid;
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: TransportifyColors.primarySwatch[900],
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                  color: TransportifyColors.primarySwatch)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.terrain,
-                              color: Colors.white,
-                              size: 30.0,
+                      Positioned(
+                        top: 30.0,
+                        right: 10.0,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              type = (type == MapType.hybrid)
+                                  ? MapType.normal
+                                  : MapType.hybrid;
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: TransportifyColors.primarySwatch[900],
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                    color: TransportifyColors.primarySwatch)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(
+                                Icons.terrain,
+                                color: Colors.white,
+                                size: 30.0,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(widget.mensajeSeleccion,
-                        style: TextStyle(color: Colors.white, fontSize: 25)),
-                    SizedBox(height: 5.0),
-                    Wrap(
-                      direction: Axis.horizontal,
-                      children: <Widget>[
-                        Text(
-                          '$lugarSeleccionado',
-                          maxLines: 6,
-                          style: TextStyle(color: Colors.white, fontSize: 15),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 15.0, vertical: 5.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(widget.mensajeSeleccion,
+                          style: TextStyle(color: Colors.white, fontSize: 25)),
+                      SizedBox(height: 5.0),
+                      Wrap(
+                        direction: Axis.horizontal,
+                        children: <Widget>[
+                          Text(
+                            '${itemSeleccionado?.toString() ?? ''}',
+                            maxLines: 6,
+                            style: TextStyle(color: Colors.white, fontSize: 15),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            );
+          }),
         ),
         extendBody: false,
         bottomNavigationBar: new Stack(
@@ -266,10 +306,7 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
                         child: TransportifyFormButton(
                           text: 'Guardar',
                           onPressed: () {
-                            if (this.lugarSeleccionado == "") {
-                              lugarSeleccionado = null;
-                            }
-                            Navigator.pop(context, this.seleccion);
+                            Navigator.pop(context, this.itemSeleccionado);
                           },
                         ),
                       ),
@@ -286,88 +323,6 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
   @override
   void initState() {
     super.initState();
-    initCiudades();
-
     type = MapType.normal;
-  }
-
-  void initCiudades() {
-    ciudadList.add(
-      Marker(
-          markerId: MarkerId("Valencia"),
-          position: new LatLng(39.4697500, -0.3773900),
-          draggable: false,
-          onTap: () {
-            setState(() {
-              lugarSeleccionado = "Valencia";
-            });
-          }),
-    );
-    ciudadList.add(
-      Marker(
-          markerId: MarkerId("Barcelona"),
-          position: new LatLng(41.3887901, 2.1589899),
-          draggable: false,
-          onTap: () {
-            setState(() {
-              lugarSeleccionado = "Barcelona";
-            });
-          }),
-    );
-    ciudadList.add(
-      Marker(
-          markerId: MarkerId("Toledo"),
-          position: new LatLng(39.8581000, -4.0226300),
-          draggable: false,
-          onTap: () {
-            setState(() {
-              lugarSeleccionado = "Toledo";
-            });
-          }),
-    );
-    ciudadList.add(
-      Marker(
-          markerId: MarkerId("Madrid"),
-          position: new LatLng(40.4165000, -3.7025600),
-          draggable: false,
-          onTap: () {
-            setState(() {
-              lugarSeleccionado = "Madrid";
-            });
-          }),
-    );
-    ciudadList.add(
-      Marker(
-          markerId: MarkerId("Segovia"),
-          position: new LatLng(40.9480800, -4.1183900),
-          draggable: false,
-          onTap: () {
-            setState(() {
-              lugarSeleccionado = "Segovia";
-            });
-          }),
-    );
-    ciudadList.add(
-      Marker(
-          markerId: MarkerId("Sevilla"),
-          position: new LatLng(37.3828300, -5.9731700),
-          draggable: false,
-          onTap: () {
-            setState(() {
-              lugarSeleccionado = "Sevilla";
-            });
-          }),
-    );
-    ciudadList.add(
-      Marker(
-          markerId: MarkerId("Santiago de Compostela"),
-          position: new LatLng(42.890528, -8.526583),
-          draggable: false,
-          onTap: () {
-            setState(() {
-              lugarSeleccionado = "Santiago de Compostela";
-            });
-          }),
-    );
   }
 }

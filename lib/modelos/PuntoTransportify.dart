@@ -43,4 +43,7 @@ class PuntoTransportify extends ComponenteBD {
   @override
   Future<void> deleteFromBD() =>
       throw UnsupportedError("Este objeto no se puede borrar de la BD");
+
+  @override
+  String toString() => this.nombreCompleto;
 }
