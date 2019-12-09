@@ -53,9 +53,14 @@ class PuntoTransportifyBD {
         onCanceled));
   }
 
-  static Future<Iterable<PuntoTransportify>> obtenerPuntos([bool filtro(PuntoTransportify punto)]) {
-    return Datos.obtenerColeccion(coleccion_puntos).getDocuments().then((query) {
-      var puntos = query.documents.map((snapshot) => PuntoTransportify.fromSnapshot(snapshot));
+  @deprecated
+  static Future<Iterable<PuntoTransportify>> obtenerPuntos(
+      [bool filtro(PuntoTransportify punto)]) {
+    return Datos.obtenerColeccion(coleccion_puntos)
+        .getDocuments()
+        .then((query) {
+      var puntos = query.documents
+          .map((snapshot) => PuntoTransportify.fromSnapshot(snapshot));
       if (filtro != null) puntos = puntos.where(filtro);
       return puntos;
     });
@@ -98,6 +103,7 @@ class PuntoTransportifyBD {
       Function onCanceled) {
     return snapshot.hasData
         ? _obtenerSelector(
+            context: context,
             antesDelListado: ciudadSeleccionada == null
                 ? const SizedBox()
                 : Row(
@@ -128,11 +134,14 @@ class PuntoTransportifyBD {
                     snapshot, ciudadSeleccionada, onCiudadChanged)
                 : _obtenerListadoPuntosWidget(snapshot, ciudadSeleccionada,
                     puntoSeleccionado, onPuntoChanged),
+            mapaView: MapaViewPuntos(
+              puntoInicial: puntoSeleccionado,
+            ),
             onSelected: onSelected,
+            onSelectionChanged: onPuntoChanged,
             onCanceled: onCanceled,
             itemSeleccionado: puntoSeleccionado)
         : const Center(child: const CircularProgressIndicator());
-    ;
   }
 
   static Widget _obtenerSelectorCiudades(
@@ -144,9 +153,12 @@ class PuntoTransportifyBD {
       String ciudadSeleccionada) {
     return snapshot.hasData
         ? _obtenerSelector(
+            context: context,
             listado: _obtenerListadoCiudades(
                 snapshot, ciudadSeleccionada, onSelectionChanged),
+            mapaView: MapaViewCiudades(ciudadInicial: ciudadSeleccionada),
             onSelected: onSelected,
+            onSelectionChanged: onSelectionChanged,
             onCanceled: onCanceled,
             itemSeleccionado: ciudadSeleccionada)
         : const Center(child: const CircularProgressIndicator());
@@ -157,7 +169,9 @@ class PuntoTransportifyBD {
       Widget antesDelListado = const SizedBox(),
       Widget listado,
       Widget despuesDelListado = const SizedBox(),
+      MapaView mapaView,
       Function(T) onSelected,
+      Function(T) onSelectionChanged,
       Function onCanceled,
       T itemSeleccionado}) {
     return Scaffold(
@@ -183,14 +197,17 @@ class PuntoTransportifyBD {
               IconButton(
                 icon: Icon(Icons.map,
                     color: TransportifyColors.primarySwatch[900]),
-                onPressed: () {
-                  /** 
-                  Navigator.of(context).push(MaterialPageRoute<Null>(
-                              builder: (BuildContext context) {
-                            return MapaView();
-                          }));
-                          */
-                }, 
+                onPressed: mapaView == null
+                    ? null
+                    : () async {
+                        itemSeleccionado = await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return mapaView;
+                            });
+                        if (onSelectionChanged != null)
+                          onSelectionChanged(itemSeleccionado);
+                      },
               ),
               Expanded(
                 child: TransportifyFormButton(
@@ -216,21 +233,20 @@ class PuntoTransportifyBD {
 
   static Widget _obtenerListadoCiudades(AsyncSnapshot<QuerySnapshot> snapshot,
       String ciudadSeleccionada, Function(String) onSelectionChanged) {
-    if (!snapshot.hasData) return const Center(child: const CircularProgressIndicator());
+    if (!snapshot.hasData)
+      return const Center(child: const CircularProgressIndicator());
 
     Set<String> ciudades = snapshot.data.documents
         .map<String>((doc) => doc[atributo_ciudad])
         .toSet();
 
     return ListView.builder(
+      itemCount: ciudades.length,
       itemBuilder: (context, index) {
-        if (index >= 0 && index < ciudades.length) {
-          String ciudad = ciudades.elementAt(index);
-          return _obtenerListViewItemCiudad(
-              ciudad, ciudad == ciudadSeleccionada, onSelectionChanged);
-        } else {
-          return null;
-        }
+        String ciudad = ciudades.elementAt(index);
+        bool seleccionada = ciudad == ciudadSeleccionada;
+        return _obtenerListViewItemCiudad(
+            ciudad, seleccionada, onSelectionChanged);
       },
     );
   }
@@ -246,14 +262,11 @@ class PuntoTransportifyBD {
     );
 
     return ListView.builder(
+      itemCount: puntosDeLaCiudad.length,
       itemBuilder: (context, index) {
-        if (index >= 0 && index < puntosDeLaCiudad.length) {
-          var punto = puntosDeLaCiudad.elementAt(index);
-          return _obtenerListViewItemPunto(
-              punto, onPuntoChanged, puntoSeleccionado);
-        } else {
-          return null;
-        }
+        var punto = puntosDeLaCiudad.elementAt(index);
+        return _obtenerListViewItemPunto(
+            punto, onPuntoChanged, puntoSeleccionado);
       },
     );
   }

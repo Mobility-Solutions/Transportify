@@ -357,11 +357,13 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
   }
 
   void setCameraPosition() {
-    for (var i in ciudadList) {
-      if (i.markerId.value.compareTo(ciudadUsuario) == 0) {
-        setState(() {
-          _initialPosition = CameraPosition(target: i.position, zoom: 8);
-        });
+    if (ciudadUsuario != null) {
+      for (var i in ciudadList) {
+        if (i.markerId.value.compareTo(ciudadUsuario) == 0) {
+          setState(() {
+            _initialPosition = CameraPosition(target: i.position, zoom: 8);
+          });
+        }
       }
     }
   }
