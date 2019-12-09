@@ -125,7 +125,7 @@ class _MapaViewStateCiudades extends _MapaViewState<MapaViewCiudades, String> {
     "Santiago de Compostela": LatLng(42.890528, -8.526583),
   };
 
-  _MapaViewStateCiudades({String ciudadInicial}) : super(latitudInicial: mapCoordenadas[ciudadInicial].latitude, longitudInicial: mapCoordenadas[ciudadInicial].longitude);
+  _MapaViewStateCiudades({String ciudadInicial}) : super(latitudInicial: mapCoordenadas[ciudadInicial]?.latitude, longitudInicial: mapCoordenadas[ciudadInicial]?.longitude);
 
   @override
   Iterable<String> obtenerListado(Iterable<DocumentSnapshot> snapshots) {
