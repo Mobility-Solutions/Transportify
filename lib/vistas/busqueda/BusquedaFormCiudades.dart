@@ -33,15 +33,19 @@ abstract class BusquedaFormCiudadesState<T extends StatefulWidget, R>
   }
 
   //Abre la página del mapa y a la vuelta de la misma, le pasa la ciudad seleccionada al controlador indicado
-  void getCiudadSeleccionada(BuildContext context, bool origenLocation) async {
-    final String ciudadSeleccionada = await Navigator.of(context)
-        .push(MaterialPageRoute<String>(builder: (context) => MapaView(false)));
+  getCiudadSeleccionada(BuildContext context, bool origenLocation) async {
+    final String ciudadSeleccionada =
+        await Navigator.of(context).push<String>(MaterialPageRoute(
+            builder: (context) => MapaViewCiudades(
+                  usuario: usuario,
+                  ciudadInicial: origenLocation ? origen : destino,
+                )));
 
     if (origenLocation) {
       if (ciudadSeleccionada != null) {
         origen = ciudadSeleccionada;
         origenController.text = origen;
-              }
+      }
     } else {
       if (ciudadSeleccionada != null) {
         destino = ciudadSeleccionada;

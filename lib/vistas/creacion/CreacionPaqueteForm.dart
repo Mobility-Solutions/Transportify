@@ -46,7 +46,6 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   DateTime _fechaentrega;
   DateTime _horaEntrega;
 
-  PuntoTransportify returnPunto;
   bool get modificando => widget.miPaquete != null;
 
   final _formKey = GlobalKey<FormState>();
@@ -68,20 +67,24 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   }
 
   getPuntoSeleccionado(BuildContext context, bool origenLocation) async {
-    final puntoSeleccionado = await Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => MapaView(true, widget.usuario)))
-        as PuntoTransportify;
-
-    returnPunto = puntoSeleccionado;
+    PuntoTransportify puntoInicial =
+        origenLocation ? puntos.origen : puntos.destino;
+        
+    final PuntoTransportify puntoSeleccionado =
+        await Navigator.of(context).push<PuntoTransportify>(MaterialPageRoute(
+            builder: (context) => MapaViewPuntos(
+                  usuario: widget.usuario,
+                  puntoInicial: puntoInicial,
+                )));
 
     if (origenLocation) {
-      if (returnPunto != null) {
-        puntos.origen = returnPunto;
+      if (puntoSeleccionado != null) {
+        puntos.origen = puntoSeleccionado;
         origenController.text = puntos.origen?.nombre;
       }
     } else {
-      if (returnPunto != null) {
-        puntos.destino = returnPunto;
+      if (puntoSeleccionado != null) {
+        puntos.destino = puntoSeleccionado;
         destinoController.text = puntos.destino?.direccion;
       }
     }

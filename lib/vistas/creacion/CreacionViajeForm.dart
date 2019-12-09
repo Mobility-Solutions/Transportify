@@ -34,11 +34,8 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
   bool get modificando => widget.viajeModificando != null;
 
-  //final Puntos puntos = Puntos();
-
   // Ciudades origen y destino
   String origen, destino;
-  String returnCiudad;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -52,20 +49,21 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
   //Abre la página del mapa y a la vuelta de la misma, le pasa la ciudad seleccionada al controlador indicado
   getCiudadSeleccionada(BuildContext context, bool origenLocation) async {
-    final ciudadSeleccionada = await Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => MapaView(false, widget.usuario)))
-        as String;
-
-    returnCiudad = ciudadSeleccionada;
+    final String ciudadSeleccionada =
+        await Navigator.of(context).push<String>(MaterialPageRoute(
+            builder: (context) => MapaViewCiudades(
+                  usuario: widget.usuario,
+                  ciudadInicial: origenLocation ? origen : destino,
+                )));
 
     if (origenLocation) {
-      if (returnCiudad != null) {
-        origen = returnCiudad;
+      if (ciudadSeleccionada != null) {
+        origen = ciudadSeleccionada;
         origenController.text = origen;
       }
     } else {
-      if (returnCiudad != null) {
-        destino = returnCiudad;
+      if (ciudadSeleccionada != null) {
+        destino = ciudadSeleccionada;
         destinoController.text = destino;
       }
     }
@@ -104,8 +102,8 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                           maxLines: 1,
                           keyboardType: TextInputType.text,
                           autofocus: false,
-                          style:
-                              TextStyle(color: TransportifyColors.primarySwatch),
+                          style: TextStyle(
+                              color: TransportifyColors.primarySwatch),
                           controller: origenController,
                           decoration:
                               TransportifyMethods.returnTextFormDecoration(
@@ -114,7 +112,8 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                             FocusScope.of(context).requestFocus(FocusNode());
                             String returnCiudad = await CiudadDialog.show(
                                 this.context,
-                                ciudadInicial: origen ?? widget.usuario?.ciudad);
+                                ciudadInicial:
+                                    origen ?? widget.usuario?.ciudad);
 
                             if (returnCiudad != null) {
                               origen = returnCiudad;
@@ -157,10 +156,12 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                         child: TextFormField(
                           maxLines: 1,
                           autofocus: false,
-                          style: TextStyle(color: TransportifyColors.primarySwatch),
+                          style: TextStyle(
+                              color: TransportifyColors.primarySwatch),
                           controller: destinoController,
-                          decoration: TransportifyMethods.returnTextFormDecoration(
-                              "Ciudad de destino"),
+                          decoration:
+                              TransportifyMethods.returnTextFormDecoration(
+                                  "Ciudad de destino"),
                           onTap: () async {
                             FocusScope.of(context).requestFocus(FocusNode());
                             String returnCiudad = await CiudadDialog.show(
