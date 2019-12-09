@@ -22,25 +22,17 @@ class MiActividadBusqueda extends StatefulWidget {
 class _MiActividadBusquedaState extends State<MiActividadBusqueda> {
   bool _loading;
   MultipleCollectionStreamSystem multipleCollection;
-  Map colecciones;
+  Map<Type, String> colecciones = new Map<Type, String>();
 
-  getActividades() async {
+  void getActividades() async {
     setState(() {
       _loading = true;
     });
 
-    switch (widget.estado) {
-      case EstadoActividad.PUBLICADO:
-        colecciones[Paquete] = PaqueteBD.coleccion_paquetes;
-        colecciones[Viaje] = ViajeBD.coleccion_viajes;
-        multipleCollection = Datos.obtenerStreamsCollectionsBD(colecciones);
-        _loading = false;
-        break;
-      case EstadoActividad.ENCURSO:
-        break;
-      case EstadoActividad.FINALIZADO:
-        break;
-    }
+    colecciones[Paquete] = PaqueteBD.coleccion_paquetes;
+    colecciones[Viaje] = ViajeBD.coleccion_viajes;
+    multipleCollection = Datos.obtenerStreamsCollectionsBD(colecciones);
+    _loading = false;
   }
 
   @override
@@ -51,12 +43,15 @@ class _MiActividadBusquedaState extends State<MiActividadBusqueda> {
 
   @override
   Widget build(BuildContext context) {
-    return _loading ?Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor)),)
-    : Column(
-            children: <Widget>[
-              ActividadBD.obtenerListaActividadesCards(multipleCollectionStreamSystem: multipleCollection,usuario: widget.usuario)
-            ],
-          );
+    return _loading
+        ? Center(
+            child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).accentColor)),
+          )
+        : ActividadBD.obtenerListaActividadesCards(
+            multipleCollectionStreamSystem: multipleCollection,
+            usuario: widget.usuario,
+            estado: widget.estado);
   }
-  
 }

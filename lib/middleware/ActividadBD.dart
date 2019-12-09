@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:transportify/middleware/Datos.dart';
 import 'package:transportify/middleware/MultipleCollectionStreamSystem.dart';
 import 'package:transportify/modelos/Usuario.dart';
+import 'package:transportify/modelos/enumerados/EstadoActividad.dart';
 
 import '../modelos/Paquete.dart';
 import '../modelos/Viaje.dart';
@@ -21,44 +22,50 @@ class ActividadBD {
 
   static Widget obtenerListaActividadesCards(
       {Usuario usuario,
-      @required
-          MultipleCollectionStreamSystem multipleCollectionStreamSystem}) {
-    return obtenerStreamBuilderListado(_obtenerListaActividadesBuilder(usuario),
+      @required MultipleCollectionStreamSystem multipleCollectionStreamSystem,
+      EstadoActividad estado}) {
+    return obtenerStreamBuilderListado(
+        _obtenerListaActividadesBuilder(usuario, estado),
         multipleCollectionStreamSystem);
   }
 
   static Function(BuildContext, AsyncSnapshot<Map<Type, QuerySnapshot>>)
-      _obtenerListaActividadesBuilder(Usuario usuario) {
+      _obtenerListaActividadesBuilder(Usuario usuario, EstadoActividad estado) {
     return (BuildContext context,
         AsyncSnapshot<Map<Type, QuerySnapshot>> snapshot) {
-      return _obtenerListaActividadesCards(context, snapshot, usuario);
+      return _obtenerListaActividadesCards(context, snapshot, usuario, estado);
     };
   }
 
-  static Widget _obtenerListaActividadesCards(BuildContext context,
-      AsyncSnapshot<Map<Type, QuerySnapshot>> snapshot, Usuario usuario) {
+  static Widget _obtenerListaActividadesCards(
+      BuildContext context,
+      AsyncSnapshot<Map<Type, QuerySnapshot>> snapshot,
+      Usuario usuario,
+      EstadoActividad estado) {
     if (!snapshot.hasData)
       return const Center(child: const CircularProgressIndicator());
 
     var paquetes = snapshot.data[Paquete].documents
         .map((snapshot) => Paquete.fromSnapshot(snapshot))
-        .where((paquete) =>
-            paquete.viajeAsignado == null &&
-            (usuario == null || paquete.remitente == usuario));
-
+        .where((paquete) => paquete.remitente == usuario);
     var viajes = snapshot.data[Viaje].documents
         .map((snapshot) => Viaje.fromSnapshot(snapshot))
-        .where((viaje) => (usuario == null || viaje.transportista == usuario));
+        .where((viaje) => viaje.transportista == usuario);
+    var resultados = new List.from(paquetes)..addAll(viajes);
 
-    return ListView.builder(itemBuilder: (context, index) {
-      if (index >= 0 && index < viajes.length) {
-        return obtenerCardPaquete(paquetes.elementAt(index));
-      } else if (index >= 0 && index < paquetes.length) {
-        return obtenerCardViaje(viajes.elementAt(index));
-      } else {
-        return null;
-      }
-    });
+    return ListView.builder(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: resultados.length,
+        itemBuilder: (context, index) {
+          final item = resultados.elementAt(index);
+          if (item is Paquete)
+            return obtenerCardPaquete(item);
+          else if (item is Viaje)
+            return obtenerCardViaje(item);
+          else
+            return null;
+        });
   }
 
   static Widget obtenerCardPaquete(Paquete paquete) {
@@ -81,7 +88,6 @@ class ActividadBD {
           ),
           Flexible(
               child: Container(
-            height: 100,
             child: Padding(
               padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
               child: Column(
@@ -95,15 +101,45 @@ class ActividadBD {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Row(children: <Widget>[
-                    Icon(Icons.location_on,color: Colors.grey[500],),
-                    Text(paquete.origen.direccion,style: TextStyle(color: Colors.grey[500],fontStyle:FontStyle.italic),)
-                    ],),
-                  Icon(Icons.keyboard_arrow_down,color: Colors.grey[500]),
-                  Row(children: <Widget>[
-                    Text(paquete.destino.direccion,style: TextStyle(color: Colors.grey[500],fontStyle:FontStyle.italic),),
-                    Icon(Icons.location_on,color: Colors.grey[500],),
-                    ],),
+                  Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.location_on,
+                        color: Colors.grey[500],
+                      ),
+                      Text(
+                        paquete.origen.ciudad ?? "No disponible",
+                        style: TextStyle(
+                            color: Colors.grey[500],
+                            fontStyle: FontStyle.italic),
+                      )
+                    ],
+                  ),
+                  Icon(Icons.keyboard_arrow_down, color: Colors.grey[500]),
+                  Row(
+                    children: <Widget>[
+                      Text(
+                        paquete.destino?.direccion ?? "No disponible",
+                        style: TextStyle(
+                            color: Colors.grey[500],
+                            fontStyle: FontStyle.italic),
+                      ),
+                      Icon(
+                        Icons.location_on,
+                        color: Colors.grey[500],
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Text(
+                        paquete.destino?.direccion ?? "No disponible",
+                        style: TextStyle(
+                            color: Colors.grey[500],
+                            fontStyle: FontStyle.italic),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -139,30 +175,52 @@ class ActividadBD {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text("Viaje a " +
-                      viaje.destino +
-                      " del " +
-                      viaje.fecha.day.toString() +
-                      "/" +
-                      viaje.fecha.month.toString() +
-                      " a las " +
-                      viaje.fecha.hour.toString() +
-                      ":" +
-                      viaje.fecha.minute.toString(),
-                      overflow: TextOverflow.ellipsis,
+                  Text(
+                    "Viaje a " +
+                        viaje.destino +
+                        " del " +
+                        viaje.fecha.day.toString() +
+                        "/" +
+                        viaje.fecha.month.toString() +
+                        " a las " +
+                        viaje.fecha.hour.toString() +
+                        ":" +
+                        viaje.fecha.minute.toString(),
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                    ),),
-                  Row(children: <Widget>[
-                    Icon(Icons.location_on,color: Colors.grey[500],),
-                    Text(viaje.origen,style: TextStyle(color: Colors.grey[500],fontStyle:FontStyle.italic),)
-                    ],),
-                  Icon(Icons.keyboard_arrow_down,color: Colors.grey[500]),
-                  Row(children: <Widget>[
-                    Text(viaje.destino,style: TextStyle(color: Colors.grey[500],fontStyle:FontStyle.italic),),
-                    Icon(Icons.location_on,color: Colors.grey[500],),
-                    ],),
+                    ),
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.location_on,
+                        color: Colors.grey[500],
+                      ),
+                      Text(
+                        viaje.origen,
+                        style: TextStyle(
+                            color: Colors.grey[500],
+                            fontStyle: FontStyle.italic),
+                      )
+                    ],
+                  ),
+                  Icon(Icons.keyboard_arrow_down, color: Colors.grey[500]),
+                  Row(
+                    children: <Widget>[
+                      Text(
+                        viaje.destino,
+                        style: TextStyle(
+                            color: Colors.grey[500],
+                            fontStyle: FontStyle.italic),
+                      ),
+                      Icon(
+                        Icons.location_on,
+                        color: Colors.grey[500],
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
