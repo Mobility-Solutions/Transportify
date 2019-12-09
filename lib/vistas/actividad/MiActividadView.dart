@@ -60,10 +60,10 @@ class _MiActividadViewState extends State<MiActividadView> {
                               Icons.new_releases,
                               color: TransportifyColors.primarySwatch,
                             ),
-                            title: Text("Publicados",
+                            title: Text("PUBLICADOS",
                                 style: TextStyle(
                                     fontWeight: FontWeight.w800,
-                                    fontSize: 16,
+                                    fontSize: 18,
                                     color: TransportifyColors.primarySwatch)),
                           );
                         },
@@ -78,10 +78,10 @@ class _MiActividadViewState extends State<MiActividadView> {
                                 Icons.sync,
                                 color: Colors.pink,
                               ),
-                              title: Text("En Curso",
+                              title: Text("EN CURSO",
                                   style: TextStyle(
                                       fontWeight: FontWeight.w800,
-                                      fontSize: 16,
+                                      fontSize: 18,
                                       color: Colors.pink)));
                         },
                         body: MiActividadBusqueda(
@@ -93,10 +93,10 @@ class _MiActividadViewState extends State<MiActividadView> {
                           return ListTile(
                               leading: Icon(Icons.check_box,
                                   color: Colors.grey[500]),
-                              title: Text("Finalizados",
+                              title: Text("FINALIZADOS/CANCELADOS",
                                   style: TextStyle(
                                       fontWeight: FontWeight.w800,
-                                      fontSize: 16,
+                                      fontSize: 18,
                                       color: Colors.grey[500])));
                         },
                         body: MiActividadBusqueda(
