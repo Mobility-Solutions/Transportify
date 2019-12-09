@@ -60,15 +60,15 @@ class ActividadBD {
         itemBuilder: (context, index) {
           final item = resultados.elementAt(index);
           if (item is Paquete)
-            return obtenerCardPaquete(item);
+            return obtenerCardPaquete(item, estado);
           else if (item is Viaje)
-            return obtenerCardViaje(item);
+            return obtenerCardViaje(item, estado);
           else
             return null;
         });
   }
 
-  static Widget obtenerCardPaquete(Paquete paquete) {
+  static Widget obtenerCardPaquete(Paquete paquete, EstadoActividad estado) {
     return Card(
       color: Colors.grey[100],
       elevation: 5,
@@ -131,13 +131,70 @@ class ActividadBD {
                     ],
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text(
-                        paquete.destino?.direccion ?? "No disponible",
+                      estado == EstadoActividad.FINALIZADO ?
+                      Text("FINALIZADO",style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[800],
+                        ),)
+                      : Text(
+                        paquete.fechaEntrega.difference(DateTime.now()).inDays >
+                                0
+                            ? "faltan " +
+                                paquete.fechaEntrega
+                                    .difference(DateTime.now())
+                                    .inDays
+                                    .toString() +
+                                " días para la entrega"
+                            : "TU PAQUETE HA EXPIRADO",
                         style: TextStyle(
-                            color: Colors.grey[500],
-                            fontStyle: FontStyle.italic),
+                          fontSize: 16,
+                          color: Colors.grey[800],
+                        ),
                       ),
+                      estado == EstadoActividad.PUBLICADO
+                          ? Row(children: <Widget>[
+                              IconButton(
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: Colors.blue,
+                                ),
+                                onPressed: () {
+                                  //TODO llamar a editar
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  //TODO llamar a borrar
+                                },
+                              ),
+                              SizedBox(
+                                width: 10,
+                              )
+                            ])
+                          : estado == EstadoActividad.ENCURSO
+                              ? Row(children: <Widget>[
+                                  IconButton(
+                                    icon: Icon(Icons.remove_red_eye,
+                                        color: Colors.blue),
+                                    onPressed: () {
+                                      //TODO llamar a editar
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.trending_up,
+                                        color: Colors.red),
+                                    onPressed: () {
+                                      //TODO llamar a seguimiento
+                                    },
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  )
+                                ])
+                              : SizedBox(width: 1,)
                     ],
                   ),
                 ],
@@ -149,7 +206,7 @@ class ActividadBD {
     );
   }
 
-  static Widget obtenerCardViaje(Viaje viaje) {
+  static Widget obtenerCardViaje(Viaje viaje, EstadoActividad estado) {
     return Card(
       color: Colors.grey[100],
       elevation: 5,
@@ -169,7 +226,6 @@ class ActividadBD {
           ),
           Flexible(
               child: Container(
-            height: 100,
             child: Padding(
               padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
               child: Column(
@@ -219,6 +275,75 @@ class ActividadBD {
                         Icons.location_on,
                         color: Colors.grey[500],
                       ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      estado == EstadoActividad.FINALIZADO ?
+                      Text("FINALIZADO",style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[800],
+                        ),)
+                      : Text(
+                        viaje.fecha.difference(DateTime.now()).inDays > 0
+                            ? "faltan " +
+                                viaje.fecha
+                                    .difference(DateTime.now())
+                                    .inDays
+                                    .toString() +
+                                " días para la entrega"
+                            : "TU PAQUETE HA EXPIRADO",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      estado == EstadoActividad.PUBLICADO
+                          ? Row(children: <Widget>[
+                              IconButton(
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: Colors.blue,
+                                ),
+                                onPressed: () {
+                                  //TODO llamar a editar
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  //TODO llamar a borrar
+                                },
+                              ),
+                              SizedBox(
+                                width: 10,
+                              )
+                            ])
+                          : estado == EstadoActividad.ENCURSO
+                              ? Row(children: <Widget>[
+                                  IconButton(
+                                    icon: Icon(Icons.remove_red_eye,
+                                        color: Colors.blue),
+                                    onPressed: (){
+                                      //TODO llamar a editar
+                                    },
+                                  ),
+                                  IconButton(icon: Icon(Icons.trending_up, color: Colors.red), 
+                                  onPressed: () {
+                                    //TODO llamar a seguimiento
+                                  },),
+                                  SizedBox(
+                                    width: 10,
+                                  )
+                                ])
+                              : 
+                              SizedBox(
+                                    width: 1,
+                                  )
                     ],
                   ),
                 ],

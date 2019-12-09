@@ -85,7 +85,7 @@ class _MiActividadViewState extends State<MiActividadView> {
                                       color: Colors.pink)));
                         },
                         body: MiActividadBusqueda(
-                            EstadoActividad.PUBLICADO, widget.usuario),
+                            EstadoActividad.ENCURSO, widget.usuario),
                         isExpanded: _categoryExpansionStateMap["En Curso"]),
                     ExpansionPanel(
                         canTapOnHeader: true,
@@ -100,7 +100,7 @@ class _MiActividadViewState extends State<MiActividadView> {
                                       color: Colors.grey[500])));
                         },
                         body: MiActividadBusqueda(
-                            EstadoActividad.PUBLICADO, widget.usuario),
+                            EstadoActividad.FINALIZADO, widget.usuario),
                         isExpanded: _categoryExpansionStateMap["Finalizados"]),
                   ],
                 )
