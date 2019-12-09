@@ -151,7 +151,7 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
 
   Set<Marker> obtenerMarkers();
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -163,67 +163,72 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
           color: TransportifyColors.primarySwatch,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              Stack(
-                children: <Widget>[
-                  Container(
-                    height: MediaQuery.of(context).size.height - 250,
-                    width: MediaQuery.of(context).size.width,
-                    child: GoogleMap(
-                      markers: obtenerMarkers(),
-                      mapType: type,
-                      onMapCreated: _onMapCreated,
-                      initialCameraPosition: _initialPosition,
+              Flexible(
+                flex: 2,
+                fit: FlexFit.tight,
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      child: GoogleMap(
+                        markers: obtenerMarkers(),
+                        mapType: type,
+                        onMapCreated: _onMapCreated,
+                        initialCameraPosition: _initialPosition,
+                      ),
                     ),
-                  ),
-                  Positioned(
-                    top: 30.0,
-                    right: 10.0,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          type = (type == MapType.hybrid)
-                              ? MapType.normal
-                              : MapType.hybrid;
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: TransportifyColors.primarySwatch[900],
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                                color: TransportifyColors.primarySwatch)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.terrain,
-                            color: Colors.white,
-                            size: 30.0,
+                    Positioned(
+                      top: 30.0,
+                      right: 10.0,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            type = (type == MapType.hybrid)
+                                ? MapType.normal
+                                : MapType.hybrid;
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: TransportifyColors.primarySwatch[900],
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: TransportifyColors.primarySwatch)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.terrain,
+                              color: Colors.white,
+                              size: 30.0,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              SizedBox(height: 5.0),
-              Row(
-                children: <Widget>[
-                  SizedBox(width: 15.0),
-                  Text(widget.mensajeSeleccion,
-                      style: TextStyle(color: Colors.white, fontSize: 25)),
-                ],
-              ),
-              SizedBox(height: 5.0),
-              Row(
-                children: <Widget>[
-                  SizedBox(width: 15.0),
-                  Text(
-                    '$lugarSeleccionado',
-                    style: TextStyle(color: Colors.white, fontSize: 15),
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(widget.mensajeSeleccion,
+                        style: TextStyle(color: Colors.white, fontSize: 25)),
+                    SizedBox(height: 5.0),
+                    Wrap(
+                      direction: Axis.horizontal,
+                      children: <Widget>[
+                        Text(
+                          '$lugarSeleccionado',
+                          style: TextStyle(color: Colors.white, fontSize: 15),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
