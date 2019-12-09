@@ -73,6 +73,7 @@ class _MapaViewStatePuntos
 
   _MapaViewStatePuntos({PuntoTransportify puntoInicial})
       : super(
+            itemInicial: puntoInicial,
             latitudInicial: puntoInicial?.latitud,
             longitudInicial: puntoInicial?.longitud);
 
@@ -137,6 +138,7 @@ class _MapaViewStateCiudades extends _MapaViewState<MapaViewCiudades, String> {
 
   _MapaViewStateCiudades({String ciudadInicial})
       : super(
+            itemInicial: ciudadInicial,
             latitudInicial: mapCoordenadas[ciudadInicial]?.latitude,
             longitudInicial: mapCoordenadas[ciudadInicial]?.longitude);
 
@@ -176,8 +178,9 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
 
   K itemSeleccionado;
 
-  _MapaViewState({double latitudInicial, double longitudInicial})
-      : _initialPosition = CameraPosition(
+  _MapaViewState({K itemInicial, double latitudInicial, double longitudInicial})
+      : itemSeleccionado = itemInicial,
+        _initialPosition = CameraPosition(
             target:
                 LatLng(latitudInicial ?? 40.416775, longitudInicial ?? -2.8),
             zoom: latitudInicial != null && longitudInicial != null ? 8 : 5);
