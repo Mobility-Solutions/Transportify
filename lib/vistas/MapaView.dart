@@ -223,7 +223,9 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
                       children: <Widget>[
                         Text(
                           '$lugarSeleccionado',
+                          maxLines: 6,
                           style: TextStyle(color: Colors.white, fontSize: 15),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
