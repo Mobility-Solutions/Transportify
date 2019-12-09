@@ -72,7 +72,10 @@ class _MapaViewStatePuntos
   @override
   PuntoTransportify get seleccion => puntoSeleccionado;
 
-  _MapaViewStatePuntos({PuntoTransportify puntoInicial});
+  _MapaViewStatePuntos({PuntoTransportify puntoInicial})
+      : super(
+            latitudInicial: puntoInicial?.latitud,
+            longitudInicial: puntoInicial?.longitud);
 
   @override
   Set<Marker> obtenerMarkers() => Set<Marker>.of(puntosList);
@@ -113,6 +116,7 @@ class _MapaViewStateCiudades extends _MapaViewState<MapaViewCiudades, String> {
   @override
   String get seleccion => lugarSeleccionado;
 
+  // TODO: Añadir super() con coordenadas ciudad inicial
   _MapaViewStateCiudades({String ciudadInicial});
 
   @override
@@ -120,10 +124,8 @@ class _MapaViewStateCiudades extends _MapaViewState<MapaViewCiudades, String> {
 }
 
 abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
-  CameraPosition _initialPosition =
-      CameraPosition(target: LatLng(40.416775, -2.8), zoom: 5);
+  CameraPosition _initialPosition;
   Completer<GoogleMapController> _controller = Completer();
-  LatLng userLocation;
   MapType type;
 
   List<Marker> ciudadList = [];
@@ -131,6 +133,13 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
 
   K get seleccion;
   String get ciudadUsuario => widget.usuario?.ciudad;
+
+  // TODO: Añadir coordenadas ciudad usuario si no se indican
+  _MapaViewState({double latitudInicial, double longitudInicial})
+      : _initialPosition = CameraPosition(
+            target:
+                LatLng(latitudInicial ?? 40.416775, longitudInicial ?? -2.8),
+            zoom: latitudInicial != null && longitudInicial != null ? 8 : 5);
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
@@ -142,7 +151,7 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
 
   Set<Marker> obtenerMarkers();
 
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -273,7 +282,6 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
     initCiudades();
 
     type = MapType.normal;
-    setCameraPosition();
   }
 
   void initCiudades() {
@@ -354,17 +362,5 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
             });
           }),
     );
-  }
-
-  void setCameraPosition() {
-    if (ciudadUsuario != null) {
-      for (var i in ciudadList) {
-        if (i.markerId.value.compareTo(ciudadUsuario) == 0) {
-          setState(() {
-            _initialPosition = CameraPosition(target: i.position, zoom: 8);
-          });
-        }
-      }
-    }
   }
 }

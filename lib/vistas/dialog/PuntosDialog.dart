@@ -48,6 +48,7 @@ class _PuntosDialogState extends State<PuntosDialog> {
                 onPuntoChanged: (nuevoPunto) {
                   setState(() {
                     this._puntoSeleccionado = nuevoPunto;
+                    this._ciudadSeleccionada = nuevoPunto?.ciudad;
                   });
                 },
                 onCiudadChanged: (nuevaCiudad) {
