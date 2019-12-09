@@ -14,6 +14,8 @@ class PuntoTransportify extends ComponenteBD {
           : direccion
       : apodo;
 
+  String get nombreCompleto => "${this.apodo} (${this.direccion})";
+
   PuntoTransportify.fromReference(DocumentReference reference, {bool init = true})
       : super.fromReference(reference, init: init);
 

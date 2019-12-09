@@ -278,7 +278,7 @@ class PuntoTransportifyBD {
     PuntoTransportify punto = PuntoTransportify.fromSnapshot(snapshot);
     return Datos.obtenerListViewItem(
       item: punto,
-      displayName: punto.nombre,
+      displayName: punto.nombreCompleto,
       onSelected: onSelected,
       selected: punto == puntoSeleccionado,
     );

@@ -78,8 +78,8 @@ class _MapaViewStatePuntos
   Set<Marker> obtenerMarkers() => Set<Marker>.of(puntosList);
 
   @override
-  void initState() async {
-    await _initPuntosTransportify();
+  void initState() {
+    _initPuntosTransportify();
     super.initState();
   }
 
@@ -88,20 +88,20 @@ class _MapaViewStatePuntos
         await PuntoTransportifyBD.obtenerPuntos();
     listaPuntosTransportify = puntos.toList();
 
-    for (var i in listaPuntosTransportify) {
-      if (i.direccion != null &&
-          i.apodo != null &&
-          i.ciudad != null &&
-          i.latitud != null &&
-          i.longitud != null) {
+    for (var punto in listaPuntosTransportify) {
+      if (punto.direccion != null &&
+          punto.apodo != null &&
+          punto.ciudad != null &&
+          punto.latitud != null &&
+          punto.longitud != null) {
         puntosList.add(Marker(
-            markerId: MarkerId(i.direccion),
-            position: new LatLng(i.latitud, i.longitud),
+            markerId: MarkerId(punto.direccion),
+            position: new LatLng(punto.latitud, punto.longitud),
             draggable: false,
             onTap: () {
               setState(() {
-                lugarSeleccionado = i.direccion;
-                puntoSeleccionado = i;
+                lugarSeleccionado = punto.nombreCompleto;
+                puntoSeleccionado = punto;
               });
             }));
       }
