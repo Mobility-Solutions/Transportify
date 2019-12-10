@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:transportify/middleware/ComponenteBD.dart';
 import 'package:transportify/middleware/PaqueteBD.dart';
+import 'package:transportify/modelos/Incidencia.dart';
 
 import 'PuntoTransportify.dart';
 import 'Usuario.dart';
@@ -9,15 +10,13 @@ import 'enumerados/EstadoPaquete.dart';
 
 class Paquete extends ComponenteBD {
   String nombre;
-  double largo, ancho, alto;
-  double peso;
+  double largo, ancho, alto, peso, precio;
   bool fragil;
-  PuntoTransportify destino;
-  PuntoTransportify origen;
+  PuntoTransportify origen, destino;
   Usuario remitente;
-  double precio;
-  DateTime fechaEntrega;
+  DateTime fechaCreacion, fechaEntrega;
   int diasMargen;
+  List<Incidencia> incidencias;
 
   EstadoPaquete estado;
 
@@ -42,7 +41,8 @@ class Paquete extends ComponenteBD {
       this.precio,
       this.fechaEntrega,
       this.diasMargen,
-
+      this.fechaCreacion,
+      this.incidencias,
       this.estado
   })  : super(coleccion: PaqueteBD.coleccion_paquetes);
 
@@ -64,10 +64,12 @@ class Paquete extends ComponenteBD {
     this.fragil = PaqueteBD.obtenerFragil(snapshot);
     this.precio = PaqueteBD.obtenerPrecio(snapshot);
     this.fechaEntrega = PaqueteBD.obtenerFechaEntrega(snapshot).toDate();
+    this.fechaCreacion = PaqueteBD.obtenerFechaCreacion(snapshot).toDate();
     this.destino = PuntoTransportify.fromReference(PaqueteBD.obtenerDestino(snapshot));
     this.origen = PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
     this.remitente = Usuario.fromReference(PaqueteBD.obtenerRemitente(snapshot));
     this.diasMargen = PaqueteBD.obtenerDiasMargen(snapshot);
+    this.incidencias = PaqueteBD.obtenerIncidencias(snapshot);
     this.estado = PaqueteBD.obtenerEstado(snapshot);
     
     var viajeBD = PaqueteBD.obtenerViaje(snapshot);
@@ -98,6 +100,8 @@ class Paquete extends ComponenteBD {
     map[PaqueteBD.atributo_peso] = this.peso;
     map[PaqueteBD.atributo_precio] = this.precio;
     map[PaqueteBD.atributo_fecha_entrega] = this.fechaEntrega;
+    map[PaqueteBD.atributo_fecha_creacion] = this.fechaCreacion;
+    map[PaqueteBD.atributo_incidencias] = this.incidencias;
     map[PaqueteBD.atributo_dias_margen] = this.diasMargen;
     map[PaqueteBD.atributo_estado] = this.estado?.index;
     map[PaqueteBD.atributo_viaje_asignado] = this.viajeAsignado?.reference;

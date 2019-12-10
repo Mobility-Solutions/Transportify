@@ -481,6 +481,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
       origen: puntos.origen,
       destino: puntos.destino,
       fechaEntrega: fechaPaqueteElegida,
+      fechaCreacion: DateTime.now(),
       diasMargen: diasMargenFinal,
       remitente: await UsuarioBD.obtenerUsuarioActual(),
     );
