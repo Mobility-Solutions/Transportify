@@ -8,6 +8,7 @@ import 'package:transportify/modelos/enumerados/EstadoActividad.dart';
 import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
+import 'package:transportify/vistas/seguimiento/IncidenciasView.dart';
 
 import '../modelos/Paquete.dart';
 import '../modelos/Viaje.dart';
@@ -59,12 +60,12 @@ class ActividadBD {
     if (estado == EstadoActividad.PUBLICADO) {
       paquetes = paquetes.where((paquete) =>
           (paquete.remitente == usuario) &&
-          paquete.estado == EstadoPaquete.por_recoger);
+          paquete.viajeAsignado == null);
       viajes = viajes.where((viaje) => viaje.transportista == usuario);
     } else if (estado == EstadoActividad.ENCURSO) {
       paquetes = paquetes.where((paquete) =>
           (paquete.remitente == usuario) &&
-          paquete.estado == EstadoPaquete.en_envio);
+          paquete.viajeAsignado != null);
       viajes = [];
     } else if (estado == EstadoActividad.FINALIZADO) {
       paquetes = paquetes.where((paquete) =>
@@ -84,7 +85,7 @@ class ActividadBD {
         itemBuilder: (context, index) {
           final item = resultados.elementAt(index);
           if (item is Paquete)
-            return obtenerCardPaquete(item, estado, context);
+            return obtenerCardPaquete(item, estado, context,usuario);
           else if (item is Viaje)
             return obtenerCardViaje(item, estado, context);
           else
@@ -93,7 +94,7 @@ class ActividadBD {
   }
 
   static Widget obtenerCardPaquete(
-      Paquete paquete, EstadoActividad estado, BuildContext context) {
+      Paquete paquete, EstadoActividad estado, BuildContext context,Usuario usuario) {
     return Card(
       color: Colors.grey[100],
       elevation: 5,
@@ -234,7 +235,10 @@ class ActividadBD {
                                     icon: Icon(Icons.trending_up,
                                         color: Colors.purple),
                                     onPressed: () {
-                                      //TODO llamar a seguimiento
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute<Null>(
+                                              builder: (BuildContext context) =>
+                                                  IncidenciasView(usuario,paquete)));
                                     },
                                   ),
                                   SizedBox(
@@ -387,31 +391,6 @@ class ActividadBD {
                                 width: 10,
                               )
                             ])
-                          : estado == EstadoActividad.ENCURSO
-                              ? Row(children: <Widget>[
-                                  IconButton(
-                                    icon: Icon(Icons.remove_red_eye,
-                                        color: Colors.blue),
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute<Null>(
-                                              builder: (BuildContext context) =>
-                                                  CreacionViajeForm(
-                                                    viajeModificando: viaje,
-                                                  )));
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.trending_up,
-                                        color: Colors.purple),
-                                    onPressed: () {
-                                      //TODO llamar a seguimiento
-                                    },
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  )
-                                ])
                               : SizedBox(
                                   width: 1,
                                 )
