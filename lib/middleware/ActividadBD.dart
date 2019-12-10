@@ -184,7 +184,7 @@ class ActividadBD {
                                 icon: Icon(Icons.delete, color: Colors.red),
                                 onPressed: () {
                                   _asyncConfirmDialog(context, "¿Desea borrar el paquete?").then((onValue){
-                                    if(onValue == ConfirmAction.ACCEPT){} Datos.eliminarTodosLosComponentes([paquete]);
+                                    if(onValue == ConfirmAction.ACCEPT){Datos.eliminarTodosLosComponentes([paquete]);}
                                   });
                                 },
                               ),
