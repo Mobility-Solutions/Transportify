@@ -21,7 +21,6 @@ import 'package:transportify/vistas/seguimiento/IncidenciasView.dart';
 import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaViajeForm.dart';
 import 'package:transportify/vistas/dialog/ViajeDialog.dart';
-import 'package:transportify/vistas/seguimiento/IncidenciasView.dart';
 
 import 'InicioPart.dart';
 
