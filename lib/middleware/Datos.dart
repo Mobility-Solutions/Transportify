@@ -85,11 +85,16 @@ class Datos {
     return Container(
       color: selected ? TransportifyColors.primarySwatch : null,
       child: ListTile(
-        title: Text(
-          displayName,
-          style: TextStyle(
-            color: selected ? Colors.white : Colors.black,
-          ),
+        title: Wrap(
+          direction: Axis.horizontal,
+          children: <Widget>[
+            Text(
+              displayName,
+              style: TextStyle(
+                color: selected ? Colors.white : Colors.black,
+              ),
+            ),
+          ],
         ),
         onTap: onTap,
       ),

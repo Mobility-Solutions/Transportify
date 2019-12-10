@@ -19,6 +19,7 @@ class BusquedaPaqueteForm extends StatefulWidget {
 
   @override
   _BusquedaPaqueteFormState createState() => _BusquedaPaqueteFormState(usuario: usuario);
+
 }
 
 enum ConfirmAction { ACCEPT, CANCEL }

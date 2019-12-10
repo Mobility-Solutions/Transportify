@@ -27,7 +27,7 @@ import 'InicioPart.dart';
 
 class MyHomePage extends StatefulWidget implements WidgetInicial {
   final Usuario usuario;
-  final VoidCallback logoutCallback;
+  final Function(Usuario) logoutCallback;
 
   MyHomePage({Key key, this.usuario, this.logoutCallback}) : super(key: key);
 
@@ -38,7 +38,7 @@ class MyHomePage extends StatefulWidget implements WidgetInicial {
 
 class _MyHomePageState extends State<MyHomePage> {
   final Usuario usuario;
-  final VoidCallback logoutCallback;
+  final Function(Usuario) logoutCallback;
 
   _MyHomePageState({this.usuario, this.logoutCallback});
 
@@ -61,7 +61,7 @@ abstract class UserDependantStatelessWidget extends StatelessWidget {
 }
 
 class TopPart extends UserDependantStatelessWidget {
-  final VoidCallback logoutCallback;
+  final Function(Usuario) logoutCallback;
 
   TopPart({Usuario usuario, this.logoutCallback}) : super(usuario);
 
@@ -86,7 +86,7 @@ class TopPart extends UserDependantStatelessWidget {
                         Icons.exit_to_app,
                         color: TransportifyColors.appBackground,
                       ),
-                      onPressed: logoutCallback,
+                      onPressed: () => logoutCallback(usuario),
                     ),
                   ),
                   IconButton(
@@ -258,7 +258,7 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
           children: [
             usuario == null
                 ? const Text(
-                    "-",
+                    '-',
                     style: TextStyle(
                         fontSize: 18.0,
                         fontStyle: FontStyle.italic,
@@ -267,9 +267,9 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
                 : Datos.obtenerStreamBuilderDocumentBDFromReference(
                     usuario.reference, (context, snapshot) {
                     if (!snapshot.hasData) return const Text("Cargando...");
-                    usuario.loadFromSnapshot(snapshot.data);
+                    if (snapshot.data.exists) usuario.loadFromSnapshot(snapshot.data);
                     return Text(
-                      usuario.paquetesCreados.toString(),
+                      usuario?.paquetesCreados?.toString() ?? '-',
                       style: TextStyle(
                           fontSize: 18.0,
                           fontStyle: FontStyle.italic,
@@ -329,7 +329,7 @@ class CrearViajePart extends UserDependantStatelessWidget {
           children: [
             usuario == null
                 ? const Text(
-                    "-",
+                    '-',
                     style: TextStyle(
                         fontSize: 20.0,
                         fontStyle: FontStyle.italic,
@@ -338,10 +338,9 @@ class CrearViajePart extends UserDependantStatelessWidget {
                 : Datos.obtenerStreamBuilderDocumentBDFromReference(
                     usuario.reference, (context, snapshot) {
                     if (!snapshot.hasData) return const Text("Cargando...");
-
-                    usuario.loadFromSnapshot(snapshot.data);
+                    if (snapshot.data.exists) usuario.loadFromSnapshot(snapshot.data);
                     return Text(
-                      usuario.viajesCreados.toString(),
+                      usuario?.viajesCreados?.toString() ?? '-',
                       style: TextStyle(
                           fontSize: 18.0,
                           fontStyle: FontStyle.italic,

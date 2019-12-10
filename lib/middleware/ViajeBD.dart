@@ -33,16 +33,19 @@ class ViajeBD {
   }
 
   static Widget obtenerListadoViajesWidget(
-      {Function(Viaje) onSelected, bool Function(Viaje) filtro, Usuario usuario}) {
+      {Function(Viaje) onSelected,
+      bool Function(Viaje) filtro,
+      Usuario usuario}) {
     return obtenerStreamBuilderListado(
         _obtenerListadoViajesBuilder(onSelected, filtro, usuario));
   }
 
   static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
-      _obtenerListadoViajesBuilder(
-          Function(Viaje) onSelected, bool Function(Viaje) filtro, Usuario usuario) {
+      _obtenerListadoViajesBuilder(Function(Viaje) onSelected,
+          bool Function(Viaje) filtro, Usuario usuario) {
     return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      return _obtenerListadoViajesWidget(context, snapshot, onSelected, filtro, usuario);
+      return _obtenerListadoViajesWidget(
+          context, snapshot, onSelected, filtro, usuario);
     };
   }
 
@@ -50,21 +53,22 @@ class ViajeBD {
       BuildContext context,
       AsyncSnapshot<QuerySnapshot> snapshot,
       Function(Viaje) onSelected,
-      bool Function(Viaje) filtro, Usuario usuario) {
-    if (!snapshot.hasData) return const Center(child: const CircularProgressIndicator());
+      bool Function(Viaje) filtro,
+      Usuario usuario) {
+    if (!snapshot.hasData)
+      return const Center(child: const CircularProgressIndicator());
 
     var viajes = snapshot.data.documents
         .map((snapshot) => Viaje.fromSnapshot(snapshot))
-        .where((viaje) => (usuario == null || viaje.transportista == usuario) && (filtro == null || filtro(viaje)));
+        .where((viaje) =>
+            (usuario == null || viaje.transportista == usuario) &&
+            (filtro == null || filtro(viaje)));
 
     return ListView.builder(
+      itemCount: viajes.length,
       itemBuilder: (context, index) {
-        if (index >= 0 && index < viajes.length) {
-          Viaje viaje = viajes.elementAt(index);
-          return _obtenerListViewItemViaje(viaje, onSelected);
-        } else {
-          return null;
-        }
+        Viaje viaje = viajes.elementAt(index);
+        return _obtenerListViewItemViaje(viaje, onSelected);
       },
     );
   }
@@ -84,8 +88,7 @@ class ViajeBD {
             .format(viaje.fecha);
 
     return ListTile(
-      title: Text(
-          "$fechaEntregaConFormato ($ciudadOrigen -> $ciudadDestino)"),
+      title: Text("$fechaEntregaConFormato ($ciudadOrigen -> $ciudadDestino)"),
       onTap: onTap,
     );
   }
