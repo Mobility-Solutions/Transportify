@@ -63,8 +63,8 @@ class Paquete extends ComponenteBD {
     this.peso = PaqueteBD.obtenerPeso(snapshot);
     this.fragil = PaqueteBD.obtenerFragil(snapshot);
     this.precio = PaqueteBD.obtenerPrecio(snapshot);
-    this.fechaEntrega = PaqueteBD.obtenerFechaEntrega(snapshot).toDate();
-    this.fechaCreacion = PaqueteBD.obtenerFechaCreacion(snapshot).toDate();
+    this.fechaEntrega = PaqueteBD.obtenerFechaEntrega(snapshot)?.toDate();
+    this.fechaCreacion = PaqueteBD.obtenerFechaCreacion(snapshot)?.toDate();
     this.destino = PuntoTransportify.fromReference(PaqueteBD.obtenerDestino(snapshot));
     this.origen = PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
     this.remitente = Usuario.fromReference(PaqueteBD.obtenerRemitente(snapshot));
