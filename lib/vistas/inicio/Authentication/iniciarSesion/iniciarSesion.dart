@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:transportify/util/style.dart';
-import 'package:transportify/vistas/inicio/Authentication/registrarse/registrarse.dart';
+import 'package:transportify/vistas/inicio/Authentication/registrarse/Registrarse.dart';
 import 'package:transportify/vistas/inicio/WidgetInicial.dart';
 import 'EmailAndPassword.dart';
 

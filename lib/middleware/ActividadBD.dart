@@ -5,13 +5,18 @@ import 'package:transportify/middleware/Datos.dart';
 import 'package:transportify/middleware/MultipleCollectionStreamSystem.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/enumerados/EstadoActividad.dart';
+import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
+import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
 
 import '../modelos/Paquete.dart';
 import '../modelos/Viaje.dart';
 
+enum ConfirmAction { ACCEPT, CANCEL }
+
 class ActividadBD {
   static const String coleccion_viajes = 'viajes';
   static const String coleccion_paquetes = 'paquetes';
+  
 
   static StreamBuilder<Map<Type, QuerySnapshot>> obtenerStreamBuilderListado(
           Function(BuildContext, AsyncSnapshot<Map<Type, QuerySnapshot>>)
@@ -60,15 +65,16 @@ class ActividadBD {
         itemBuilder: (context, index) {
           final item = resultados.elementAt(index);
           if (item is Paquete)
-            return obtenerCardPaquete(item, estado);
+            return obtenerCardPaquete(item, estado, context);
           else if (item is Viaje)
-            return obtenerCardViaje(item, estado);
+            return obtenerCardViaje(item, estado, context);
           else
             return null;
         });
   }
 
-  static Widget obtenerCardPaquete(Paquete paquete, EstadoActividad estado) {
+  static Widget obtenerCardPaquete(
+      Paquete paquete, EstadoActividad estado, BuildContext context) {
     return Card(
       color: Colors.grey[100],
       elevation: 5,
@@ -133,26 +139,31 @@ class ActividadBD {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      estado == EstadoActividad.FINALIZADO ?
-                      Text("FINALIZADO",style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[800],
-                        ),)
-                      : Text(
-                        paquete.fechaEntrega.difference(DateTime.now()).inDays >
-                                0
-                            ? "faltan " +
-                                paquete.fechaEntrega
-                                    .difference(DateTime.now())
-                                    .inDays
-                                    .toString() +
-                                " días para la entrega"
-                            : "TU PAQUETE HA EXPIRADO",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[800],
-                        ),
-                      ),
+                      estado == EstadoActividad.FINALIZADO
+                          ? Text(
+                              "FINALIZADO",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[800],
+                              ),
+                            )
+                          : Text(
+                              paquete.fechaEntrega
+                                          .difference(DateTime.now())
+                                          .inDays >
+                                      0
+                                  ? "faltan " +
+                                      paquete.fechaEntrega
+                                          .difference(DateTime.now())
+                                          .inDays
+                                          .toString() +
+                                      " días para la entrega"
+                                  : "TU PAQUETE HA EXPIRADO",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[800],
+                              ),
+                            ),
                       estado == EstadoActividad.PUBLICADO
                           ? Row(children: <Widget>[
                               IconButton(
@@ -161,13 +172,20 @@ class ActividadBD {
                                   color: Colors.blue,
                                 ),
                                 onPressed: () {
-                                  //TODO llamar a editar
+                                  Navigator.of(context).push(
+                                      MaterialPageRoute<Null>(
+                                          builder: (BuildContext context) =>
+                                              CreacionPaqueteForm(
+                                                miPaquete: paquete,
+                                              )));
                                 },
                               ),
                               IconButton(
                                 icon: Icon(Icons.delete, color: Colors.red),
                                 onPressed: () {
-                                  //TODO llamar a borrar
+                                  _asyncConfirmDialog(context, "¿Desea borrar el paquete?").then((onValue){
+                                    if(onValue == ConfirmAction.ACCEPT){} Datos.eliminarTodosLosComponentes([paquete]);
+                                  });
                                 },
                               ),
                               SizedBox(
@@ -180,12 +198,17 @@ class ActividadBD {
                                     icon: Icon(Icons.remove_red_eye,
                                         color: Colors.blue),
                                     onPressed: () {
-                                      //TODO llamar a editar
+                                      Navigator.of(context).push(
+                                      MaterialPageRoute<Null>(
+                                          builder: (BuildContext context) =>
+                                              CreacionPaqueteForm(
+                                                miPaquete: paquete,
+                                              )));
                                     },
                                   ),
                                   IconButton(
                                     icon: Icon(Icons.trending_up,
-                                        color: Colors.red),
+                                        color: Colors.purple),
                                     onPressed: () {
                                       //TODO llamar a seguimiento
                                     },
@@ -194,7 +217,9 @@ class ActividadBD {
                                     width: 10,
                                   )
                                 ])
-                              : SizedBox(width: 1,)
+                              : SizedBox(
+                                  width: 1,
+                                )
                     ],
                   ),
                 ],
@@ -206,7 +231,8 @@ class ActividadBD {
     );
   }
 
-  static Widget obtenerCardViaje(Viaje viaje, EstadoActividad estado) {
+  static Widget obtenerCardViaje(
+      Viaje viaje, EstadoActividad estado, BuildContext context) {
     return Card(
       color: Colors.grey[100],
       elevation: 5,
@@ -283,25 +309,28 @@ class ActividadBD {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      estado == EstadoActividad.FINALIZADO ?
-                      Text("FINALIZADO",style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[800],
-                        ),)
-                      : Text(
-                        viaje.fecha.difference(DateTime.now()).inDays > 0
-                            ? "faltan " +
-                                viaje.fecha
-                                    .difference(DateTime.now())
-                                    .inDays
-                                    .toString() +
-                                " días para la entrega"
-                            : "TU PAQUETE HA EXPIRADO",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[800],
-                        ),
-                      ),
+                      estado == EstadoActividad.FINALIZADO
+                          ? Text(
+                              "FINALIZADO",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[800],
+                              ),
+                            )
+                          : Text(
+                              viaje.fecha.difference(DateTime.now()).inDays > 0
+                                  ? "faltan " +
+                                      viaje.fecha
+                                          .difference(DateTime.now())
+                                          .inDays
+                                          .toString() +
+                                      " días para la entrega"
+                                  : "TU VIAJE HA EXPIRADO",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[800],
+                              ),
+                            ),
                       estado == EstadoActividad.PUBLICADO
                           ? Row(children: <Widget>[
                               IconButton(
@@ -310,13 +339,20 @@ class ActividadBD {
                                   color: Colors.blue,
                                 ),
                                 onPressed: () {
-                                  //TODO llamar a editar
+                                  Navigator.of(context).push(
+                                      MaterialPageRoute<Null>(
+                                          builder: (BuildContext context) =>
+                                              CreacionViajeForm(
+                                                viajeModificando: viaje,
+                                              )));
                                 },
                               ),
                               IconButton(
                                 icon: Icon(Icons.delete, color: Colors.red),
                                 onPressed: () {
-                                  //TODO llamar a borrar
+                                  _asyncConfirmDialog(context, "¿Desea borrar el viaje?").then((onValue){
+                                    if(onValue == ConfirmAction.ACCEPT) Datos.eliminarTodosLosComponentes([viaje]);
+                                  });
                                 },
                               ),
                               SizedBox(
@@ -328,22 +364,29 @@ class ActividadBD {
                                   IconButton(
                                     icon: Icon(Icons.remove_red_eye,
                                         color: Colors.blue),
-                                    onPressed: (){
-                                      //TODO llamar a editar
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                      MaterialPageRoute<Null>(
+                                          builder: (BuildContext context) =>
+                                              CreacionViajeForm(
+                                                viajeModificando: viaje,
+                                              )));
                                     },
                                   ),
-                                  IconButton(icon: Icon(Icons.trending_up, color: Colors.red), 
-                                  onPressed: () {
-                                    //TODO llamar a seguimiento
-                                  },),
+                                  IconButton(
+                                    icon: Icon(Icons.trending_up,
+                                        color: Colors.purple),
+                                    onPressed: () {
+                                      //TODO llamar a seguimiento
+                                    },
+                                  ),
                                   SizedBox(
                                     width: 10,
                                   )
                                 ])
-                              : 
-                              SizedBox(
-                                    width: 1,
-                                  )
+                              : SizedBox(
+                                  width: 1,
+                                )
                     ],
                   ),
                 ],
@@ -352,6 +395,32 @@ class ActividadBD {
           ))
         ],
       ),
+    );
+  }
+  static Future<ConfirmAction> _asyncConfirmDialog(
+      BuildContext context, String title) async {
+    return showDialog<ConfirmAction>(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          actions: <Widget>[
+            FlatButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop(ConfirmAction.CANCEL);
+              },
+            ),
+            FlatButton(
+              child: const Text('Aceptar'),
+              onPressed: () {
+                Navigator.of(context).pop(ConfirmAction.ACCEPT);
+              },
+            )
+          ],
+        );
+      },
     );
   }
 }
