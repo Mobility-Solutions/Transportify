@@ -42,6 +42,12 @@ class _MiActividadBusquedaState extends State<MiActividadBusqueda> {
   }
 
   @override
+  void dispose(){
+    multipleCollection.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return _loading
         ? Center(

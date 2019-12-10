@@ -58,21 +58,21 @@ class ActividadBD {
         .map((snapshot) => Viaje.fromSnapshot(snapshot));
 
     if (estado == EstadoActividad.PUBLICADO) {
-      paquetes = paquetes.where((paquete) =>
-          (paquete.remitente == usuario) &&
-          paquete.viajeAsignado == null);
+      paquetes = paquetes?.where((paquete) =>
+          (paquete?.remitente == usuario) &&
+          paquete?.viajeAsignado == null);
       viajes = viajes.where((viaje) => viaje.transportista == usuario);
     } else if (estado == EstadoActividad.ENCURSO) {
-      paquetes = paquetes.where((paquete) =>
-          (paquete.remitente == usuario) &&
-          paquete.viajeAsignado != null);
+      paquetes = paquetes?.where((paquete) =>
+          (paquete?.remitente == usuario) &&
+          paquete?.viajeAsignado != null);
       viajes = [];
     } else if (estado == EstadoActividad.FINALIZADO) {
-      paquetes = paquetes.where((paquete) =>
-          (paquete.remitente == usuario) &&
-          paquete.estado == EstadoPaquete.entregado);
-      viajes = viajes.where((viaje) =>
-          (viaje.transportista == viaje) &&
+      paquetes = paquetes?.where((paquete) =>
+          (paquete?.remitente == usuario) &&
+          paquete?.estado == EstadoPaquete.entregado);
+      viajes = viajes?.where((viaje) =>
+          (viaje?.transportista == viaje) &&
           viaje.fecha.difference(DateTime.now()).inDays < 0);
     }
 
@@ -84,12 +84,14 @@ class ActividadBD {
         itemCount: resultados.length,
         itemBuilder: (context, index) {
           final item = resultados.elementAt(index);
-          if (item is Paquete)
-            return obtenerCardPaquete(item, estado, context,usuario);
-          else if (item is Viaje)
-            return obtenerCardViaje(item, estado, context);
-          else
-            return null;
+          return FutureBuilder(
+            future: item.waitForInit(),
+            builder:(context,_) {
+              if (item is Paquete) return obtenerCardPaquete(item, estado, context,usuario);
+          else if (item is Viaje) return obtenerCardViaje(item, estado, context);
+          else return null;
+            }
+          );
         });
   }
 
@@ -134,7 +136,7 @@ class ActividadBD {
                         color: Colors.grey[500],
                       ),
                       Text(
-                        paquete.origen.ciudad ?? "No disponible",
+                        paquete.origen.direccion ?? "No disponible",
                         style: TextStyle(
                             color: Colors.grey[500],
                             fontStyle: FontStyle.italic),
@@ -145,7 +147,7 @@ class ActividadBD {
                   Row(
                     children: <Widget>[
                       Text(
-                        paquete.destino?.direccion ?? "No disponible",
+                        paquete.destino.direccion ?? "No disponible",
                         style: TextStyle(
                             color: Colors.grey[500],
                             fontStyle: FontStyle.italic),
