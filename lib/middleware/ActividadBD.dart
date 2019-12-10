@@ -5,6 +5,7 @@ import 'package:transportify/middleware/Datos.dart';
 import 'package:transportify/middleware/MultipleCollectionStreamSystem.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/enumerados/EstadoActividad.dart';
+import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
 
@@ -16,7 +17,6 @@ enum ConfirmAction { ACCEPT, CANCEL }
 class ActividadBD {
   static const String coleccion_viajes = 'viajes';
   static const String coleccion_paquetes = 'paquetes';
-  
 
   static StreamBuilder<Map<Type, QuerySnapshot>> obtenerStreamBuilderListado(
           Function(BuildContext, AsyncSnapshot<Map<Type, QuerySnapshot>>)
@@ -51,11 +51,30 @@ class ActividadBD {
       return const Center(child: const CircularProgressIndicator());
 
     var paquetes = snapshot.data[Paquete].documents
-        .map((snapshot) => Paquete.fromSnapshot(snapshot))
-        .where((paquete) => paquete.remitente == usuario);
+        .map((snapshot) => Paquete.fromSnapshot(snapshot));
+
     var viajes = snapshot.data[Viaje].documents
-        .map((snapshot) => Viaje.fromSnapshot(snapshot))
-        .where((viaje) => viaje.transportista == usuario);
+        .map((snapshot) => Viaje.fromSnapshot(snapshot));
+
+    if (estado == EstadoActividad.PUBLICADO) {
+      paquetes = paquetes.where((paquete) =>
+          (paquete.remitente == usuario) &&
+          paquete.estado == EstadoPaquete.por_recoger);
+      viajes = viajes.where((viaje) => viaje.transportista == usuario);
+    } else if (estado == EstadoActividad.ENCURSO) {
+      paquetes = paquetes.where((paquete) =>
+          (paquete.remitente == usuario) &&
+          paquete.estado == EstadoPaquete.en_envio);
+      viajes = [];
+    } else if (estado == EstadoActividad.FINALIZADO) {
+      paquetes = paquetes.where((paquete) =>
+          (paquete.remitente == usuario) &&
+          paquete.estado == EstadoPaquete.entregado);
+      viajes = viajes.where((viaje) =>
+          (viaje.transportista == viaje) &&
+          viaje.fecha.difference(DateTime.now()).inDays < 0);
+    }
+
     var resultados = new List.from(paquetes)..addAll(viajes);
 
     return ListView.builder(
@@ -183,8 +202,13 @@ class ActividadBD {
                               IconButton(
                                 icon: Icon(Icons.delete, color: Colors.red),
                                 onPressed: () {
-                                  _asyncConfirmDialog(context, "¿Desea borrar el paquete?").then((onValue){
-                                    if(onValue == ConfirmAction.ACCEPT){Datos.eliminarTodosLosComponentes([paquete]);}
+                                  _asyncConfirmDialog(
+                                          context, "¿Desea borrar el paquete?")
+                                      .then((onValue) {
+                                    if (onValue == ConfirmAction.ACCEPT) {
+                                      Datos.eliminarTodosLosComponentes(
+                                          [paquete]);
+                                    }
                                   });
                                 },
                               ),
@@ -199,11 +223,11 @@ class ActividadBD {
                                         color: Colors.blue),
                                     onPressed: () {
                                       Navigator.of(context).push(
-                                      MaterialPageRoute<Null>(
-                                          builder: (BuildContext context) =>
-                                              CreacionPaqueteForm(
-                                                miPaquete: paquete,
-                                              )));
+                                          MaterialPageRoute<Null>(
+                                              builder: (BuildContext context) =>
+                                                  CreacionPaqueteForm(
+                                                    miPaquete: paquete,
+                                                  )));
                                     },
                                   ),
                                   IconButton(
@@ -350,8 +374,12 @@ class ActividadBD {
                               IconButton(
                                 icon: Icon(Icons.delete, color: Colors.red),
                                 onPressed: () {
-                                  _asyncConfirmDialog(context, "¿Desea borrar el viaje?").then((onValue){
-                                    if(onValue == ConfirmAction.ACCEPT) Datos.eliminarTodosLosComponentes([viaje]);
+                                  _asyncConfirmDialog(
+                                          context, "¿Desea borrar el viaje?")
+                                      .then((onValue) {
+                                    if (onValue == ConfirmAction.ACCEPT)
+                                      Datos.eliminarTodosLosComponentes(
+                                          [viaje]);
                                   });
                                 },
                               ),
@@ -366,11 +394,11 @@ class ActividadBD {
                                         color: Colors.blue),
                                     onPressed: () {
                                       Navigator.of(context).push(
-                                      MaterialPageRoute<Null>(
-                                          builder: (BuildContext context) =>
-                                              CreacionViajeForm(
-                                                viajeModificando: viaje,
-                                              )));
+                                          MaterialPageRoute<Null>(
+                                              builder: (BuildContext context) =>
+                                                  CreacionViajeForm(
+                                                    viajeModificando: viaje,
+                                                  )));
                                     },
                                   ),
                                   IconButton(
@@ -397,6 +425,7 @@ class ActividadBD {
       ),
     );
   }
+
   static Future<ConfirmAction> _asyncConfirmDialog(
       BuildContext context, String title) async {
     return showDialog<ConfirmAction>(
