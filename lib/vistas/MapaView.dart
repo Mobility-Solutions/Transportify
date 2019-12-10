@@ -45,7 +45,7 @@ class MapaViewPuntos extends MapaView {
 
   @override
   State<StatefulWidget> createState() => puntoInicial == null
-      ? _MapaViewStatePuntos.fromCiudad(usuario?.ciudad)
+      ? _MapaViewStatePuntos.fromCiudad(ciudadInicial ?? usuario?.ciudad)
       : _MapaViewStatePuntos(puntoInicial: puntoInicial);
 }
 

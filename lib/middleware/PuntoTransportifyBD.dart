@@ -135,6 +135,7 @@ class PuntoTransportifyBD {
                 : _obtenerListadoPuntosWidget(snapshot, ciudadSeleccionada,
                     puntoSeleccionado, onPuntoChanged),
             mapaView: MapaViewPuntos(
+              ciudadInicial: ciudadSeleccionada,
               puntoInicial: puntoSeleccionado,
             ),
             onSelected: onSelected,
