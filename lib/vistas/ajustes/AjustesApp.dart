@@ -18,6 +18,7 @@ class AjustesAppState extends State<AjustesApp> {
 
   bool permisoUbicacion = false;
   bool permisoNotificacion = false;
+  bool _loading = true;
 
   @override
   Widget build(BuildContext context) {
@@ -33,64 +34,63 @@ class AjustesAppState extends State<AjustesApp> {
         body: Padding(
           padding:
               EdgeInsets.only(left: 15.0, right: 15.0, bottom: 30.0, top: 15.0),
-          child: Container(
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Text("Permisos",
-                      style: TextStyle(
-                          color: TransportifyColors.primarySwatch,
-                          fontSize: 30,
-                          fontWeight: FontWeight.w900)),
-                  Divider(height: 5, color: TransportifyColors.primarySwatch),
-                  SizedBox(
-                    height: 20.0,
+          child: _loading
+              ? const Center(child:CircularProgressIndicator())
+              : Container(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        Text("Permisos",
+                            style: TextStyle(
+                                color: TransportifyColors.primarySwatch,
+                                fontSize: 30,
+                                fontWeight: FontWeight.w900)),
+                        Divider(
+                            height: 5, color: TransportifyColors.primarySwatch),
+                        SizedBox(
+                          height: 20.0,
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.gps_fixed,
+                                color: TransportifyColors.primarySwatch),
+                            Text(" GPS",
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w900)),
+                            Switch(
+                              value: permisoUbicacion,
+                              onChanged: (value) {
+                                setState(() {
+                                  if (value) getPermisoUbicacion();
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 20.0,
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.notifications,
+                                color: TransportifyColors.primarySwatch),
+                            Text(" Notificaciones",
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w900)),
+                            Switch(
+                              value: permisoNotificacion,
+                              onChanged: (value) {
+                                setState(() {
+                                  if (value) getPermisoNotificacion();
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    children: <Widget>[
-                      Icon(Icons.gps_fixed,
-                          color: TransportifyColors.primarySwatch),
-                      Text(" GPS",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w900)),
-                      Switch(
-                        value: permisoUbicacion,
-                        onChanged: (value) {
-                          setState(() {
-                            if (value == true) {
-                              getPermisoUbicacion();
-                            }
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Icon(Icons.notifications,
-                          color: TransportifyColors.primarySwatch),
-                      Text(" Notificaciones",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w900)),
-                      Switch(
-                        value: permisoNotificacion,
-                        onChanged: (value) {
-                          setState(() {
-                            if (value == true) {
-                              getPermisoNotificacion();
-                            }
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
+                ),
         ),
       ),
     );
@@ -148,6 +148,7 @@ class AjustesAppState extends State<AjustesApp> {
         permisoNotificacion = value;
       });
     });
+    _loading = false;
     super.initState();
   }
 
