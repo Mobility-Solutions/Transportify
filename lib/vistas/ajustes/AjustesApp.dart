@@ -70,7 +70,7 @@ class AjustesAppState extends State<AjustesApp> {
                   ),
                   Row(
                     children: <Widget>[
-                      Icon(Icons.add_alert,
+                      Icon(Icons.notifications,
                           color: TransportifyColors.primarySwatch),
                       Text(" Notificaciones",
                           style: TextStyle(
