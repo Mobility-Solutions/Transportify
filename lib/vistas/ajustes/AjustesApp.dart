@@ -16,7 +16,7 @@ class AjustesApp extends StatefulWidget {
 class AjustesAppState extends State<AjustesApp> {
   final _formKey = GlobalKey<FormState>();
 
-  bool permisoUbicacion = false ;
+  bool permisoUbicacion = false;
   bool permisoNotificacion = false;
 
   @override
