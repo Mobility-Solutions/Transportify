@@ -16,7 +16,7 @@ class Paquete extends ComponenteBD {
   Usuario remitente;
   DateTime fechaCreacion, fechaEntrega;
   int diasMargen;
-  List<Incidencia> incidencias;
+  List<Incidencia> incidencias = const <Incidencia>[];
 
   EstadoPaquete estado;
 
@@ -42,7 +42,7 @@ class Paquete extends ComponenteBD {
       this.fechaEntrega,
       this.diasMargen,
       this.fechaCreacion,
-      this.incidencias,
+      this.incidencias = const <Incidencia>[],
       this.estado
   })  : super(coleccion: PaqueteBD.coleccion_paquetes);
 
