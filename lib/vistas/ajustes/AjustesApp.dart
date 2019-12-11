@@ -16,8 +16,8 @@ class AjustesApp extends StatefulWidget {
 class AjustesAppState extends State<AjustesApp> {
   final _formKey = GlobalKey<FormState>();
 
-  bool permisoUbicacion = false;
-  bool permisoNotificacion = false;
+  bool permisoUbicacion = true;
+
   bool _loading = true;
 
   @override
@@ -35,7 +35,7 @@ class AjustesAppState extends State<AjustesApp> {
           padding:
               EdgeInsets.only(left: 15.0, right: 15.0, bottom: 30.0, top: 15.0),
           child: _loading
-              ? const Center(child:CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : Container(
                   child: SingleChildScrollView(
                     child: Column(
@@ -44,7 +44,7 @@ class AjustesAppState extends State<AjustesApp> {
                             style: TextStyle(
                                 color: TransportifyColors.primarySwatch,
                                 fontSize: 30,
-                                fontWeight: FontWeight.w900)),
+                                fontWeight: FontWeight.w300)),
                         Divider(
                             height: 5, color: TransportifyColors.primarySwatch),
                         SizedBox(
@@ -56,12 +56,15 @@ class AjustesAppState extends State<AjustesApp> {
                                 color: TransportifyColors.primarySwatch),
                             Text(" GPS",
                                 style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w900)),
+                                    fontSize: 20, fontWeight: FontWeight.w200)),
                             Switch(
                               value: permisoUbicacion,
                               onChanged: (value) {
                                 setState(() {
-                                  if (value) getPermisoUbicacion();
+                                  if (value) {
+                                    getPermisoUbicacion();
+                                  }
+                                  permisoUbicacion = value;
                                 });
                               },
                             ),
@@ -70,22 +73,20 @@ class AjustesAppState extends State<AjustesApp> {
                         SizedBox(
                           height: 20.0,
                         ),
-                        Row(
-                          children: <Widget>[
-                            Icon(Icons.notifications,
-                                color: TransportifyColors.primarySwatch),
-                            Text(" Notificaciones",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w900)),
-                            Switch(
-                              value: permisoNotificacion,
-                              onChanged: (value) {
-                                setState(() {
-                                  if (value) getPermisoNotificacion();
-                                });
-                              },
-                            ),
-                          ],
+                        GestureDetector(
+                          child: Row(
+                            children: <Widget>[
+                              Icon(Icons.announcement,
+                                  color: TransportifyColors.primarySwatch),
+                              Text("Mostrar permisos",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w200)),
+                            ],
+                          ),
+                          onTap: (){
+                            PermissionHandler().openAppSettings();
+                          },
                         ),
                       ],
                     ),
@@ -138,14 +139,9 @@ class AjustesAppState extends State<AjustesApp> {
 
   @override
   void initState() {
-    hasPermisoNotificacion().then((value) {
-      setState(() {
-        permisoNotificacion = value;
-      });
-    });
     hasPermisoUbicacion().then((value) {
       setState(() {
-        permisoNotificacion = value;
+        permisoUbicacion = value;
       });
     });
     _loading = false;
