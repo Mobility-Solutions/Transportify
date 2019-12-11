@@ -9,6 +9,7 @@ import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
+import 'package:transportify/vistas/AjustesAppView.dart';
 import 'package:transportify/vistas/inicio/WidgetInicial.dart';
 import 'package:transportify/vistas/dialog/PaquetesDialog.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
@@ -91,7 +92,10 @@ class TopPart extends UserDependantStatelessWidget {
                         color: TransportifyColors.appBackground,
                       ),
                       onPressed: () {
-                        // TODO: llevar a la pantalla de preferencias.
+                        Navigator.of(context)
+                         .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+                          return AjustesAppView();
+            }));
                       }),
                 ],
               ),
