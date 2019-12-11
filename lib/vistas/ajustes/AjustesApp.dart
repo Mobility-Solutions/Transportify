@@ -115,7 +115,7 @@ class AjustesAppState extends State<AjustesApp> {
   }
 
   Future<bool> getPermisoUbicacion() async {
-    return getPermisos(PermissionGroup.location);
+    return getPermisos(PermissionGroup.locationWhenInUse);
   }
 
   Future<bool> getPermisoNotificacion() async {
@@ -129,7 +129,7 @@ class AjustesAppState extends State<AjustesApp> {
   }
 
   Future<bool> hasPermisoUbicacion() async {
-    return hasPermisos(PermissionGroup.location);
+    return hasPermisos(PermissionGroup.locationWhenInUse);
   }
 
   Future<bool> hasPermisoNotificacion() async {
