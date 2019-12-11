@@ -140,7 +140,8 @@ class TopPart extends UserDependantStatelessWidget {
                       Container(
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.pink)),
+                            border: Border.all(
+                                color: TransportifyColors.primarySwatch[900])),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Icon(
@@ -156,13 +157,15 @@ class TopPart extends UserDependantStatelessWidget {
                       Text(
                         " ACTIVIDAD ",
                         style: TextStyle(
-                            fontWeight: FontWeight.w500, fontSize: 14.0),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14.0,
+                            color: TransportifyColors.primarySwatch[900]),
                       )
                     ],
                   ),
                   GestureDetector(
                       onTap: () {
-                          //TODO Avisos.
+                        //TODO Avisos.
                       },
                       child: Column(
                         children: <Widget>[
@@ -173,7 +176,7 @@ class TopPart extends UserDependantStatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Icon(
-                                Icons.warning,
+                                Icons.notifications,
                                 size: 30.0,
                                 color: Colors.grey[300],
                               ),
@@ -185,7 +188,9 @@ class TopPart extends UserDependantStatelessWidget {
                           Text(
                             "AVISOS",
                             style: TextStyle(
-                                fontWeight: FontWeight.w500, fontSize: 14.0,color: Colors.grey[300]),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14.0,
+                                color: Colors.grey[300]),
                           )
                         ],
                       ))
@@ -304,7 +309,8 @@ class CrearViajePart extends UserDependantStatelessWidget {
                 : Datos.obtenerStreamBuilderDocumentBDFromReference(
                     usuario.reference, (context, snapshot) {
                     if (!snapshot.hasData) return const Text("Cargando...");
-                    if (snapshot.data.exists) usuario.loadFromSnapshot(snapshot.data);
+                    if (snapshot.data.exists)
+                      usuario.loadFromSnapshot(snapshot.data);
                     return Text(
                       usuario?.viajesCreados?.toString() ?? '-',
                       style: TextStyle(
