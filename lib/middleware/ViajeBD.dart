@@ -15,6 +15,7 @@ class ViajeBD {
   static const String atributo_transportista = "transportista";
   static const String atributo_carga_maxima = "carga_maxima";
   static const String atributo_fecha = "fecha";
+  static const String atributo_cancelado = "cancelado";
 
   static String obtenerDestino(DocumentSnapshot snapshot) =>
       snapshot[atributo_destino];
@@ -26,6 +27,8 @@ class ViajeBD {
       snapshot[atributo_carga_maxima];
   static Timestamp obtenerFecha(DocumentSnapshot snapshot) =>
       snapshot[atributo_fecha];
+  static bool obtenerCancelado(DocumentSnapshot snapshot) =>
+      snapshot[atributo_cancelado];
 
   static StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(
       Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {

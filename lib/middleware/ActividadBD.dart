@@ -18,7 +18,7 @@ enum ConfirmAction { ACCEPT, CANCEL }
 class ActividadBD {
   static const String coleccion_viajes = 'viajes';
   static const String coleccion_paquetes = 'paquetes';
-
+  
   static StreamBuilder<Map<Type, QuerySnapshot>> obtenerStreamBuilderListado(
           Function(BuildContext, AsyncSnapshot<Map<Type, QuerySnapshot>>)
               builder,
@@ -53,15 +53,15 @@ class ActividadBD {
 
     var paquetes = snapshot.data[Paquete].documents
         .map((snapshot) => Paquete.fromSnapshot(snapshot));
-
+    
     var viajes = snapshot.data[Viaje].documents
         .map((snapshot) => Viaje.fromSnapshot(snapshot));
 
     if (estado == EstadoActividad.PUBLICADO) {
       paquetes = paquetes?.where((paquete) =>
           (paquete?.remitente == usuario) &&
-          paquete?.viajeAsignado == null);
-      viajes = viajes.where((viaje) => viaje.transportista == usuario);
+          paquete?.viajeAsignado == null && paquete?.estado != EstadoPaquete.cancelado);
+      viajes = viajes.where((viaje) => viaje.transportista == usuario && viaje?.cancelado == false);
     } else if (estado == EstadoActividad.ENCURSO) {
       paquetes = paquetes?.where((paquete) =>
           (paquete?.remitente == usuario) &&
@@ -70,10 +70,10 @@ class ActividadBD {
     } else if (estado == EstadoActividad.FINALIZADO) {
       paquetes = paquetes?.where((paquete) =>
           (paquete?.remitente == usuario) &&
-          paquete?.estado == EstadoPaquete.entregado);
+          paquete?.estado == EstadoPaquete.entregado || paquete?.estado == EstadoPaquete.cancelado);
       viajes = viajes?.where((viaje) =>
           (viaje?.transportista == viaje) &&
-          viaje.fecha.difference(DateTime.now()).inDays < 0);
+          viaje.fecha.difference(DateTime.now()).inDays < 0 || viaje?.cancelado == true );
     }
 
     var resultados = new List.from(paquetes)..addAll(viajes);
@@ -88,7 +88,7 @@ class ActividadBD {
             future: item.waitForInit(),
             builder:(context,_) {
               if (item is Paquete) return obtenerCardPaquete(item, estado, context,usuario);
-          else if (item is Viaje) return obtenerCardViaje(item, estado, context);
+          else if (item is Viaje) return obtenerCardViaje(item, estado, context, paquetes);
           else return null;
             }
           );
@@ -161,7 +161,16 @@ class ActividadBD {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      estado == EstadoActividad.FINALIZADO
+                      paquete.estado == EstadoPaquete.cancelado
+                      ? Text(
+                              "CANCELADO",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[800],
+                              ),
+                            )
+                      
+                      : estado == EstadoActividad.FINALIZADO
                           ? Text(
                               "FINALIZADO",
                               style: TextStyle(
@@ -206,11 +215,11 @@ class ActividadBD {
                                 icon: Icon(Icons.delete, color: Colors.red),
                                 onPressed: () {
                                   _asyncConfirmDialog(
-                                          context, "¿Desea borrar el paquete?")
+                                          context, "¿Desea cancelar el paquete?")
                                       .then((onValue) {
                                     if (onValue == ConfirmAction.ACCEPT) {
-                                      Datos.eliminarTodosLosComponentes(
-                                          [paquete]);
+                                      paquete.estado = EstadoPaquete.cancelado;
+                                      paquete.updateBD();
                                     }
                                   });
                                 },
@@ -262,7 +271,7 @@ class ActividadBD {
   }
 
   static Widget obtenerCardViaje(
-      Viaje viaje, EstadoActividad estado, BuildContext context) {
+      Viaje viaje, EstadoActividad estado, BuildContext context, Iterable<Paquete> paquetes) {
     return Card(
       color: Colors.grey[100],
       elevation: 5,
@@ -339,7 +348,17 @@ class ActividadBD {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      estado == EstadoActividad.FINALIZADO
+                      viaje.cancelado == true
+                      ? Text(
+                              "CANCELADO",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[800],
+                              ),
+                            )
+                      
+                      : estado == EstadoActividad.FINALIZADO
+                      
                           ? Text(
                               "FINALIZADO",
                               style: TextStyle(
@@ -381,11 +400,11 @@ class ActividadBD {
                                 icon: Icon(Icons.delete, color: Colors.red),
                                 onPressed: () {
                                   _asyncConfirmDialog(
-                                          context, "¿Desea borrar el viaje?")
+                                          context, "¿Desea cancelar el viaje?")
                                       .then((onValue) {
-                                    if (onValue == ConfirmAction.ACCEPT)
-                                      Datos.eliminarTodosLosComponentes(
-                                          [viaje]);
+                                    if (onValue == ConfirmAction.ACCEPT){
+                                      cancelarViaje(viaje, paquetes);
+                                    }
                                   });
                                 },
                               ),
@@ -432,5 +451,19 @@ class ActividadBD {
         );
       },
     );
+  }
+
+  static cancelarViaje(Viaje viaje, Iterable<Paquete> paquetes){
+    
+    viaje.cancelado=true;
+    viaje.updateBD();
+    paquetes = paquetes?.where((paquete) =>
+          (paquete?.viajeAsignado == viaje));
+
+    paquetes.forEach((paquete){
+      paquete.viajeAsignado=null;
+      paquete.estado = EstadoPaquete.por_recoger;
+      paquete.updateBD();
+    });
   }
 }
