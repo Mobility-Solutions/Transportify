@@ -19,7 +19,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_svg: ^0.12.1
+  flutter_svg: ^0.15.0
   flutter_datetime_picker: 1.2.5
   google_maps_flutter: ^0.5.5
 

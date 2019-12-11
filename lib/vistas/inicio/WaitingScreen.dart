@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'WidgetInicial.dart';
 
@@ -11,8 +12,10 @@ class WaitingScreen extends StatelessWidget implements WidgetInicial {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          Image.network(
-              "https://avatars1.githubusercontent.com/u/55597308?s=200&v=4"),
+          SvgPicture.asset(
+              'assets/logo.svg',
+              semanticsLabel: 'Logo'
+          ),
           CircularProgressIndicator(),
         ],
       ),

@@ -63,7 +63,7 @@ class _IniciarSesionViewState extends State<IniciarSesionView> {
                   children: <Widget>[
                     Center(
                       child: SvgPicture.asset(
-                          'assets/images/logo-transportify.svg',
+                          'assets/logo.svg',
                           semanticsLabel: 'Logo'
                       )
                     ),
