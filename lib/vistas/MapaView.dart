@@ -134,6 +134,15 @@ class _MapaViewStateCiudades extends _MapaViewState<MapaViewCiudades, String> {
     "Segovia": LatLng(40.9480800, -4.1183900),
     "Sevilla": LatLng(37.3828300, -5.9731700),
     "Santiago de Compostela": LatLng(42.890528, -8.526583),
+    "Bilbao": LatLng(43.263017, -2.934993),
+    "Zaragoza": LatLng(41.648822, -0.889086),
+    "Murcia": LatLng(37.992244, -1.130654),
+    "Salamanca": LatLng(40.970105, -5.663541),
+    "Córdoba": LatLng(37.888151, -4.779410),
+    "Granada": LatLng(37.177343, -3.598589),
+    "Alicante": LatLng(38.346020, -0.490684),
+    "Málaga": LatLng(36.721286, -4.421282),
+    "León": LatLng(42.598730, -5.567096),    
   };
 
   _MapaViewStateCiudades({String ciudadInicial})
