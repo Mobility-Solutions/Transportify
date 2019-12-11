@@ -9,7 +9,7 @@ class Viaje extends ComponenteBD {
   DateTime fecha;
   String destino;
   String origen;
-  bool cancelado;
+  bool cancelado = false;
   Usuario transportista;
 
   Viaje(
@@ -17,7 +17,7 @@ class Viaje extends ComponenteBD {
       this.fecha,
       this.destino,
       this.origen,
-      this.cancelado,
+      this.cancelado = false,
       this.transportista}) : super(coleccion: ViajeBD.coleccion_viajes);
 
   Viaje.fromReference(DocumentReference reference, {bool init = true})

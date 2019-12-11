@@ -326,6 +326,7 @@ class _VentanaViaje extends State<VentanaViaje> {
                 Navigator.pop(context, _viajeSeleccionado);
               },
               filtro: (viaje) =>
+                  (!viaje.cancelado) &&
                   (origen != null ? origen == viaje.origen : true) &&
                   (destino != null ? destino == viaje.destino : true) &&
                   (fechaPaquete != null

@@ -456,14 +456,16 @@ class ActividadBD {
   static cancelarViaje(Viaje viaje, Iterable<Paquete> paquetes){
     
     viaje.cancelado=true;
-    viaje.updateBD();
+    
     paquetes = paquetes?.where((paquete) =>
           (paquete?.viajeAsignado == viaje));
-
-    paquetes.forEach((paquete){
+    
+    for(int i = 0; i<paquetes.length; i++){
+      Paquete paquete = paquetes.elementAt(i) ;
       paquete.viajeAsignado=null;
       paquete.estado = EstadoPaquete.por_recoger;
       paquete.updateBD();
-    });
+    }
+    viaje.updateBD();
   }
 }

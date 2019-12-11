@@ -28,7 +28,7 @@ class ViajeBD {
   static Timestamp obtenerFecha(DocumentSnapshot snapshot) =>
       snapshot[atributo_fecha];
   static bool obtenerCancelado(DocumentSnapshot snapshot) =>
-      snapshot[atributo_cancelado];
+      snapshot[atributo_cancelado] ?? false;
 
   static StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(
       Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
