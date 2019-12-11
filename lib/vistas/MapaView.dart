@@ -302,7 +302,7 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
                       ),
                       Expanded(
                         child: TransportifyFormButton(
-                          text: 'Cancelar',
+                          text: 'CANCELAR',
                           onPressed: () {
                             Navigator.pop(context);
                           },
@@ -313,7 +313,7 @@ abstract class _MapaViewState<T extends MapaView, K> extends State<T> {
                       ),
                       Expanded(
                         child: TransportifyFormButton(
-                          text: 'Guardar',
+                          text: 'ACEPTAR',
                           onPressed: () {
                             Navigator.pop(context, this.itemSeleccionado);
                           },

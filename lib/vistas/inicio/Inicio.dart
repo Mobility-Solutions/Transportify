@@ -162,10 +162,7 @@ class TopPart extends UserDependantStatelessWidget {
                   ),
                   GestureDetector(
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute<Null>(
-                            builder: (BuildContext context) {
-                          return new SeguimientoForm(usuario);
-                        }));
+                          //TODO Avisos.
                       },
                       child: Column(
                         children: <Widget>[
@@ -176,9 +173,9 @@ class TopPart extends UserDependantStatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Icon(
-                                Icons.trending_up,
+                                Icons.warning,
                                 size: 30.0,
-                                color: TransportifyColors.primarySwatch[900],
+                                color: Colors.grey[300],
                               ),
                             ),
                           ),
@@ -186,9 +183,9 @@ class TopPart extends UserDependantStatelessWidget {
                             height: 8.0,
                           ),
                           Text(
-                            "SEGUIMIENTO",
+                            "AVISOS",
                             style: TextStyle(
-                                fontWeight: FontWeight.w500, fontSize: 14.0),
+                                fontWeight: FontWeight.w500, fontSize: 14.0,color: Colors.grey[300]),
                           )
                         ],
                       ))
@@ -206,16 +203,11 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () async {
-        Paquete paquete = await PaquetesDialog.show(context, usuario: usuario);
-        if (paquete != null) {
-          if (paquete is Paquete) {
-            Navigator.of(context)
-                .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return CreacionPaqueteForm(miPaquete: paquete, usuario: usuario);
-            }));
-          }
-        }
+      onTap: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+          return CreacionPaqueteForm(usuario: usuario);
+        }));
       },
       child: InicioPart(
         usuario: usuario,
@@ -246,7 +238,8 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
                 : Datos.obtenerStreamBuilderDocumentBDFromReference(
                     usuario.reference, (context, snapshot) {
                     if (!snapshot.hasData) return const Text("Cargando...");
-                    if (snapshot.data.exists) usuario.loadFromSnapshot(snapshot.data);
+                    if (snapshot.data.exists)
+                      usuario.loadFromSnapshot(snapshot.data);
                     return Text(
                       usuario?.paquetesCreados?.toString() ?? '-',
                       style: TextStyle(
@@ -277,16 +270,10 @@ class CrearViajePart extends UserDependantStatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        Viaje viaje = await ViajeDialog.show(context, usuario: usuario);
-        if (viaje != null) {
-          if (viaje is Viaje) {
-            Navigator.of(context)
-                .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return CreacionViajeForm(
-                  viajeModificando: viaje, usuario: usuario);
-            }));
-          }
-        }
+        Navigator.of(context)
+            .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+          return CreacionViajeForm(usuario: usuario);
+        }));
       },
       child: InicioPart(
         usuario: usuario,
