@@ -7,6 +7,8 @@ import 'package:transportify/vistas/inicio/Authentication/registrarse/Registrars
 import 'package:transportify/vistas/inicio/WidgetInicial.dart';
 import 'EmailAndPassword.dart';
 
+import 'package:flutter_svg/flutter_svg.dart';
+
 class IniciarSesionView extends StatefulWidget implements WidgetInicial {
   final String title = 'Iniciar sesión';
   final Function(Usuario) loginCallback;
@@ -60,8 +62,10 @@ class _IniciarSesionViewState extends State<IniciarSesionView> {
                 return ListView(
                   children: <Widget>[
                     Center(
-                      child: Image.network(
-                          "https://avatars1.githubusercontent.com/u/55597308?s=200&v=4"),
+                      child: SvgPicture.asset(
+                          'assets/images/logo-transportify.svg',
+                          semanticsLabel: 'Logo'
+                      )
                     ),
                     EmailPasswordForm(loginCallback: widget.loginCallback),
                     //GoogleSignInSection(),
