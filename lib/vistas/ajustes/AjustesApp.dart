@@ -16,8 +16,8 @@ class AjustesApp extends StatefulWidget {
 class AjustesAppState extends State<AjustesApp> {
   final _formKey = GlobalKey<FormState>();
 
-  bool permisoUbicacion;
-  bool permisoNotificacion;
+  bool permisoUbicacion = false;
+  bool permisoNotificacion = false;
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +56,11 @@ class AjustesAppState extends State<AjustesApp> {
                       Switch(
                         value: permisoUbicacion,
                         onChanged: (value) {
-                          if (value == true) {
-                            getPermisoUbicacion();
-                          }
+                          setState(() {
+                            if (value == true) {
+                              getPermisoUbicacion();
+                            }
+                          });
                         },
                       ),
                     ],
@@ -76,9 +78,11 @@ class AjustesAppState extends State<AjustesApp> {
                       Switch(
                         value: permisoNotificacion,
                         onChanged: (value) {
-                          if (value == true) {
-                            getPermisoNotificacion();
-                          }
+                          setState(() {
+                            if (value == true) {
+                              getPermisoNotificacion();
+                            }
+                          });
                         },
                       ),
                     ],
@@ -90,6 +94,14 @@ class AjustesAppState extends State<AjustesApp> {
         ),
       ),
     );
+  }
+
+  Future<bool> requestLocationPermission({Function onPermissionDenied}) async {
+    var granted = await getPermisos(PermissionGroup.location);
+    if (!granted) {
+      onPermissionDenied();
+    }
+    return granted;
   }
 
   Future<bool> getPermisos(PermissionGroup permissionGroup) async {
@@ -110,18 +122,18 @@ class AjustesAppState extends State<AjustesApp> {
     return getPermisos(PermissionGroup.notification);
   }
 
-  Future<bool> tienePermisos(PermissionGroup permissionGroup) async {
+  Future<bool> hasPermisos(PermissionGroup permissionGroup) async {
     var permisosStatus =
         await PermissionHandler().checkPermissionStatus(permissionGroup);
     return permisosStatus == PermissionStatus.granted;
   }
 
   Future<bool> hasPermisoUbicacion() async {
-    return tienePermisos(PermissionGroup.location);
+    return hasPermisos(PermissionGroup.location);
   }
 
   Future<bool> hasPermisoNotificacion() async {
-    return tienePermisos(PermissionGroup.notification);
+    return hasPermisos(PermissionGroup.notification);
   }
 
   @override
