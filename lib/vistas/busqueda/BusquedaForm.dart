@@ -74,7 +74,7 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
       builder: (context, busquedaHasData) {
         bool hasData;
         if (busquedaHasData.connectionState == ConnectionState.done) {
-          hasData = busquedaHasData.data;
+          hasData = busquedaHasData.data ?? false;
           buscando = false;
         } else {
           hasData = false;
