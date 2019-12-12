@@ -58,8 +58,8 @@ class PaqueteBD {
       snapshot[atributo_fecha_entrega];
   static Timestamp obtenerFechaCreacion(DocumentSnapshot snapshot) =>
       snapshot[atributo_fecha_creacion];
-  static List<DocumentReference> obtenerIncidencias(DocumentSnapshot snapshot) =>
-      snapshot[atributo_incidencias] ?? const <DocumentReference>[];
+  static List<dynamic> obtenerIncidencias(DocumentSnapshot snapshot) =>
+      snapshot[atributo_incidencias] ?? const [];
   static int obtenerDiasMargen(DocumentSnapshot snapshot) =>
       snapshot[atributo_dias_margen];
   static EstadoPaquete obtenerEstado(DocumentSnapshot snapshot) {

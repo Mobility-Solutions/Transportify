@@ -35,7 +35,7 @@ class PuntoTransportify extends ComponenteBD {
   }
 
   @override
-  Map<String, dynamic> toMap() {
+  Future<Map<String, dynamic>> toMap() async {
     // PuntoTransportify no necesita toMap, ya que sus instancias deben ser inmutables
     return null;
   }
