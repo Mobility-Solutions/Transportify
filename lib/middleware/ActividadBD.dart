@@ -18,7 +18,7 @@ enum ConfirmAction { ACCEPT, CANCEL }
 class ActividadBD {
   static const String coleccion_viajes = 'viajes';
   static const String coleccion_paquetes = 'paquetes';
-  
+
   static StreamBuilder<Map<Type, QuerySnapshot>> obtenerStreamBuilderListado(
           Function(BuildContext, AsyncSnapshot<Map<Type, QuerySnapshot>>)
               builder,
@@ -53,15 +53,17 @@ class ActividadBD {
 
     var paquetes = snapshot.data[Paquete].documents
         .map((snapshot) => Paquete.fromSnapshot(snapshot));
-    
+
     var viajes = snapshot.data[Viaje].documents
         .map((snapshot) => Viaje.fromSnapshot(snapshot));
 
     if (estado == EstadoActividad.PUBLICADO) {
       paquetes = paquetes?.where((paquete) =>
           (paquete?.remitente == usuario) &&
-          paquete?.viajeAsignado == null && paquete?.estado != EstadoPaquete.cancelado);
-      viajes = viajes.where((viaje) => viaje.transportista == usuario && !viaje?.cancelado);
+          paquete?.viajeAsignado == null &&
+          paquete?.estado != EstadoPaquete.cancelado);
+      viajes = viajes.where(
+          (viaje) => viaje.transportista == usuario && !viaje?.cancelado);
     } else if (estado == EstadoActividad.ENCURSO) {
       paquetes = paquetes?.where((paquete) =>
           (paquete?.remitente == usuario) && paquete?.viajeAsignado != null);
@@ -69,10 +71,12 @@ class ActividadBD {
     } else if (estado == EstadoActividad.FINALIZADO) {
       paquetes = paquetes?.where((paquete) =>
           (paquete?.remitente == usuario) &&
-          paquete?.estado == EstadoPaquete.entregado || paquete?.estado == EstadoPaquete.cancelado);
+              paquete?.estado == EstadoPaquete.entregado ||
+          paquete?.estado == EstadoPaquete.cancelado);
       viajes = viajes?.where((viaje) =>
           (viaje?.transportista == viaje) &&
-          viaje.fecha.difference(DateTime.now()).inDays < 0 || viaje?.cancelado == true );
+              viaje.fecha.difference(DateTime.now()).inDays < 0 ||
+          viaje?.cancelado == true);
     }
 
     var resultados = new List.from(paquetes)..addAll(viajes);
@@ -164,39 +168,38 @@ class ActividadBD {
                     alignment: WrapAlignment.spaceBetween,
                     children: <Widget>[
                       paquete.estado == EstadoPaquete.cancelado
-                      ? Text(
+                          ? Text(
                               "CANCELADO",
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey[800],
                               ),
                             )
-                      
-                      : estado == EstadoActividad.FINALIZADO
-                          ? Text(
-                              "FINALIZADO",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey[800],
-                              ),
-                            )
-                          : Text(
-                              paquete.fechaEntrega
-                                          .difference(DateTime.now())
-                                          .inDays >
-                                      0
-                                  ? "faltan " +
-                                      paquete.fechaEntrega
-                                          .difference(DateTime.now())
-                                          .inDays
-                                          .toString() +
-                                      " días para la entrega"
-                                  : "TU PAQUETE HA EXPIRADO",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey[800],
-                              ),
-                            ),
+                          : estado == EstadoActividad.FINALIZADO
+                              ? Text(
+                                  "FINALIZADO",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[800],
+                                  ),
+                                )
+                              : Text(
+                                  paquete.fechaEntrega
+                                              .difference(DateTime.now())
+                                              .inDays >
+                                          0
+                                      ? "faltan " +
+                                          paquete.fechaEntrega
+                                              .difference(DateTime.now())
+                                              .inDays
+                                              .toString() +
+                                          " días para la entrega"
+                                      : "TU PAQUETE HA EXPIRADO",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[800],
+                                  ),
+                                ),
                       estado == EstadoActividad.PUBLICADO
                           ? Padding(
                               padding: const EdgeInsets.only(right: 10.0),
@@ -220,34 +223,22 @@ class ActividadBD {
                                     icon: Icon(Icons.delete, color: Colors.red),
                                     onPressed: () {
                                       _asyncConfirmDialog(context,
-                                              "¿Desea borrar el paquete?")
+                                              "¿Desea cancelar el paquete?")
                                           .then((onValue) {
                                         if (onValue == ConfirmAction.ACCEPT) {
-                                          Datos.eliminarTodosLosComponentes(
-                                              [paquete]);
+                                          paquete.estado =
+                                              EstadoPaquete.cancelado;
+                                          paquete.updateBD();
                                         }
                                       });
                                     },
                                   ),
+                                  SizedBox(
+                                    width: 10,
+                                  )
                                 ],
                               ),
-                              IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red),
-                                onPressed: () {
-                                  _asyncConfirmDialog(
-                                          context, "¿Desea cancelar el paquete?")
-                                      .then((onValue) {
-                                    if (onValue == ConfirmAction.ACCEPT) {
-                                      paquete.estado = EstadoPaquete.cancelado;
-                                      paquete.updateBD();
-                                    }
-                                  });
-                                },
-                              ),
-                              SizedBox(
-                                width: 10,
-                              )
-                            ])
+                            )
                           : estado == EstadoActividad.ENCURSO
                               ? Row(children: <Widget>[
                                   IconButton(
@@ -291,8 +282,8 @@ class ActividadBD {
     );
   }
 
-  static Widget obtenerCardViaje(
-      Viaje viaje, EstadoActividad estado, BuildContext context, Iterable<Paquete> paquetes) {
+  static Widget obtenerCardViaje(Viaje viaje, EstadoActividad estado,
+      BuildContext context, Iterable<Paquete> paquetes) {
     return Card(
       color: Colors.grey[100],
       elevation: 5,
@@ -371,83 +362,78 @@ class ActividadBD {
                     alignment: WrapAlignment.spaceBetween,
                     children: <Widget>[
                       viaje.cancelado == true
-                      ? Text(
+                          ? Text(
                               "CANCELADO",
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey[800],
                               ),
                             )
-                      
-                      : estado == EstadoActividad.FINALIZADO
-                      
-                          ? Text(
-                              "FINALIZADO",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey[800],
-                              ),
-                            )
-                          : Text(
-                              viaje.fecha.difference(DateTime.now()).inDays > 0
-                                  ? "faltan " +
-                                      viaje.fecha
-                                          .difference(DateTime.now())
-                                          .inDays
-                                          .toString() +
-                                      " días para la entrega"
-                                  : "TU VIAJE HA EXPIRADO",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey[800],
-                              ),
-                            ),
+                          : estado == EstadoActividad.FINALIZADO
+                              ? Text(
+                                  "FINALIZADO",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[800],
+                                  ),
+                                )
+                              : Text(
+                                  viaje.fecha
+                                              .difference(DateTime.now())
+                                              .inDays >
+                                          0
+                                      ? "faltan " +
+                                          viaje.fecha
+                                              .difference(DateTime.now())
+                                              .inDays
+                                              .toString() +
+                                          " días para la entrega"
+                                      : "TU VIAJE HA EXPIRADO",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[800],
+                                  ),
+                                ),
                       estado == EstadoActividad.PUBLICADO
                           ? Padding(
-                            padding: const EdgeInsets.only(right: 10.0),
-                            child: Row(children: <Widget>[
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.edit,
-                                    color: Colors.blue,
+                              padding: const EdgeInsets.only(right: 10.0),
+                              child: Row(
+                                children: <Widget>[
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: Colors.blue,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute<Null>(
+                                              builder: (BuildContext context) =>
+                                                  CreacionViajeForm(
+                                                    viajeModificando: viaje,
+                                                  )));
+                                    },
                                   ),
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute<Null>(
-                                            builder: (BuildContext context) =>
-                                                CreacionViajeForm(
-                                                  viajeModificando: viaje,
-                                                )));
-                                  },
-                                ),
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                      MaterialPageRoute<Null>(
-                                          builder: (BuildContext context) =>
-                                              CreacionViajeForm(
-                                                viajeModificando: viaje,
-                                              )));
-                                },
+                                  IconButton(
+                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    onPressed: () {
+                                      _asyncConfirmDialog(context,
+                                              "¿Desea cancelar el viaje?")
+                                          .then((onValue) {
+                                        if (onValue == ConfirmAction.ACCEPT) {
+                                          cancelarViaje(viaje, paquetes);
+                                        }
+                                      });
+                                    },
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  )
+                                ],
                               ),
-                              IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red),
-                                onPressed: () {
-                                  _asyncConfirmDialog(
-                                          context, "¿Desea cancelar el viaje?")
-                                      .then((onValue) {
-                                    if (onValue == ConfirmAction.ACCEPT){
-                                      cancelarViaje(viaje, paquetes);
-                                    }
-                                  });
-                                },
-                              ),
-                              SizedBox(
-                                width: 10,
-                              )
-                            ])
-                              : SizedBox(
-                                  width: 1,
-                                )
+                            )
+                          : SizedBox(
+                              width: 1,
+                            ),
                     ],
                   ),
                 ],
@@ -486,16 +472,14 @@ class ActividadBD {
     );
   }
 
-  static cancelarViaje(Viaje viaje, Iterable<Paquete> paquetes){
-    
-    viaje.cancelado=true;
-    
-    paquetes = paquetes?.where((paquete) =>
-          (paquete?.viajeAsignado == viaje));
-    
-    for(int i = 0; i<paquetes.length; i++){
-      Paquete paquete = paquetes.elementAt(i) ;
-      paquete.viajeAsignado=null;
+  static cancelarViaje(Viaje viaje, Iterable<Paquete> paquetes) {
+    viaje.cancelado = true;
+
+    paquetes = paquetes?.where((paquete) => (paquete?.viajeAsignado == viaje));
+
+    for (int i = 0; i < paquetes.length; i++) {
+      Paquete paquete = paquetes.elementAt(i);
+      paquete.viajeAsignado = null;
       paquete.estado = EstadoPaquete.por_recoger;
       paquete.updateBD();
     }
