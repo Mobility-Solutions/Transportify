@@ -61,10 +61,10 @@ class AjustesAppState extends State<AjustesApp> {
                               value: permisoUbicacion,
                               onChanged: (value) {
                                 setState(() {
-                                  if (value) {
+                                  if (!value) {
                                     getPermisoUbicacion();
+                                    value = true;
                                   }
-                                  permisoUbicacion = value;
                                 });
                               },
                             ),
@@ -119,10 +119,6 @@ class AjustesAppState extends State<AjustesApp> {
     return getPermisos(PermissionGroup.locationWhenInUse);
   }
 
-  Future<bool> getPermisoNotificacion() async {
-    return getPermisos(PermissionGroup.notification);
-  }
-
   Future<bool> hasPermisos(PermissionGroup permissionGroup) async {
     var permisosStatus =
         await PermissionHandler().checkPermissionStatus(permissionGroup);
@@ -131,10 +127,6 @@ class AjustesAppState extends State<AjustesApp> {
 
   Future<bool> hasPermisoUbicacion() async {
     return hasPermisos(PermissionGroup.locationWhenInUse);
-  }
-
-  Future<bool> hasPermisoNotificacion() async {
-    return hasPermisos(PermissionGroup.notification);
   }
 
   @override
