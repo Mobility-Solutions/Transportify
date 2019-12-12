@@ -52,17 +52,15 @@ class _RootPageState extends State<RootPage> {
     });
   }
 
-  void loginCallback() async {
-    await UsuarioBD.obtenerUsuarioActual().then((usuario) {
-      setState(() {
-        _usuarioController.add(usuario);
-        _authStatusController.add(AuthStatus.LOGGED_IN);
-      });
+  void loginCallback(Usuario usuario) {
+    setState(() {
+      _usuarioController.add(usuario);
+      _authStatusController.add(AuthStatus.LOGGED_IN);
     });
   }
 
-  void logoutCallback() async {
-    await UsuarioBD.signOut().then((_) {
+  void logoutCallback(Usuario usuario) async {
+    await usuario.desconectar().then((_) {
       setState(() {
         _authStatusController.add(AuthStatus.NOT_LOGGED_IN);
         _usuarioController.add(null);

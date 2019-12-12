@@ -76,13 +76,14 @@ class PaqueteBD {
   }
 
   static Widget obtenerListadoPaquetesWidget(
-      {Usuario usuario, onSelected(int estado)}) {
+      {Usuario usuario, onSelected(Paquete paquete)}) {
     var builder = _obtenerListaEnviosBuilder(usuario, onSelected);
     return Datos.obtenerStreamBuilderCollectionBD(coleccion_paquetes, builder);
   }
 
   static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
-      _obtenerListaEnviosBuilder(Usuario usuario, onTapMethod(int estado)) =>
+      _obtenerListaEnviosBuilder(
+              Usuario usuario, onTapMethod(Paquete paquete)) =>
           (context, snapshot) =>
               _obtenerListaPaquetes(context, snapshot, usuario, onTapMethod);
 
@@ -90,34 +91,34 @@ class PaqueteBD {
       BuildContext context,
       AsyncSnapshot<QuerySnapshot> snapshot,
       Usuario usuario,
-      onTapMethod(int estado)) {
-    if (!snapshot.hasData) return const Center(child: const CircularProgressIndicator());
+      onTapMethod(Paquete paquete)) {
+    if (!snapshot.hasData)
+      return const Center(child: const CircularProgressIndicator());
+      
+    List<Paquete> paquetes = snapshot.data.documents
+        .map((document) => Paquete.fromSnapshot(document))
+        .where((paquete) =>
+            paquete.viajeAsignado == null &&
+            (usuario == null || paquete.remitente == usuario))
+        .toList();
 
     return ListView.builder(
+      itemCount: paquetes.length,
       itemBuilder: (context, index) {
-        List<Paquete> paquetes = snapshot.data.documents
-            .map((document) => Paquete.fromSnapshot(document))
-            .where((paquete) =>
-                paquete.viajeAsignado != null &&  (usuario == null || paquete.remitente == usuario))
-            .toList();
-        if (index >= 0 && index < paquetes.length) {
-          Paquete paquete = paquetes[index];
-          return FutureBuilder(
-            future: paquete.waitForInit(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return _obtenerListViewItemPaquete(
-                  paquete: paquete,
-                  onSelected: (paquete) => onTapMethod(paquete.estado.index),
-                );
-              } else {
-                return const SizedBox();
-              }
-            },
-          );
-        } else {
-          return null;
-        }
+        Paquete paquete = paquetes[index];
+        return FutureBuilder(
+          future: paquete.waitForInit(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return _obtenerListViewItemPaquete(
+                paquete: paquete,
+                onSelected: onTapMethod,
+              );
+            } else {
+              return const SizedBox();
+            }
+          },
+        );
       },
     );
   }

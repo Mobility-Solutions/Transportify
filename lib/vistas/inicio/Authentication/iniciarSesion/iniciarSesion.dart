@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
 import 'package:transportify/vistas/inicio/Authentication/registrarse/registrarse.dart';
 import 'package:transportify/vistas/inicio/WidgetInicial.dart';
@@ -8,7 +9,7 @@ import 'EmailAndPassword.dart';
 
 class IniciarSesionView extends StatefulWidget implements WidgetInicial {
   final String title = 'Iniciar sesión';
-  final VoidCallback loginCallback;
+  final Function(Usuario) loginCallback;
   
   IniciarSesionView({this.loginCallback});
 
@@ -66,7 +67,7 @@ class _IniciarSesionViewState extends State<IniciarSesionView> {
                         size: 120,
                       ),
                     ),
-                    EmailPasswordForm(loginCallback:widget.loginCallback),
+                    EmailPasswordForm(loginCallback: widget.loginCallback),
                     //GoogleSignInSection(),
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),

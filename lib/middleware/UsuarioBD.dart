@@ -48,18 +48,16 @@ class UsuarioBD {
 
   static Widget _obtenerListadoUsuarios(BuildContext context,
       AsyncSnapshot<QuerySnapshot> snapshot, Function(Usuario) onSelected) {
-    if (!snapshot.hasData) return const Center(child: const CircularProgressIndicator());
+    if (!snapshot.hasData)
+      return const Center(child: const CircularProgressIndicator());
 
     var usuarios = snapshot.data.documents;
 
     return ListView.builder(
+      itemCount: usuarios.length,
       itemBuilder: (context, index) {
-        if (index >= 0 && index < usuarios.length) {
-          var usuario = usuarios.elementAt(index);
-          return _obtenerListViewItemUsuario(usuario, onSelected);
-        } else {
-          return null;
-        }
+        var usuario = usuarios.elementAt(index);
+        return _obtenerListViewItemUsuario(usuario, onSelected);
       },
     );
   }
@@ -84,19 +82,22 @@ class UsuarioBD {
         .createUserWithEmailAndPassword(email: correo, password: password);
   }
 
-  static Future<Usuario> obtenerUsuarioActual() => FirebaseAuth.instance
-      .currentUser()
-      .then((firebaseUser) => 
-      firebaseUser == null ? null : obtenerUsuarioConUid(firebaseUser.uid));
+  static Future<Usuario> obtenerUsuarioActual() =>
+      FirebaseAuth.instance.currentUser().then((firebaseUser) =>
+          firebaseUser == null ? null : obtenerUsuarioConUid(firebaseUser.uid));
 
   static Future<Usuario> obtenerUsuarioConUid(String uid) {
+    return obtenerSnapshotUsuarioConUid(uid)
+        .then((snapshot) => Usuario.fromSnapshot(snapshot));
+  }
+
+  static Future<DocumentSnapshot> obtenerSnapshotUsuarioConUid(String uid) {
     return Datos.obtenerColeccion(coleccion_usuarios)
         .getDocuments()
         .then((query) {
       var listadoUsuarios = query.documents;
-      DocumentSnapshot usuarioSnapshot =
-          listadoUsuarios.firstWhere((snapshot) => obtenerUid(snapshot) == uid);
-      return Usuario.fromSnapshot(usuarioSnapshot);
+      return listadoUsuarios
+          .firstWhere((snapshot) => obtenerUid(snapshot) == uid);
     });
   }
 
@@ -112,4 +113,9 @@ class UsuarioBD {
       FirebaseAuth.instance.signInWithCredential(credential);
 
   static Future<void> signOut() => FirebaseAuth.instance.signOut();
+
+  static Future<bool> existeUsuarioConNickname(String nickname) =>
+      Datos.obtenerColeccion(coleccion_usuarios).getDocuments().then((query) =>
+          query.documents
+              .any((snapshot) => obtenerNickname(snapshot) == nickname));
 }

@@ -6,16 +6,18 @@ import 'package:transportify/middleware/UsuarioBD.dart';
 import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/util/style.dart';
+import 'package:transportify/vistas/MapaView.dart';
 import 'package:transportify/vistas/dialog/CiudadDialog.dart';
 
 class CreacionViajeForm extends StatefulWidget {
-  CreacionViajeForm([this.viajeModificando, Key key, this.title])
+  CreacionViajeForm({this.viajeModificando, Key key, this.title, this.usuario})
       : super(key: key);
   @override
   _CreacionViajeFormState createState() => _CreacionViajeFormState();
 
   final String title;
   final Viaje viajeModificando;
+  final Usuario usuario;
 }
 
 class _CreacionViajeFormState extends State<CreacionViajeForm> {
@@ -32,8 +34,6 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
   bool get modificando => widget.viajeModificando != null;
 
-  //final Puntos puntos = Puntos();
-
   // Ciudades origen y destino
   String origen, destino;
 
@@ -45,6 +45,28 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
   void _remove() {
     if (peso - 1 >= 0.0) pesoController.text = (peso -= 1).toString();
+  }
+
+  //Abre la página del mapa y a la vuelta de la misma, le pasa la ciudad seleccionada al controlador indicado
+  getCiudadSeleccionada(BuildContext context, bool origenLocation) async {
+    final String ciudadSeleccionada =
+        await Navigator.of(context).push<String>(MaterialPageRoute(
+            builder: (context) => MapaViewCiudades(
+                  usuario: widget.usuario,
+                  ciudadInicial: origenLocation ? origen : destino,
+                )));
+
+    if (origenLocation) {
+      if (ciudadSeleccionada != null) {
+        origen = ciudadSeleccionada;
+        origenController.text = origen;
+      }
+    } else {
+      if (ciudadSeleccionada != null) {
+        destino = ciudadSeleccionada;
+        destinoController.text = destino;
+      }
+    }
   }
 
   @override
@@ -72,32 +94,51 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                   SizedBox(
                     height: 15.0,
                   ),
-                  TextFormField(
-                    maxLines: 1,
-                    keyboardType: TextInputType.text,
-                    autofocus: false,
-                    style: TextStyle(color: TransportifyColors.primarySwatch),
-                    controller: origenController,
-                    decoration: TransportifyMethods.returnTextFormDecoration(
-                        "Ciudad de origen"),
-                    onTap: () async {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      String returnCiudad =
-                          await CiudadDialog.show(this.context);
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: TextFormField(
+                          maxLines: 1,
+                          keyboardType: TextInputType.text,
+                          autofocus: false,
+                          style: TextStyle(
+                              color: TransportifyColors.primarySwatch),
+                          controller: origenController,
+                          decoration:
+                              TransportifyMethods.returnTextFormDecoration(
+                                  "Ciudad de origen"),
+                          onTap: () async {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            String returnCiudad = await CiudadDialog.show(
+                                this.context,
+                                ciudadInicial:
+                                    origen ?? widget.usuario?.ciudad);
 
-                      if (returnCiudad != null) {
-                        origen = returnCiudad;
-                        origenController.text = origen;
-                      }
-                    },
-                    validator: (value) {
-                      if (origen == null || destino == null)
-                        return 'Introduzca las ciudades origen y destino';
-                      else if (origen == destino)
-                        return 'Las ciudades no deben coincidir.';
-                      else
-                        return null;
-                    },
+                            if (returnCiudad != null) {
+                              origen = returnCiudad;
+                              origenController.text = origen;
+                            }
+                          },
+                          validator: (value) {
+                            if (origen == null || destino == null)
+                              return 'Introduzca las ciudades origen y destino';
+                            else if (origen == destino)
+                              return 'Las ciudades no deben coincidir.';
+                            else
+                              return null;
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 10.0),
+                      IconButton(
+                        color: TransportifyColors.primarySwatch,
+                        icon: Icon(Icons.map, color: Colors.white),
+                        onPressed: () {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          getCiudadSeleccionada(context, true);
+                        },
+                      ),
+                    ],
                   ),
                   SizedBox(
                     height: 20.0,
@@ -107,31 +148,50 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                  * SELECTOR DE PUNTO DESTINO *
                  * ***************************
                  * */
-                  TextFormField(
-                    maxLines: 1,
-                    autofocus: false,
-                    style: TextStyle(color: TransportifyColors.primarySwatch),
-                    controller: destinoController,
-                    decoration: TransportifyMethods.returnTextFormDecoration(
-                        "Ciudad de destino"),
-                    onTap: () async {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      String returnCiudad =
-                          await CiudadDialog.show(this.context);
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: TextFormField(
+                          maxLines: 1,
+                          autofocus: false,
+                          style: TextStyle(
+                              color: TransportifyColors.primarySwatch),
+                          controller: destinoController,
+                          decoration:
+                              TransportifyMethods.returnTextFormDecoration(
+                                  "Ciudad de destino"),
+                          onTap: () async {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            String returnCiudad = await CiudadDialog.show(
+                                this.context,
+                                ciudadInicial:
+                                    destino); // Ciudad inicial del usuario solo en origen
 
-                      if (returnCiudad != null) {
-                        destino = returnCiudad;
-                        destinoController.text = destino;
-                      }
-                    },
-                    validator: (value) {
-                      if (origen == null || destino == null)
-                        return 'Introduzca las ciudades origen y destino';
-                      else if (origen == destino)
-                        return 'Las ciudades no deben coincidir.';
-                      else
-                        return null;
-                    },
+                            if (returnCiudad != null) {
+                              destino = returnCiudad;
+                              destinoController.text = destino;
+                            }
+                          },
+                          validator: (value) {
+                            if (origen == null || destino == null)
+                              return 'Introduzca las ciudades origen y destino';
+                            else if (origen == destino)
+                              return 'Las ciudades no deben coincidir.';
+                            else
+                              return null;
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 10.0),
+                      IconButton(
+                        color: TransportifyColors.primarySwatch,
+                        icon: Icon(Icons.map, color: Colors.white),
+                        onPressed: () {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          getCiudadSeleccionada(context, false);
+                        },
+                      ),
+                    ],
                   ),
                   SizedBox(
                     height: 20.0,
@@ -294,13 +354,13 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                       width: 15,
                     ),
                     Expanded(
-                      child: buildButtonContainer("ACEPTAR"),
+                      child: buildButtonContainer("CANCELAR"),
                     ),
                     SizedBox(
                       width: 20,
                     ),
                     Expanded(
-                      child: buildButtonContainer("CANCELAR"),
+                      child: buildButtonContainer("ACEPTAR"),
                     ),
                     SizedBox(
                       width: 15,
@@ -373,13 +433,11 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
 
   @override
   void dispose() {
-    if (modificando) {
-      pesoController.dispose();
-      origenController.dispose();
-      destinoController.dispose();
-      fechaController.dispose();
-      origenController.dispose();
-    }
+    pesoController.dispose();
+    origenController.dispose();
+    destinoController.dispose();
+    fechaController.dispose();
+
     super.dispose();
   }
 

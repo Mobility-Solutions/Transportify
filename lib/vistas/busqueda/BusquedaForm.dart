@@ -11,8 +11,8 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
   BusquedaFormState({this.titulo, this.coleccionBD, this.textoResultados});
 
   int get resultados => listaResultados.length;
-  List<R> listaResultados = List<R>();
-  bool validada = false, buscando = false;
+  final List<R> listaResultados = List<R>();
+  bool comenzarBusqueda = false, validada = false, buscando = false;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -47,7 +47,7 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
   Widget buildSelectorBusqueda(BuildContext context);
 
   Widget obtenerListaResultados() {
-    if (validada) {
+    if (comenzarBusqueda) {
       buscando = true;
       Future<Widget> busqueda = Firestore.instance
           .collection(coleccionBD)
@@ -57,11 +57,12 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
       return FutureBuilder<Widget>(
           future: busqueda,
           builder: (context, widget) {
-            return widget.hasData ? widget.data : _buildContainerBusqueda(false);
+            return widget.hasData
+                ? widget.data
+                : _buildContainerBusqueda(false);
           });
     } else {
-      validada = false;
-      return _buildContainerBusqueda(false);
+      return _buildContainerBusqueda(validada);
     }
   }
 
@@ -71,9 +72,12 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
       future: hasData,
       builder: (context, busquedaHasData) {
         bool hasData;
-        if (busquedaHasData.connectionState == ConnectionState.done) {
-          hasData = busquedaHasData.data;
+        bool terminado =
+            busquedaHasData.connectionState == ConnectionState.done;
+        if (terminado) {
+          hasData = busquedaHasData.data ?? false;
           buscando = false;
+          comenzarBusqueda = false;
         } else {
           hasData = false;
         }
@@ -87,29 +91,23 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
   Widget _buildContainerBusqueda(bool hasData) {
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(32),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 10.0,
             children: [
-              Container(
-                  margin: const EdgeInsets.all(10),
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        '$textoResultados:  ',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                      validada
-                          ? Text(
-                              '$resultados',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            )
-                          : Container(),
-                    ],
-                  )),
+              Text(
+                '$textoResultados:',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              validada
+                  ? Text(
+                      '$resultados',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    )
+                  : const SizedBox(),
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
@@ -119,12 +117,14 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
                   icon: Icon(Icons.search),
                   color: Colors.white,
                   // Pasar un onPressed null pone el botón en disabled
-                  onPressed: buscando ? null : () {
-                    setState(() {
-                      validada = _formKey.currentState.validate();
-                    });
-                  },
-
+                  onPressed: buscando
+                      ? null
+                      : () {
+                          setState(() {
+                            validada = _formKey.currentState.validate();
+                            comenzarBusqueda = validada;
+                          });
+                        },
                 ),
               ),
             ],
@@ -145,7 +145,6 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
 
   ListView _buildListado() {
     return ListView.separated(
-      padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
       itemCount: resultados,
       itemBuilder: builderListado,
       separatorBuilder: (BuildContext context, int index) => const Divider(),

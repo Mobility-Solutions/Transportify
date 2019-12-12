@@ -33,40 +33,53 @@ class ViajeBD {
   }
 
   static Widget obtenerListadoViajesWidget(
-      {Function(Viaje) onSelected, bool Function(Viaje) filtro, Usuario usuario}) {
+      {Function(Viaje) onSelected,
+      Widget showOnEmpty,
+      bool Function(Viaje) filtro,
+      Usuario usuario}) {
     return obtenerStreamBuilderListado(
-        _obtenerListadoViajesBuilder(onSelected, filtro, usuario));
+        _obtenerListadoViajesBuilder(onSelected, showOnEmpty, filtro, usuario));
   }
 
   static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
       _obtenerListadoViajesBuilder(
-          Function(Viaje) onSelected, bool Function(Viaje) filtro, Usuario usuario) {
+    Function(Viaje) onSelected,
+    Widget showOnEmpty,
+    bool Function(Viaje) filtro,
+    Usuario usuario,
+  ) {
     return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      return _obtenerListadoViajesWidget(context, snapshot, onSelected, filtro, usuario);
+      return _obtenerListadoViajesWidget(
+          context, snapshot, onSelected, showOnEmpty, filtro, usuario);
     };
   }
 
   static Widget _obtenerListadoViajesWidget(
-      BuildContext context,
-      AsyncSnapshot<QuerySnapshot> snapshot,
-      Function(Viaje) onSelected,
-      bool Function(Viaje) filtro, Usuario usuario) {
-    if (!snapshot.hasData) return const Center(child: const CircularProgressIndicator());
+    BuildContext context,
+    AsyncSnapshot<QuerySnapshot> snapshot,
+    Function(Viaje) onSelected,
+    Widget showOnEmpty,
+    bool Function(Viaje) filtro,
+    Usuario usuario,
+  ) {
+    if (!snapshot.hasData)
+      return const Center(child: const CircularProgressIndicator());
 
     var viajes = snapshot.data.documents
         .map((snapshot) => Viaje.fromSnapshot(snapshot))
-        .where((viaje) => (usuario == null || viaje.transportista == usuario) && (filtro == null || filtro(viaje)));
+        .where((viaje) =>
+            (usuario == null || viaje.transportista == usuario) &&
+            (filtro == null || filtro(viaje)));
 
-    return ListView.builder(
-      itemBuilder: (context, index) {
-        if (index >= 0 && index < viajes.length) {
-          Viaje viaje = viajes.elementAt(index);
-          return _obtenerListViewItemViaje(viaje, onSelected);
-        } else {
-          return null;
-        }
-      },
-    );
+    return showOnEmpty != null && viajes.isEmpty
+        ? showOnEmpty
+        : ListView.builder(
+            itemCount: viajes.length,
+            itemBuilder: (context, index) {
+              Viaje viaje = viajes.elementAt(index);
+              return _obtenerListViewItemViaje(viaje, onSelected);
+            },
+          );
   }
 
   static Widget _obtenerListViewItemViaje(
@@ -84,8 +97,7 @@ class ViajeBD {
             .format(viaje.fecha);
 
     return ListTile(
-      title: Text(
-          "$fechaEntregaConFormato ($ciudadOrigen -> $ciudadDestino)"),
+      title: Text("$fechaEntregaConFormato ($ciudadOrigen -> $ciudadDestino)"),
       onTap: onTap,
     );
   }

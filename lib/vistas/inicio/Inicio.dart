@@ -24,7 +24,7 @@ import 'InicioPart.dart';
 
 class MyHomePage extends StatefulWidget implements WidgetInicial {
   final Usuario usuario;
-  final VoidCallback logoutCallback;
+  final Function(Usuario) logoutCallback;
 
   MyHomePage({Key key, this.usuario, this.logoutCallback}) : super(key: key);
 
@@ -35,7 +35,7 @@ class MyHomePage extends StatefulWidget implements WidgetInicial {
 
 class _MyHomePageState extends State<MyHomePage> {
   final Usuario usuario;
-  final VoidCallback logoutCallback;
+  final Function(Usuario) logoutCallback;
 
   _MyHomePageState({this.usuario, this.logoutCallback});
 
@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
           TopPart(usuario: usuario, logoutCallback: logoutCallback),
           CrearPaquetePart(usuario: usuario),
           CrearViajePart(usuario: usuario),
-          BuscarPart(),
+          BuscarPart(usuario: usuario),
         ]));
   }
 }
@@ -58,7 +58,7 @@ abstract class UserDependantStatelessWidget extends StatelessWidget {
 }
 
 class TopPart extends UserDependantStatelessWidget {
-  final VoidCallback logoutCallback;
+  final Function(Usuario) logoutCallback;
 
   TopPart({Usuario usuario, this.logoutCallback}) : super(usuario);
 
@@ -83,7 +83,7 @@ class TopPart extends UserDependantStatelessWidget {
                         Icons.exit_to_app,
                         color: TransportifyColors.appBackground,
                       ),
-                      onPressed: logoutCallback,
+                      onPressed: () => logoutCallback(usuario),
                     ),
                   ),
                   IconButton(
@@ -145,7 +145,8 @@ class TopPart extends UserDependantStatelessWidget {
                       Container(
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.pink)),
+                            border: Border.all(
+                                color: TransportifyColors.primarySwatch[900])),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Icon(
@@ -161,16 +162,15 @@ class TopPart extends UserDependantStatelessWidget {
                       Text(
                         " ACTIVIDAD ",
                         style: TextStyle(
-                            fontWeight: FontWeight.w500, fontSize: 14.0),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14.0,
+                            color: TransportifyColors.primarySwatch[900]),
                       )
                     ],
                   ),
                   GestureDetector(
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute<Null>(
-                            builder: (BuildContext context) {
-                          return new SeguimientoForm(usuario);
-                        }));
+                        //TODO Avisos.
                       },
                       child: Column(
                         children: <Widget>[
@@ -181,9 +181,9 @@ class TopPart extends UserDependantStatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Icon(
-                                Icons.trending_up,
+                                Icons.notifications,
                                 size: 30.0,
-                                color: TransportifyColors.primarySwatch[900],
+                                color: Colors.grey[300],
                               ),
                             ),
                           ),
@@ -191,9 +191,11 @@ class TopPart extends UserDependantStatelessWidget {
                             height: 8.0,
                           ),
                           Text(
-                            "SEGUIMIENTO",
+                            "AVISOS",
                             style: TextStyle(
-                                fontWeight: FontWeight.w500, fontSize: 14.0),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14.0,
+                                color: Colors.grey[300]),
                           )
                         ],
                       ))
@@ -211,16 +213,11 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () async {
-        Paquete paquete = await PaquetesDialog.show(context, usuario: usuario);
-        if (paquete != null) {
-          if (paquete is Paquete) {
-            Navigator.of(context)
-                .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return new CreacionPaqueteForm(paquete);
-            }));
-          }
-        }
+      onTap: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+          return CreacionPaqueteForm(usuario: usuario);
+        }));
       },
       child: InicioPart(
         usuario: usuario,
@@ -242,7 +239,7 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
           children: [
             usuario == null
                 ? const Text(
-                    "-",
+                    '-',
                     style: TextStyle(
                         fontSize: 18.0,
                         fontStyle: FontStyle.italic,
@@ -251,9 +248,10 @@ class CrearPaquetePart extends UserDependantStatelessWidget {
                 : Datos.obtenerStreamBuilderDocumentBDFromReference(
                     usuario.reference, (context, snapshot) {
                     if (!snapshot.hasData) return const Text("Cargando...");
-                    usuario.loadFromSnapshot(snapshot.data);
+                    if (snapshot.data.exists)
+                      usuario.loadFromSnapshot(snapshot.data);
                     return Text(
-                      usuario.paquetesCreados.toString(),
+                      usuario?.paquetesCreados?.toString() ?? '-',
                       style: TextStyle(
                           fontSize: 18.0,
                           fontStyle: FontStyle.italic,
@@ -282,15 +280,10 @@ class CrearViajePart extends UserDependantStatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        Viaje viaje = await ViajeDialog.show(context, usuario: usuario);
-        if (viaje != null) {
-          if (viaje is Viaje) {
-            Navigator.of(context)
-                .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return new CreacionViajeForm(viaje);
-            }));
-          }
-        }
+        Navigator.of(context)
+            .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+          return CreacionViajeForm(usuario: usuario);
+        }));
       },
       child: InicioPart(
         usuario: usuario,
@@ -312,7 +305,7 @@ class CrearViajePart extends UserDependantStatelessWidget {
           children: [
             usuario == null
                 ? const Text(
-                    "-",
+                    '-',
                     style: TextStyle(
                         fontSize: 20.0,
                         fontStyle: FontStyle.italic,
@@ -321,10 +314,10 @@ class CrearViajePart extends UserDependantStatelessWidget {
                 : Datos.obtenerStreamBuilderDocumentBDFromReference(
                     usuario.reference, (context, snapshot) {
                     if (!snapshot.hasData) return const Text("Cargando...");
-
-                    usuario.loadFromSnapshot(snapshot.data);
+                    if (snapshot.data.exists)
+                      usuario.loadFromSnapshot(snapshot.data);
                     return Text(
-                      usuario.viajesCreados.toString(),
+                      usuario?.viajesCreados?.toString() ?? '-',
                       style: TextStyle(
                           fontSize: 18.0,
                           fontStyle: FontStyle.italic,
@@ -346,7 +339,9 @@ class CrearViajePart extends UserDependantStatelessWidget {
   }
 }
 
-class BuscarPart extends StatelessWidget {
+class BuscarPart extends UserDependantStatelessWidget {
+  BuscarPart({Usuario usuario}) : super(usuario);
+
   Widget getNumDocuments(
       BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
     if (!snapshot.hasData) {
@@ -386,7 +381,7 @@ class BuscarPart extends StatelessWidget {
           onTap: () {
             Navigator.of(context)
                 .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return new BusquedaPaqueteForm();
+              return BusquedaPaqueteForm(usuario: usuario);
             }));
           },
         ),
@@ -400,7 +395,7 @@ class BuscarPart extends StatelessWidget {
           onTap: () {
             Navigator.of(context)
                 .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return new BusquedaViajeForm();
+              return BusquedaViajeForm(usuario: usuario);
             }));
           },
         ),
