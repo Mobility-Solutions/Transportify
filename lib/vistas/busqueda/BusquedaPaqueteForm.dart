@@ -301,11 +301,15 @@ class VentanaViaje extends StatelessWidget {
               showOnEmpty: const Center(child: const Text('No hay viajes disponibles')),
               usuario: transportista,
               filtro: (viaje) =>
-                  (origen == null || origen == viaje.origen) &&
-                  (destino == null || destino == viaje.destino) &&
-                  (fechaPaquete == null ||
-                      fechaPaquete.isBefore(viaje.fecha)) &&
-                  (fechaMargen == null || fechaMargen.isAfter(viaje.fecha)),
+                  (!viaje.cancelado) &&
+                  (origen != null ? origen == viaje.origen : true) &&
+                  (destino != null ? destino == viaje.destino : true) &&
+                  (fechaPaquete != null
+                      ? fechaPaquete.isBefore(viaje.fecha)
+                      : true) &&
+                  (fechaMargen != null
+                      ? fechaMargen.isAfter(viaje.fecha)
+                      : true),
             ),
           )),
     );

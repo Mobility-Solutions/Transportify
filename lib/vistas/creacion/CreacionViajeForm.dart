@@ -394,7 +394,6 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
     viaje.destino = destino;
 
     viaje.origen = origen;
-
     return viaje;
   }
 

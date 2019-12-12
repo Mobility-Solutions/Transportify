@@ -9,6 +9,7 @@ class Viaje extends ComponenteBD {
   DateTime fecha;
   String destino;
   String origen;
+  bool cancelado = false;
   Usuario transportista;
 
   Viaje(
@@ -16,6 +17,7 @@ class Viaje extends ComponenteBD {
       this.fecha,
       this.destino,
       this.origen,
+      this.cancelado = false,
       this.transportista}) : super(coleccion: ViajeBD.coleccion_viajes);
 
   Viaje.fromReference(DocumentReference reference, {bool init = true})
@@ -30,6 +32,7 @@ class Viaje extends ComponenteBD {
     this.fecha = ViajeBD.obtenerFecha(snapshot).toDate();
     this.destino = ViajeBD.obtenerDestino(snapshot);
     this.origen = ViajeBD.obtenerOrigen(snapshot);
+    this.cancelado = ViajeBD.obtenerCancelado(snapshot);
     this.transportista = Usuario.fromReference(ViajeBD.obtenerTransportista(snapshot));
 
     await this.transportista.waitForInit();
@@ -42,6 +45,7 @@ class Viaje extends ComponenteBD {
     map[ViajeBD.atributo_origen] = this.origen;
     map[ViajeBD.atributo_transportista] = this.transportista?.reference;
     map[ViajeBD.atributo_carga_maxima] = this.cargaMaxima;
+    map[ViajeBD.atributo_cancelado] = this.cancelado;
     map[ViajeBD.atributo_fecha] = this.fecha;
     return map;
   }
