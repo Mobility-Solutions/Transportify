@@ -57,7 +57,7 @@ class Usuario extends ComponenteBD {
   }
 
   @override
-  Map<String, dynamic> toMap() {
+  Future<Map<String, dynamic>> toMap() async {
     Map<String, dynamic> map = Map<String, dynamic>();
     map[UsuarioBD.atributo_uid] = this._uid;
     map[UsuarioBD.atributo_nombre] = this.nombre;
