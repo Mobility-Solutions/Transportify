@@ -69,7 +69,14 @@ class Paquete extends ComponenteBD {
     this.origen = PuntoTransportify.fromReference(PaqueteBD.obtenerOrigen(snapshot));
     this.remitente = Usuario.fromReference(PaqueteBD.obtenerRemitente(snapshot));
     this.diasMargen = PaqueteBD.obtenerDiasMargen(snapshot);
-    this.incidencias = PaqueteBD.obtenerIncidencias(snapshot);
+
+    List<Future> initsIncidencias = List<Future>();
+    this.incidencias = PaqueteBD.obtenerIncidencias(snapshot).map((reference) {
+      Incidencia incidencia = Incidencia.fromReference(reference);
+      initsIncidencias.add(incidencia.waitForInit());
+      return incidencia;
+    });
+
     this.estado = PaqueteBD.obtenerEstado(snapshot);
     
     var viajeBD = PaqueteBD.obtenerViaje(snapshot);
@@ -78,8 +85,8 @@ class Paquete extends ComponenteBD {
     List<Future> futures = [
       this.destino.waitForInit(),
       this.origen.waitForInit(),
-      this.remitente.waitForInit()
-    ];
+      this.remitente.waitForInit(),
+    ]..addAll(initsIncidencias);
     
     if (viajeAsignado != null) futures.add(this.viajeAsignado.waitForInit());
 
@@ -101,7 +108,18 @@ class Paquete extends ComponenteBD {
     map[PaqueteBD.atributo_precio] = this.precio;
     map[PaqueteBD.atributo_fecha_entrega] = this.fechaEntrega;
     map[PaqueteBD.atributo_fecha_creacion] = this.fechaCreacion;
-    map[PaqueteBD.atributo_incidencias] = this.incidencias;
+
+    var incidenciasBD = this.incidencias.map((incidencia) {
+      var reference = incidencia.reference;
+      if (reference == null) {
+        incidencia.crearEnBD();
+        reference = incidencia.reference;
+      }
+      return reference;
+    }).toList();
+    map[PaqueteBD.atributo_incidencias] = incidenciasBD;
+
+
     map[PaqueteBD.atributo_dias_margen] = this.diasMargen;
     map[PaqueteBD.atributo_estado] = this.estado?.index;
     map[PaqueteBD.atributo_viaje_asignado] = this.viajeAsignado?.reference;
