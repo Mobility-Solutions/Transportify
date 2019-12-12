@@ -59,13 +59,11 @@ class ActividadBD {
 
     if (estado == EstadoActividad.PUBLICADO) {
       paquetes = paquetes?.where((paquete) =>
-          (paquete?.remitente == usuario) &&
-          paquete?.viajeAsignado == null);
+          (paquete?.remitente == usuario) && paquete?.viajeAsignado == null);
       viajes = viajes.where((viaje) => viaje.transportista == usuario);
     } else if (estado == EstadoActividad.ENCURSO) {
       paquetes = paquetes?.where((paquete) =>
-          (paquete?.remitente == usuario) &&
-          paquete?.viajeAsignado != null);
+          (paquete?.remitente == usuario) && paquete?.viajeAsignado != null);
       viajes = [];
     } else if (estado == EstadoActividad.FINALIZADO) {
       paquetes = paquetes?.where((paquete) =>
@@ -85,18 +83,20 @@ class ActividadBD {
         itemBuilder: (context, index) {
           final item = resultados.elementAt(index);
           return FutureBuilder(
-            future: item.waitForInit(),
-            builder:(context,_) {
-              if (item is Paquete) return obtenerCardPaquete(item, estado, context,usuario);
-          else if (item is Viaje) return obtenerCardViaje(item, estado, context);
-          else return null;
-            }
-          );
+              future: item.waitForInit(),
+              builder: (context, _) {
+                if (item is Paquete)
+                  return obtenerCardPaquete(item, estado, context, usuario);
+                else if (item is Viaje)
+                  return obtenerCardViaje(item, estado, context);
+                else
+                  return null;
+              });
         });
   }
 
-  static Widget obtenerCardPaquete(
-      Paquete paquete, EstadoActividad estado, BuildContext context,Usuario usuario) {
+  static Widget obtenerCardPaquete(Paquete paquete, EstadoActividad estado,
+      BuildContext context, Usuario usuario) {
     return Card(
       color: Colors.grey[100],
       elevation: 5,
@@ -158,8 +158,9 @@ class ActividadBD {
                       ),
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Wrap(
+                    direction: Axis.horizontal,
+                    alignment: WrapAlignment.spaceBetween,
                     children: <Widget>[
                       estado == EstadoActividad.FINALIZADO
                           ? Text(
@@ -187,38 +188,40 @@ class ActividadBD {
                               ),
                             ),
                       estado == EstadoActividad.PUBLICADO
-                          ? Row(children: <Widget>[
-                              IconButton(
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.blue,
-                                ),
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                      MaterialPageRoute<Null>(
-                                          builder: (BuildContext context) =>
-                                              CreacionPaqueteForm(
-                                                miPaquete: paquete,
-                                              )));
-                                },
+                          ? Padding(
+                              padding: const EdgeInsets.only(right: 10.0),
+                              child: Row(
+                                children: <Widget>[
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: Colors.blue,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute<Null>(
+                                              builder: (BuildContext context) =>
+                                                  CreacionPaqueteForm(
+                                                    miPaquete: paquete,
+                                                  )));
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    onPressed: () {
+                                      _asyncConfirmDialog(context,
+                                              "¿Desea borrar el paquete?")
+                                          .then((onValue) {
+                                        if (onValue == ConfirmAction.ACCEPT) {
+                                          Datos.eliminarTodosLosComponentes(
+                                              [paquete]);
+                                        }
+                                      });
+                                    },
+                                  ),
+                                ],
                               ),
-                              IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red),
-                                onPressed: () {
-                                  _asyncConfirmDialog(
-                                          context, "¿Desea borrar el paquete?")
-                                      .then((onValue) {
-                                    if (onValue == ConfirmAction.ACCEPT) {
-                                      Datos.eliminarTodosLosComponentes(
-                                          [paquete]);
-                                    }
-                                  });
-                                },
-                              ),
-                              SizedBox(
-                                width: 10,
-                              )
-                            ])
+                            )
                           : estado == EstadoActividad.ENCURSO
                               ? Row(children: <Widget>[
                                   IconButton(
@@ -240,7 +243,8 @@ class ActividadBD {
                                       Navigator.of(context).push(
                                           MaterialPageRoute<Null>(
                                               builder: (BuildContext context) =>
-                                                  IncidenciasView(usuario,paquete)));
+                                                  IncidenciasView(
+                                                      usuario, paquete)));
                                     },
                                   ),
                                   SizedBox(
@@ -336,8 +340,9 @@ class ActividadBD {
                   SizedBox(
                     height: 5,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Wrap(
+                    direction: Axis.horizontal,
+                    alignment: WrapAlignment.spaceBetween,
                     children: <Widget>[
                       estado == EstadoActividad.FINALIZADO
                           ? Text(
@@ -362,40 +367,40 @@ class ActividadBD {
                               ),
                             ),
                       estado == EstadoActividad.PUBLICADO
-                          ? Row(children: <Widget>[
-                              IconButton(
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.blue,
+                          ? Padding(
+                            padding: const EdgeInsets.only(right: 10.0),
+                            child: Row(children: <Widget>[
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.edit,
+                                    color: Colors.blue,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute<Null>(
+                                            builder: (BuildContext context) =>
+                                                CreacionViajeForm(
+                                                  viajeModificando: viaje,
+                                                )));
+                                  },
                                 ),
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                      MaterialPageRoute<Null>(
-                                          builder: (BuildContext context) =>
-                                              CreacionViajeForm(
-                                                viajeModificando: viaje,
-                                              )));
-                                },
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red),
-                                onPressed: () {
-                                  _asyncConfirmDialog(
-                                          context, "¿Desea borrar el viaje?")
-                                      .then((onValue) {
-                                    if (onValue == ConfirmAction.ACCEPT)
-                                      Datos.eliminarTodosLosComponentes(
-                                          [viaje]);
-                                  });
-                                },
-                              ),
-                              SizedBox(
-                                width: 10,
-                              )
-                            ])
-                              : SizedBox(
-                                  width: 1,
-                                )
+                                IconButton(
+                                  icon: Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () {
+                                    _asyncConfirmDialog(
+                                            context, "¿Desea borrar el viaje?")
+                                        .then((onValue) {
+                                      if (onValue == ConfirmAction.ACCEPT)
+                                        Datos.eliminarTodosLosComponentes(
+                                            [viaje]);
+                                    });
+                                  },
+                                ),
+                              ],),
+                          )
+                          : SizedBox(
+                              width: 1,
+                            ),
                     ],
                   ),
                 ],
