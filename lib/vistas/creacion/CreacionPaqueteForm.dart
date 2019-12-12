@@ -488,13 +488,13 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                   width: 15,
                 ),
                 Expanded(
-                  child: buildButtonContainer("ACEPTAR"),
+                  child: buildButtonContainer("CANCELAR"),
                 ),
                 SizedBox(
                   width: 20,
                 ),
                 Expanded(
-                  child: buildButtonContainer("CANCELAR"),
+                  child: buildButtonContainer("ACEPTAR"),
                 ),
                 SizedBox(
                   width: 15,
@@ -536,6 +536,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
       origen: puntos.origen,
       destino: puntos.destino,
       fechaEntrega: fechaPaqueteElegida,
+      fechaCreacion: DateTime.now(),
       diasMargen: diasMargenFinal,
       remitente: await UsuarioBD.obtenerUsuarioActual(),
     );

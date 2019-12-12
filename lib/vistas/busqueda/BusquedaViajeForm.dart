@@ -66,7 +66,7 @@ class _BusquedaViajeFormState
       if (origen == viaje.origen &&
           destino == viaje.destino &&
           fechaBusqueda &&
-          diff) {
+          diff && !viaje.cancelado) {
         listaResultados.add(viaje);
       }
     }

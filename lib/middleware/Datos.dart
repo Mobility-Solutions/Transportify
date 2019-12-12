@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:transportify/middleware/MultipleCollectionStreamSystem.dart';
 import 'package:transportify/util/style.dart';
 
 import 'ComponenteBD.dart';
@@ -11,6 +12,22 @@ class Datos {
       Widget Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
     return obtenerStreamBuilderCollectionBDFromReference(
         obtenerColeccion(collectionPath), builder);
+  }
+
+  static MultipleCollectionStreamSystem obtenerStreamsCollectionsBD(
+          Map<Type, String> collectionPaths) =>
+      MultipleCollectionStreamSystem(collectionPaths.map(
+          (type, collectionPath) => MapEntry(type, obtenerColeccion(collectionPath).snapshots())));
+
+  static StreamBuilder<Map<Type, QuerySnapshot>>
+      obtenerStreamBuilderFromMultipleCollectionStreamSystem(
+          MultipleCollectionStreamSystem multipleCollectionStreamSystem,
+          Widget Function(BuildContext, AsyncSnapshot<Map<Type, QuerySnapshot>>)
+              builder) {
+    return StreamBuilder<Map<Type, QuerySnapshot>>(
+      stream: multipleCollectionStreamSystem.snapshots,
+      builder: builder,
+    );
   }
 
   static StreamBuilder<QuerySnapshot>

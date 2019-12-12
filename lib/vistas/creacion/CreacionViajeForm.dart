@@ -354,13 +354,13 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
                       width: 15,
                     ),
                     Expanded(
-                      child: buildButtonContainer("ACEPTAR"),
+                      child: buildButtonContainer("CANCELAR"),
                     ),
                     SizedBox(
                       width: 20,
                     ),
                     Expanded(
-                      child: buildButtonContainer("CANCELAR"),
+                      child: buildButtonContainer("ACEPTAR"),
                     ),
                     SizedBox(
                       width: 15,
@@ -394,7 +394,6 @@ class _CreacionViajeFormState extends State<CreacionViajeForm> {
     viaje.destino = destino;
 
     viaje.origen = origen;
-
     return viaje;
   }
 

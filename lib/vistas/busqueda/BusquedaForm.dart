@@ -11,8 +11,8 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
   BusquedaFormState({this.titulo, this.coleccionBD, this.textoResultados});
 
   int get resultados => listaResultados.length;
-  List<R> listaResultados = List<R>();
-  bool validada = false, buscando = false;
+  final List<R> listaResultados = List<R>();
+  bool comenzarBusqueda = false, validada = false, buscando = false;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -47,7 +47,7 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
   Widget buildSelectorBusqueda(BuildContext context);
 
   Widget obtenerListaResultados() {
-    if (validada) {
+    if (comenzarBusqueda) {
       buscando = true;
       Future<Widget> busqueda = Firestore.instance
           .collection(coleccionBD)
@@ -62,8 +62,7 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
                 : _buildContainerBusqueda(false);
           });
     } else {
-      validada = false;
-      return _buildContainerBusqueda(false);
+      return _buildContainerBusqueda(validada);
     }
   }
 
@@ -73,9 +72,12 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
       future: hasData,
       builder: (context, busquedaHasData) {
         bool hasData;
-        if (busquedaHasData.connectionState == ConnectionState.done) {
-          hasData = busquedaHasData.data;
+        bool terminado =
+            busquedaHasData.connectionState == ConnectionState.done;
+        if (terminado) {
+          hasData = busquedaHasData.data ?? false;
           buscando = false;
+          comenzarBusqueda = false;
         } else {
           hasData = false;
         }
@@ -120,6 +122,7 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
                       : () {
                           setState(() {
                             validada = _formKey.currentState.validate();
+                            comenzarBusqueda = validada;
                           });
                         },
                 ),
