@@ -57,29 +57,7 @@ class ActividadBD {
     var viajes = snapshot.data[Viaje].documents
         .map((snapshot) => Viaje.fromSnapshot(snapshot));
 
-    if (estado == EstadoActividad.PUBLICADO) {
-      paquetes = paquetes?.where((paquete) =>
-          (paquete?.remitente == usuario) &&
-          paquete?.viajeAsignado == null &&
-          paquete?.estado != EstadoPaquete.cancelado);
-      viajes = viajes.where(
-          (viaje) => viaje.transportista == usuario && !viaje?.cancelado);
-    } else if (estado == EstadoActividad.ENCURSO) {
-      paquetes = paquetes?.where((paquete) =>
-          (paquete?.remitente == usuario) && paquete?.viajeAsignado != null);
-      viajes = [];
-    } else if (estado == EstadoActividad.FINALIZADO) {
-      paquetes = paquetes?.where((paquete) =>
-          (paquete?.remitente == usuario) &&
-              paquete?.estado == EstadoPaquete.entregado ||
-          paquete?.estado == EstadoPaquete.cancelado);
-      viajes = viajes?.where((viaje) =>
-          (viaje?.transportista == viaje) &&
-              viaje.fecha.difference(DateTime.now()).inDays < 0 ||
-          viaje?.cancelado == true);
-    }
-
-    var resultados = new List.from(paquetes)..addAll(viajes);
+    var resultados = List.from(paquetes)..addAll(viajes);
 
     return ListView.builder(
         physics: NeverScrollableScrollPhysics(),
@@ -90,12 +68,52 @@ class ActividadBD {
           return FutureBuilder(
               future: item.waitForInit(),
               builder: (context, _) {
-                if (item is Paquete)
-                  return obtenerCardPaquete(item, estado, context, usuario);
-                else if (item is Viaje)
-                  return obtenerCardViaje(item, estado, context, paquetes);
+                if (item is Paquete) {
+                  bool Function(Paquete) filtro;
+                  switch (estado) {                
+                    case EstadoActividad.PUBLICADO:
+                      filtro = (paquete) =>
+          (paquete?.remitente == usuario) &&
+          paquete?.viajeAsignado == null &&
+          paquete?.estado != EstadoPaquete.cancelado;
+                      break;
+                    case EstadoActividad.ENCURSO:
+                      filtro = (paquete) =>
+          (paquete?.remitente == usuario) && paquete?.viajeAsignado != null;
+                      break;
+                    case EstadoActividad.FINALIZADO:
+                      filtro = (paquete) =>
+          (paquete?.remitente == usuario) &&
+              paquete?.estado == EstadoPaquete.entregado ||
+          paquete?.estado == EstadoPaquete.cancelado;
+                      break;
+                  }
+
+                  if (filtro(item)) return obtenerCardPaquete(item, estado, context, usuario);
+                  else return const SizedBox();
+                }
+                else if (item is Viaje) {
+                  bool Function(Viaje) filtro;
+                  switch (estado) {                   
+                    case EstadoActividad.PUBLICADO:
+                      filtro = (viaje) => viaje.transportista == usuario && !(viaje.cancelado ?? false);
+                      break;
+                    case EstadoActividad.ENCURSO:
+                      filtro = (_) => false;
+                      break;
+                    case EstadoActividad.FINALIZADO:
+                      filtro = (viaje) =>
+          (viaje?.transportista == usuario) &&
+              viaje.fecha.difference(DateTime.now()).inDays < 0 ||
+          viaje?.cancelado == true;
+                      break;
+                  }
+
+                  if (filtro(item)) return obtenerCardViaje(item, estado, context, paquetes);
+                  else return const SizedBox();
+                }
                 else
-                  return null;
+                  return const SizedBox();
               });
         });
   }
