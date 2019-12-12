@@ -24,7 +24,7 @@ class Incidencia extends ComponenteBD {
   }
 
   @override
-  Map<String, dynamic> toMap() {
+  Future<Map<String, dynamic>> toMap() async {
     Map<String, dynamic> map = Map<String, dynamic>();
     map[IncidenciaBD.atributo_descripcion] = this.descripcion;
     map[IncidenciaBD.atributo_retrasoHoras] = this.retrasoHoras;

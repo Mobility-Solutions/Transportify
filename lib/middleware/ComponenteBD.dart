@@ -35,10 +35,10 @@ abstract class ComponenteBD {
     this._reference = snapshot.reference;
   }
 
-  Map<String, dynamic> toMap();
+  Future<Map<String, dynamic>> toMap();
 
-  Future<void> crearEnBD() {
-    Map<String, dynamic> map = this.toMap();
+  Future<void> crearEnBD() async {
+    Map<String, dynamic> map = await this.toMap();
     if (map != null) {
       if (reference == null) {
         return coleccion.add(map).then((reference) {
@@ -52,8 +52,8 @@ abstract class ComponenteBD {
     }
   }
 
-  Future<void> updateBD() {
-    Map<String, dynamic> map = this.toMap();
+  Future<void> updateBD() async {
+    Map<String, dynamic> map = await this.toMap();
     if (map != null) {
       return reference?.updateData(map);
     } else {

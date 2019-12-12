@@ -9,7 +9,7 @@ import 'package:transportify/util/style.dart';
 
 class IncidenciasView extends StatefulWidget {
   @override
-  IncidenciasViewState createState() => IncidenciasViewState();
+  IncidenciasViewState createState() => IncidenciasViewState(this.paquete.incidencias);
 
   IncidenciasView(this.usuario, this.paquete) : super();
 
@@ -24,6 +24,8 @@ class IncidenciasViewState extends State<IncidenciasView> {
   int progreso, paqueteRetraso = 0;
   Color barraDeProgreso;
   List<Incidencia> incidencias;
+
+  IncidenciasViewState(this.incidencias);
 
   @override
   Widget build(BuildContext context) {
@@ -259,8 +261,7 @@ class IncidenciasViewState extends State<IncidenciasView> {
       Incidencia comentario = new Incidencia(
           descripcion: incidencia, retrasoHoras: paqueteRetrasoActual);
       paqueteRetraso += paqueteRetrasoActual;
-      widget.paquete.fechaCreacion.add(Duration(hours: paqueteRetraso));
-      widget.paquete.fechaEntrega.add(Duration(hours: paqueteRetraso));
+      widget.paquete.fechaEntrega = widget.paquete.fechaEntrega.add(Duration(hours: paqueteRetrasoActual));
       incidencias.add(comentario);
       incidenciaController.text = "";
       horasRetrasadasController.text = "";
@@ -329,13 +330,9 @@ class IncidenciasViewState extends State<IncidenciasView> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    incidencias = widget.paquete.incidencias;
-  }
-
-  @override
   void dispose() {
+    incidenciaController.dispose();
+    horasRetrasadasController.dispose();
     super.dispose();
   }
 }

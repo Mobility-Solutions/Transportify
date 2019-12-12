@@ -39,7 +39,7 @@ class Viaje extends ComponenteBD {
   }
 
   @override
-  Map<String, dynamic> toMap() {
+  Future<Map<String, dynamic>> toMap() async {
     Map<String, dynamic> map = Map<String, dynamic>();
     map[ViajeBD.atributo_destino] = this.destino;
     map[ViajeBD.atributo_origen] = this.origen;
