@@ -9,20 +9,19 @@ import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
 import 'package:transportify/util/style.dart';
+import 'package:transportify/vistas/dialog/ConfirmDialog.dart';
 
 import 'BusquedaFormCiudades.dart';
 
-class BusquedaPaqueteForm extends StatefulWidget {  
+class BusquedaPaqueteForm extends StatefulWidget {
   final Usuario usuario;
 
   BusquedaPaqueteForm({Key key, this.usuario}) : super(key: key);
 
   @override
-  _BusquedaPaqueteFormState createState() => _BusquedaPaqueteFormState(usuario: usuario);
-
+  _BusquedaPaqueteFormState createState() =>
+      _BusquedaPaqueteFormState(usuario: usuario);
 }
-
-enum ConfirmAction { ACCEPT, CANCEL }
 
 class _BusquedaPaqueteFormState
     extends BusquedaFormCiudadesState<BusquedaPaqueteForm, Paquete> {
@@ -30,7 +29,8 @@ class _BusquedaPaqueteFormState
       : super(
             titulo: "Buscar Paquete",
             coleccionBD: "paquetes",
-            textoResultados: "Paquetes encontrados", usuario: usuario);
+            textoResultados: "Paquetes encontrados",
+            usuario: usuario);
 
   List<PuntoTransportify> listaPuntosOrigen = List<PuntoTransportify>();
   List<PuntoTransportify> listaPuntosDestino = List<PuntoTransportify>();
@@ -205,7 +205,12 @@ class _BusquedaPaqueteFormState
                         ),
                       ],
                     ),
-                    listaResultados[index].fragil ? Text('Frágil', style: TextStyle(color: Colors.red, fontSize: 18),) : const SizedBox(),
+                    listaResultados[index].fragil
+                        ? Text(
+                            'Frágil',
+                            style: TextStyle(color: Colors.red, fontSize: 18),
+                          )
+                        : const SizedBox(),
                   ],
                 )
               ],
@@ -213,105 +218,73 @@ class _BusquedaPaqueteFormState
           ],
         ),
       ),
-      onTap: () {
-        _asyncConfirmDialog(context, '¿Desea aceptar este paquete?').then(
-            (ConfirmAction value) {
-          if (value == ConfirmAction.ACCEPT) {
-            Viaje viaje;
-            Paquete paquete = listaResultados[index];
-            Duration diasMargen = new Duration(days: 1 + paquete.diasMargen);
-            DateTime fechaMargen = paquete.fechaEntrega.add(diasMargen);
-            showDialog(
-                context: context,
-                builder: (BuildContext context) => VentanaViaje(
-                      origen: paquete.origen.ciudad,
-                      destino: paquete.destino.ciudad,
-                      fechaPaquete: paquete.fechaEntrega,
-                      fechaMargen: fechaMargen,
-                    )).then((value) {
-              viaje = value;
-              if (viaje != null) {
-                _asyncConfirmDialog(
-                        context, '¿Desea incluir el paquete en este viaje?')
-                    .then((ConfirmAction value) {
-                  if (value == ConfirmAction.ACCEPT) {
-                    paquete.estado = EstadoPaquete.por_recoger;
-                    paquete.viajeAsignado = viaje;
-                    paquete.updateBD();
+      onTap: () async {
+        ConfirmAction aceptarPaquete = await ConfirmDialog.show(context,
+            titulo: '¿Desea aceptar este paquete?');
 
-                    TransportifyMethods.doneDialog(context, "Paquete vinculado",
-                        content: "¡El paquete ha sido asignado con éxito!");
+        if (aceptarPaquete == ConfirmAction.ACCEPT) {
+          Paquete paquete = listaResultados[index];
+          Duration diasMargen = new Duration(days: 1 + paquete.diasMargen);
+          DateTime fechaMargen = paquete.fechaEntrega.add(diasMargen);
 
-                    //aceptar paquete en viaje
+          Viaje viaje = await VentanaViaje.show(
+            context,
+            transportista: usuario,
+            origen: paquete.origen.ciudad,
+            destino: paquete.destino.ciudad,
+            fechaPaquete: paquete.fechaEntrega,
+            fechaMargen: fechaMargen,
+          );
 
-                  }
-                }, onError: (error) {
-                  print(error);
-                });
-              }
-            });
+          if (viaje != null) {
+            ConfirmAction incluirPaqueteEnViaje = await ConfirmDialog.show(
+                context,
+                titulo: '¿Desea incluir el paquete en este viaje?');
+
+            if (incluirPaqueteEnViaje == ConfirmAction.ACCEPT) {
+              paquete.estado = EstadoPaquete.por_recoger;
+              paquete.viajeAsignado = viaje;
+              paquete.updateBD();
+
+              TransportifyMethods.doneDialog(context, "Paquete vinculado",
+                  content: "¡El paquete ha sido asignado con éxito!");
+            }
           }
-        }, onError: (error) {
-          print(error);
-        });
-      },
-    );
-  }
-
-  Future<ConfirmAction> _asyncConfirmDialog(
-      BuildContext context, String title) async {
-    return showDialog<ConfirmAction>(
-      context: context,
-      barrierDismissible: false, // user must tap button for close dialog!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          actions: <Widget>[
-            FlatButton(
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop(ConfirmAction.CANCEL);
-              },
-            ),
-            FlatButton(
-              child: const Text('Aceptar'),
-              onPressed: () {
-                Navigator.of(context).pop(ConfirmAction.ACCEPT);
-              },
-            )
-          ],
-        );
+        }
       },
     );
   }
 }
 
-class VentanaViaje extends StatefulWidget {
+class VentanaViaje extends StatelessWidget {
+  final Usuario transportista;
   final String origen, destino;
   final DateTime fechaPaquete, fechaMargen;
   VentanaViaje(
-      {this.origen, this.destino, this.fechaPaquete, this.fechaMargen});
+      {this.transportista,
+      this.origen,
+      this.destino,
+      this.fechaPaquete,
+      this.fechaMargen});
 
-  @override
-  _VentanaViaje createState() => new _VentanaViaje(
-      origen: origen,
-      destino: destino,
-      fechaPaquete: fechaPaquete,
-      fechaMargen: fechaMargen);
-
-  static Future<Viaje> show(BuildContext context) async => await showDialog(
-      context: context,
-      builder: (_) {
-        return VentanaViaje();
-      });
-}
-
-class _VentanaViaje extends State<VentanaViaje> {
-  String origen, destino;
-  DateTime fechaPaquete, fechaMargen;
-
-  _VentanaViaje(
-      {this.origen, this.destino, this.fechaPaquete, this.fechaMargen});
+  static Future<Viaje> show(
+    BuildContext context, {
+    Usuario transportista,
+    String origen,
+    String destino,
+    DateTime fechaPaquete,
+    DateTime fechaMargen,
+  }) async =>
+      await showDialog(
+          context: context,
+          builder: (_) {
+            return VentanaViaje(
+              origen: origen,
+              destino: destino,
+              fechaPaquete: fechaPaquete,
+              fechaMargen: fechaMargen,
+            );
+          });
 
   @override
   Widget build(BuildContext context) {
@@ -325,6 +298,8 @@ class _VentanaViaje extends State<VentanaViaje> {
               onSelected: (_viajeSeleccionado) {
                 Navigator.pop(context, _viajeSeleccionado);
               },
+              showOnEmpty: const Center(child: const Text('No hay viajes disponibles')),
+              usuario: transportista,
               filtro: (viaje) =>
                   (!viaje.cancelado) &&
                   (origen != null ? origen == viaje.origen : true) &&

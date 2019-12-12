@@ -11,7 +11,11 @@ import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/modelos/Incidencia.dart';
 import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
 import 'package:transportify/util/style.dart';
+
 import 'package:transportify/vistas/actividad/MiActividadView.dart';
+import 'package:transportify/vistas/ajustes/AjustesApp.dart';
+import 'package:transportify/vistas/inicio/WidgetInicial.dart';
+import 'package:transportify/vistas/dialog/PaquetesDialog.dart';
 import 'package:transportify/vistas/creacion/CreacionPaqueteForm.dart';
 import 'package:transportify/vistas/busqueda/BusquedaPaqueteForm.dart';
 import 'package:transportify/vistas/dialog/PaquetesDialog.dart';
@@ -95,6 +99,10 @@ class TopPart extends UserDependantStatelessWidget {
                       ),
                       onPressed: () {
                         // TODO: llevar a la pantalla de preferencias.
+                        Navigator.of(context).push(MaterialPageRoute<Null>(
+                              builder: (BuildContext context) {
+                            return AjustesApp(usuario);
+                          }));
                       }),
                 ],
               ),
