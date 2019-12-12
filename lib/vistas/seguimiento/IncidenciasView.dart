@@ -261,8 +261,7 @@ class IncidenciasViewState extends State<IncidenciasView> {
       Incidencia comentario = new Incidencia(
           descripcion: incidencia, retrasoHoras: paqueteRetrasoActual);
       paqueteRetraso += paqueteRetrasoActual;
-      widget.paquete.fechaCreacion.add(Duration(hours: paqueteRetraso));
-      widget.paquete.fechaEntrega.add(Duration(hours: paqueteRetraso));
+      widget.paquete.fechaEntrega = widget.paquete.fechaEntrega.add(Duration(hours: paqueteRetrasoActual));
       incidencias.add(comentario);
       incidenciaController.text = "";
       horasRetrasadasController.text = "";
