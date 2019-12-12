@@ -24,7 +24,7 @@ class _MiActividadBusquedaState extends State<MiActividadBusqueda> {
   MultipleCollectionStreamSystem multipleCollection;
   Map<Type, String> colecciones = new Map<Type, String>();
 
-  void getActividades() async {
+  void getActividades() {
     setState(() {
       _loading = true;
     });

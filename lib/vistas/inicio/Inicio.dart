@@ -98,7 +98,6 @@ class TopPart extends UserDependantStatelessWidget {
                         color: TransportifyColors.appBackground,
                       ),
                       onPressed: () {
-                        // TODO: llevar a la pantalla de preferencias.
                         Navigator.of(context).push(MaterialPageRoute<Null>(
                               builder: (BuildContext context) {
                             return AjustesApp(usuario);

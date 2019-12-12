@@ -11,6 +11,8 @@ class WaitingScreen extends StatelessWidget implements WidgetInicial {
     // TODO: Pantalla de carga (splash)
     return Scaffold(
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           SvgPicture.asset(
               'assets/logo.svg',
