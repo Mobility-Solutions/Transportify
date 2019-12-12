@@ -7,10 +7,12 @@ import 'package:transportify/vistas/inicio/Authentication/registrarse/Registrars
 import 'package:transportify/vistas/inicio/WidgetInicial.dart';
 import 'EmailAndPassword.dart';
 
+import 'package:flutter_svg/flutter_svg.dart';
+
 class IniciarSesionView extends StatefulWidget implements WidgetInicial {
   final String title = 'Iniciar sesión';
   final Function(Usuario) loginCallback;
-  
+
   IniciarSesionView({this.loginCallback});
 
   @override
@@ -18,7 +20,6 @@ class IniciarSesionView extends StatefulWidget implements WidgetInicial {
 }
 
 class _IniciarSesionViewState extends State<IniciarSesionView> {
-
   Future<bool> _onWillPop() {
     return showDialog(
           context: context,
@@ -46,7 +47,7 @@ class _IniciarSesionViewState extends State<IniciarSesionView> {
     return new WillPopScope(
         onWillPop: _onWillPop,
         child: Scaffold(
-          backgroundColor: Colors.grey[200],
+          backgroundColor: Colors.white,
           appBar: AppBar(
             //automaticallyImplyLeading: false,
             leading: new Container(
@@ -61,11 +62,10 @@ class _IniciarSesionViewState extends State<IniciarSesionView> {
                 return ListView(
                   children: <Widget>[
                     Center(
-                      child: Icon(
-                        Icons.directions_car,
-                        color: TransportifyColors.primarySwatch,
-                        size: 120,
-                      ),
+                      child: SvgPicture.asset(
+                          'assets/logo.svg',
+                          semanticsLabel: 'Logo'
+                      )
                     ),
                     EmailPasswordForm(loginCallback: widget.loginCallback),
                     //GoogleSignInSection(),

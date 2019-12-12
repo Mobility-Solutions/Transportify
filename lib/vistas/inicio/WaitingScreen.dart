@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'WidgetInicial.dart';
 
 class WaitingScreen extends StatelessWidget implements WidgetInicial {
   const WaitingScreen();
-  
+
   @override
   Widget build(BuildContext context) {
     // TODO: Pantalla de carga (splash)
-    return const Scaffold(
-      body: const Center(
-        child: const CircularProgressIndicator(),
+    return Scaffold(
+      body: Column(
+        children: <Widget>[
+          SvgPicture.asset(
+              'assets/logo.svg',
+              semanticsLabel: 'Logo'
+          ),
+          CircularProgressIndicator(),
+        ],
       ),
     );
   }
