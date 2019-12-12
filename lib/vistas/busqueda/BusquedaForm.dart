@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:transportify/util/style.dart';
-import 'package:transportify/middleware/Datos.dart';
 
 abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
   final String titulo;
@@ -12,8 +11,8 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
   BusquedaFormState({this.titulo, this.coleccionBD, this.textoResultados});
 
   int get resultados => listaResultados.length;
-  List<R> listaResultados = List<R>();
-  bool validada = false;
+  final List<R> listaResultados = List<R>();
+  bool comenzarBusqueda = false, validada = false, buscando = false;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -47,61 +46,68 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
 
   Widget buildSelectorBusqueda(BuildContext context);
 
-  StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(
-      Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
-    return Datos.obtenerStreamBuilderCollectionBD(coleccionBD, builder);
-  }
-
   Widget obtenerListaResultados() {
-    return obtenerStreamBuilderListado(obtenerListaBuilder());
+    if (comenzarBusqueda) {
+      buscando = true;
+      Future<Widget> busqueda = Firestore.instance
+          .collection(coleccionBD)
+          .getDocuments()
+          .then(_obtenerListaResultados);
+
+      return FutureBuilder<Widget>(
+          future: busqueda,
+          builder: (context, widget) {
+            return widget.hasData
+                ? widget.data
+                : _buildContainerBusqueda(false);
+          });
+    } else {
+      return _buildContainerBusqueda(validada);
+    }
   }
 
-  Widget Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
-      obtenerListaBuilder() {
-    return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      Future<bool> hasData;
-      if (validada) {
-        hasData = buscar(context, snapshot);
-      } else {
-        hasData = Future.value(false);
-      }
-      return FutureBuilder<bool>(
-        future: hasData,
-        builder: (context, hasData) =>
-            _buildContainerBusqueda(hasData.hasData ? hasData.data : false),
-      );
-    };
+  Widget _obtenerListaResultados(QuerySnapshot snapshot) {
+    Future<bool> hasData = buscar(context, snapshot);
+    return FutureBuilder<bool>(
+      future: hasData,
+      builder: (context, busquedaHasData) {
+        bool hasData;
+        bool terminado =
+            busquedaHasData.connectionState == ConnectionState.done;
+        if (terminado) {
+          hasData = busquedaHasData.data ?? false;
+          buscando = false;
+          comenzarBusqueda = false;
+        } else {
+          hasData = false;
+        }
+        return _buildContainerBusqueda(hasData);
+      },
+    );
   }
 
-  Future<bool> buscar(
-      BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot);
+  Future<bool> buscar(BuildContext context, QuerySnapshot snapshot);
 
   Widget _buildContainerBusqueda(bool hasData) {
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(32),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 10.0,
             children: [
-              Container(
-                  margin: const EdgeInsets.all(10),
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        '$textoResultados:  ',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                      validada
-                          ? Text(
-                              '$resultados',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            )
-                          : Container(),
-                    ],
-                  )),
+              Text(
+                '$textoResultados:',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              validada
+                  ? Text(
+                      '$resultados',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    )
+                  : const SizedBox(),
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
@@ -110,11 +116,15 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
                 child: IconButton(
                   icon: Icon(Icons.search),
                   color: Colors.white,
-                  onPressed: () {
-                    setState(() {
-                      validada = _formKey.currentState.validate();
-                    });
-                  },
+                  // Pasar un onPressed null pone el botón en disabled
+                  onPressed: buscando
+                      ? null
+                      : () {
+                          setState(() {
+                            validada = _formKey.currentState.validate();
+                            comenzarBusqueda = validada;
+                          });
+                        },
                 ),
               ),
             ],
@@ -135,7 +145,6 @@ abstract class BusquedaFormState<T extends StatefulWidget, R> extends State<T> {
 
   ListView _buildListado() {
     return ListView.separated(
-      padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
       itemCount: resultados,
       itemBuilder: builderListado,
       separatorBuilder: (BuildContext context, int index) => const Divider(),

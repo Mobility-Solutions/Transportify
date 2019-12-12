@@ -14,6 +14,8 @@ class PuntoTransportify extends ComponenteBD {
           : direccion
       : apodo;
 
+  String get nombreCompleto => "${this.apodo} (${this.direccion})";
+
   PuntoTransportify.fromReference(DocumentReference reference, {bool init = true})
       : super.fromReference(reference, init: init);
 
@@ -33,7 +35,7 @@ class PuntoTransportify extends ComponenteBD {
   }
 
   @override
-  Map<String, dynamic> toMap() {
+  Future<Map<String, dynamic>> toMap() async {
     // PuntoTransportify no necesita toMap, ya que sus instancias deben ser inmutables
     return null;
   }
@@ -41,4 +43,7 @@ class PuntoTransportify extends ComponenteBD {
   @override
   Future<void> deleteFromBD() =>
       throw UnsupportedError("Este objeto no se puede borrar de la BD");
+
+  @override
+  String toString() => this.nombreCompleto;
 }

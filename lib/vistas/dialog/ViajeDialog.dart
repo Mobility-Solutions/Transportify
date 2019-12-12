@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/middleware/ViajeBD.dart';
+import 'package:transportify/vistas/creacion/CreacionViajeForm.dart';
+import 'package:transportify/vistas/inicio/Inicio.dart';
 
-import 'creacion/CreacionViajeForm.dart';
 
-class ViajeDialog extends StatefulWidget {
-  @override
-  _ViajeDialogState createState() => new _ViajeDialogState();
+class ViajeDialog extends UserDependantStatelessWidget {
+  ViajeDialog({Usuario usuario}) : super(usuario);
 
-  static Future<Viaje> show(BuildContext context) async =>
+  static Future<Viaje> show(BuildContext context, {Usuario usuario}) async =>
       await showDialog(
           context: context,
           builder: (_) {
-            return ViajeDialog();
+            return ViajeDialog(usuario: usuario);
           });
-}
 
-class _ViajeDialogState extends State<ViajeDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -27,6 +26,7 @@ class _ViajeDialogState extends State<ViajeDialog> {
             width: 300,
             child: Center(
               child: ViajeBD.obtenerListadoViajesWidget(
+                usuario: usuario,
                 onSelected: (_viajeSeleccionado){
                   Navigator.pop(context, _viajeSeleccionado);
                 }
@@ -35,12 +35,12 @@ class _ViajeDialogState extends State<ViajeDialog> {
  
             )),
         actions: <Widget>[
-          new FlatButton(
-            child: new Text("Crear Viaje"),
+          FlatButton(
+            child: Text("Crear Viaje"),
             onPressed: () {
             Navigator.of(context)
               .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return new CreacionViajeForm();
+              return CreacionViajeForm(usuario: usuario);
               }));
           },
           )

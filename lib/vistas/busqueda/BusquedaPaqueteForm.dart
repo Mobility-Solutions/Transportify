@@ -5,36 +5,39 @@ import 'package:transportify/middleware/ViajeBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:intl/intl.dart';
 import 'package:transportify/modelos/Paquete.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
 import 'package:transportify/util/style.dart';
+import 'package:transportify/vistas/dialog/ConfirmDialog.dart';
 
 import 'BusquedaFormCiudades.dart';
 
 class BusquedaPaqueteForm extends StatefulWidget {
-  @override
-  _BusquedaPaqueteFormState createState() => _BusquedaPaqueteFormState();
-}
+  final Usuario usuario;
 
-enum ConfirmAction { ACCEPT, CANCEL }
+  BusquedaPaqueteForm({Key key, this.usuario}) : super(key: key);
+
+  @override
+  _BusquedaPaqueteFormState createState() =>
+      _BusquedaPaqueteFormState(usuario: usuario);
+}
 
 class _BusquedaPaqueteFormState
     extends BusquedaFormCiudadesState<BusquedaPaqueteForm, Paquete> {
-  _BusquedaPaqueteFormState()
+  _BusquedaPaqueteFormState({Usuario usuario})
       : super(
             titulo: "Buscar Paquete",
             coleccionBD: "paquetes",
-            textoResultados: "Paquetes encontrados");
+            textoResultados: "Paquetes encontrados",
+            usuario: usuario);
 
   List<PuntoTransportify> listaPuntosOrigen = List<PuntoTransportify>();
   List<PuntoTransportify> listaPuntosDestino = List<PuntoTransportify>();
 
   @override
-  Future<bool> buscar(
-      BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) async {
-    if (!snapshot.hasData) return false;
-
-    List<DocumentSnapshot> coleccion = snapshot.data.documents;
+  Future<bool> buscar(BuildContext context, QuerySnapshot snapshot) async {
+    List<DocumentSnapshot> coleccion = snapshot.documents;
 
     var now = new DateTime.now();
     DateTime fechaElegida;
@@ -47,6 +50,7 @@ class _BusquedaPaqueteFormState
     } else {
       fechaElegida = now;
     }
+
     listaResultados.clear();
     for (DocumentSnapshot snapshot in coleccion) {
       Paquete paquete = Paquete.fromSnapshot(snapshot);
@@ -66,16 +70,11 @@ class _BusquedaPaqueteFormState
         fechaBusqueda = true;
       }
 
-      bool repetido = false;
-      for (Paquete aux in listaResultados) {
-        if (aux == paquete) repetido = true;
-      }
       if (origen == paquete.origen.ciudad &&
           destino == paquete.destino.ciudad &&
           diff &&
           fechaBusqueda &&
-          paquete.viajeAsignado == null &&
-          !repetido) {
+          paquete.viajeAsignado == null) {
         listaPuntosOrigen.add(paquete.origen);
         listaPuntosDestino.add(paquete.destino);
         listaResultados.add(paquete);
@@ -89,267 +88,203 @@ class _BusquedaPaqueteFormState
   Widget builderListado(BuildContext context, int index) {
     return InkWell(
       child: Container(
-        decoration: new BoxDecoration(
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,
         ),
-        height: 120,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              direction: Axis.horizontal,
+              spacing: 10.0,
+              children: [
+                Text(
+                  listaPuntosOrigen[index].direccion,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black, fontSize: 18),
+                ),
+                Icon(
+                  Icons.arrow_forward,
+                ),
+                Text(
+                  listaPuntosDestino[index].direccion,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black, fontSize: 18),
+                ),
+              ],
+            ),
+            SizedBox(height: 10.0),
+            Wrap(
+              direction: Axis.horizontal,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 5.0,
               children: [
                 Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Dir Origen: ${listaPuntosOrigen[index].direccion}',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.black, fontSize: 18),
-                        ),
-                      ],
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.calendar_today,
+                      color: Colors.lightBlue[200],
+                      size: 35.0,
                     ),
+                    Text(
+                      DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, "es_ES")
+                          .format(listaResultados[index].fechaEntrega),
+                      style: TextStyle(fontSize: 18, color: Colors.black),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+                Wrap(
+                  direction: Axis.vertical,
+                  spacing: 4.0,
+                  children: <Widget>[
                     Row(
                       children: [
                         Text(
-                          'Dir Destino: ${listaPuntosDestino[index].direccion}',
+                          'Precio:',
+                          textAlign: TextAlign.right,
+                          style:
+                              TextStyle(color: Colors.grey[500], fontSize: 18),
+                        ),
+                        Text(
+                          ' ${(listaResultados[index].precio ?? 0) - (listaResultados[index].precio ?? 0) * 0.05 ?? 'No'} €',
                           textAlign: TextAlign.right,
                           style: TextStyle(color: Colors.black, fontSize: 18),
                         ),
                       ],
                     ),
+                    Row(
+                      children: [
+                        Text(
+                          'Peso: ',
+                          textAlign: TextAlign.left,
+                          style:
+                              TextStyle(color: Colors.grey[500], fontSize: 18),
+                        ),
+                        Text(
+                          '${listaResultados[index].peso} kg',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    Wrap(
+                      direction: Axis.horizontal,
+                      spacing: 5.0,
+                      children: <Widget>[
+                        Text(
+                          'Dimensiones: ',
+                          textAlign: TextAlign.left,
+                          style:
+                              TextStyle(color: Colors.grey[500], fontSize: 18),
+                        ),
+                        Text(
+                          '${listaResultados[index].largo}',
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                        Text(
+                          'x',
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                        Text(
+                          '${listaResultados[index].ancho}',
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                        Text(
+                          'x',
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                        Text(
+                          '${listaResultados[index].alto}',
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                        Text(
+                          'cm',
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    listaResultados[index].fragil
+                        ? Text(
+                            'Frágil',
+                            style: TextStyle(color: Colors.red, fontSize: 18),
+                          )
+                        : const SizedBox(),
                   ],
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  //flex: 2,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        Icons.calendar_today,
-                        color: Colors.lightBlue[200],
-                        size: 35.0,
-                      ),
-                      Text(
-                        DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, "es_ES")
-                            .format(listaResultados[index].fechaEntrega),
-                        style: TextStyle(
-                            fontSize: 18, color: Colors.black, height: 1.5),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  //flex: 2,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Precio:',
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 18),
-                          ),
-                          Text(
-                            ' ${listaResultados[index].precio ?? 'No'}',
-                            textAlign: TextAlign.right,
-                            style: TextStyle(color: Colors.black, fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Peso: ',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 18),
-                          ),
-                          Text(
-                            '${listaResultados[index].peso}',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(color: Colors.black, fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Frágil: ',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 18),
-                          ),
-                          Text(
-                            listaResultados[index].fragil ? 'Sí' : 'No',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(color: Colors.black, fontSize: 18),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  width: 10,
-                ),
-                Expanded(
-                  //flex: 2,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Alto: ',
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 18),
-                          ),
-                          Text(
-                            '${listaResultados[index].alto} cm',
-                            style: TextStyle(color: Colors.black, fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            'Ancho: ',
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 18),
-                          ),
-                          Text(
-                            '${listaResultados[index].ancho} cm',
-                            style: TextStyle(color: Colors.black, fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            'Largo: ',
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 18),
-                          ),
-                          Text(
-                            '${listaResultados[index].largo} cm',
-                            style: TextStyle(color: Colors.black, fontSize: 18),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                )
               ],
             ),
           ],
         ),
       ),
-      onTap: () {
-        _asyncConfirmDialog(context, '¿Desea aceptar este paquete?').then(
-            (ConfirmAction value) {
-          if (value == ConfirmAction.ACCEPT) {
-            Viaje viaje;
-            Paquete paquete = listaResultados[index];
-            Duration diasMargen = new Duration(days: 1 + paquete.diasMargen);
-            DateTime fechaMargen = paquete.fechaEntrega.add(diasMargen);
-            showDialog(
-                context: context,
-                builder: (BuildContext context) => VentanaViaje(
-                      origen: paquete.origen.ciudad,
-                      destino: paquete.destino.ciudad,
-                      fechaPaquete: paquete.fechaEntrega,
-                      fechaMargen: fechaMargen,
-                    )).then((value) {
-              viaje = value;
-              if (viaje != null) {
-                _asyncConfirmDialog(
-                        context, '¿Desea incluir el paquete en este viaje?')
-                    .then((ConfirmAction value) {
-                  if (value == ConfirmAction.ACCEPT) {
-                    paquete.estado = EstadoPaquete.por_recoger;
-                    paquete.viajeAsignado = viaje;
-                    paquete.updateBD();
+      onTap: () async {
+        ConfirmAction aceptarPaquete = await ConfirmDialog.show(context,
+            titulo: '¿Desea aceptar este paquete?');
 
-                    TransportifyMethods.doneDialog(context, "Paquete vinculado",
-                        content: "¡El paquete ha sido asignado con éxito!");
+        if (aceptarPaquete == ConfirmAction.ACCEPT) {
+          Paquete paquete = listaResultados[index];
+          Duration diasMargen = new Duration(days: 1 + paquete.diasMargen);
+          DateTime fechaMargen = paquete.fechaEntrega.add(diasMargen);
 
-                    //aceptar paquete en viaje
+          Viaje viaje = await VentanaViaje.show(
+            context,
+            transportista: usuario,
+            origen: paquete.origen.ciudad,
+            destino: paquete.destino.ciudad,
+            fechaPaquete: paquete.fechaEntrega,
+            fechaMargen: fechaMargen,
+          );
 
-                  }
-                }, onError: (error) {
-                  print(error);
-                });
-              }
-            });
+          if (viaje != null) {
+            ConfirmAction incluirPaqueteEnViaje = await ConfirmDialog.show(
+                context,
+                titulo: '¿Desea incluir el paquete en este viaje?');
+
+            if (incluirPaqueteEnViaje == ConfirmAction.ACCEPT) {
+              paquete.estado = EstadoPaquete.por_recoger;
+              paquete.viajeAsignado = viaje;
+              paquete.updateBD();
+
+              TransportifyMethods.doneDialog(context, "Paquete vinculado",
+                  content: "¡El paquete ha sido asignado con éxito!");
+            }
           }
-        }, onError: (error) {
-          print(error);
-        });
-      },
-    );
-  }
-
-  Future<ConfirmAction> _asyncConfirmDialog(
-      BuildContext context, String title) async {
-    return showDialog<ConfirmAction>(
-      context: context,
-      barrierDismissible: false, // user must tap button for close dialog!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          actions: <Widget>[
-            FlatButton(
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop(ConfirmAction.CANCEL);
-              },
-            ),
-            FlatButton(
-              child: const Text('Aceptar'),
-              onPressed: () {
-                Navigator.of(context).pop(ConfirmAction.ACCEPT);
-              },
-            )
-          ],
-        );
+        }
       },
     );
   }
 }
 
-class VentanaViaje extends StatefulWidget {
+class VentanaViaje extends StatelessWidget {
+  final Usuario transportista;
   final String origen, destino;
   final DateTime fechaPaquete, fechaMargen;
   VentanaViaje(
-      {this.origen, this.destino, this.fechaPaquete, this.fechaMargen});
+      {this.transportista,
+      this.origen,
+      this.destino,
+      this.fechaPaquete,
+      this.fechaMargen});
 
-  @override
-  _VentanaViaje createState() =>
-      new _VentanaViaje(origen: origen, destino: destino, fechaPaquete: fechaPaquete, fechaMargen: fechaMargen);
-
-  static Future<Viaje> show(BuildContext context) async => await showDialog(
-      context: context,
-      builder: (_) {
-        return VentanaViaje();
-      });
-}
-
-class _VentanaViaje extends State<VentanaViaje> {
-  String origen, destino;
-  DateTime fechaPaquete, fechaMargen;
-
-  _VentanaViaje(
-      {this.origen, this.destino, this.fechaPaquete, this.fechaMargen});
+  static Future<Viaje> show(
+    BuildContext context, {
+    Usuario transportista,
+    String origen,
+    String destino,
+    DateTime fechaPaquete,
+    DateTime fechaMargen,
+  }) async =>
+      await showDialog(
+          context: context,
+          builder: (_) {
+            return VentanaViaje(
+              origen: origen,
+              destino: destino,
+              fechaPaquete: fechaPaquete,
+              fechaMargen: fechaMargen,
+            );
+          });
 
   @override
   Widget build(BuildContext context) {
@@ -363,7 +298,10 @@ class _VentanaViaje extends State<VentanaViaje> {
               onSelected: (_viajeSeleccionado) {
                 Navigator.pop(context, _viajeSeleccionado);
               },
+              showOnEmpty: const Center(child: const Text('No hay viajes disponibles')),
+              usuario: transportista,
               filtro: (viaje) =>
+                  (!viaje.cancelado) &&
                   (origen != null ? origen == viaje.origen : true) &&
                   (destino != null ? destino == viaje.destino : true) &&
                   (fechaPaquete != null

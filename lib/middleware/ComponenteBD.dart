@@ -16,7 +16,8 @@ abstract class ComponenteBD {
   ComponenteBD.fromReference(DocumentReference reference, {bool init = true}) :
     this._reference = reference,
     this.coleccion = reference?.parent() {
-      if (init) this._init = revertToBD();
+      if (init && reference != null) this._init = revertToBD();
+      else this._init = Future.value();
     }
 
   ComponenteBD.fromSnapshot(DocumentSnapshot snapshot)
@@ -34,10 +35,10 @@ abstract class ComponenteBD {
     this._reference = snapshot.reference;
   }
 
-  Map<String, dynamic> toMap();
+  Future<Map<String, dynamic>> toMap();
 
-  Future<void> crearEnBD() {
-    Map<String, dynamic> map = this.toMap();
+  Future<void> crearEnBD() async {
+    Map<String, dynamic> map = await this.toMap();
     if (map != null) {
       if (reference == null) {
         return coleccion.add(map).then((reference) {
@@ -51,8 +52,8 @@ abstract class ComponenteBD {
     }
   }
 
-  Future<void> updateBD() {
-    Map<String, dynamic> map = this.toMap();
+  Future<void> updateBD() async {
+    Map<String, dynamic> map = await this.toMap();
     if (map != null) {
       return reference?.updateData(map);
     } else {
@@ -69,9 +70,4 @@ abstract class ComponenteBD {
   });
 
   Future<void> deleteFromBD() => reference?.delete();
-
-  static Future<void> waitForReferences(List<Future> futures) {
-    futures.removeWhere((future) => future == null);
-    return Future.wait(futures);
-  }
 }

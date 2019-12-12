@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/util/style.dart';
-import 'package:transportify/vistas/Authentication/Autenticacion.dart';
 import 'package:toast/toast.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-
 class EmailPasswordForm extends StatefulWidget {
+  EmailPasswordForm({this.loginCallback});
+
+  final Function(Usuario) loginCallback;
+ 
   @override
   State<StatefulWidget> createState() => _EmailPasswordFormState();
 }
@@ -18,8 +20,8 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _success;
-  String _userEmail;
+
+  bool _isLoggingIn = false;
 
   @override
   Widget build(BuildContext context) {
@@ -73,26 +75,32 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             alignment: Alignment.center,
-            child: RaisedButton(
-              color: TransportifyColors.primarySwatch,
-              textColor: Colors.white,
-              disabledColor: Colors.grey,
-              disabledTextColor: Colors.white,
-              padding: EdgeInsets.all(8.0),
-              splashColor: Colors.blueAccent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              ),
-              onPressed: () async {
-                if (_formKey.currentState.validate()) {
-                  _signInWithEmailAndPassword();
-                  FocusScope.of(context).requestFocus(new FocusNode());
-                }
-              },
-              child: Text(
-                "Iniciar sesión",
-                style: TextStyle(fontSize: 20.0),
-              ),
+            child: Stack(
+              alignment: AlignmentDirectional.center,
+              children: <Widget>[
+                RaisedButton(
+                  color: TransportifyColors.primarySwatch,
+                  textColor: Colors.white,
+                  disabledColor: Colors.grey,
+                  disabledTextColor: Colors.white,
+                  padding: EdgeInsets.all(8.0),
+                  splashColor: Colors.blueAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  ),
+                  onPressed: _isLoggingIn ? null : () async {
+                    if (_formKey.currentState.validate()) {
+                      _signInWithEmailAndPassword();
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                    }
+                  },
+                  child: Text(
+                    "Iniciar sesión",
+                    style: TextStyle(fontSize: 20.0),
+                  ),
+                ),
+                _isLoggingIn ? const CircularProgressIndicator() : const SizedBox(),
+              ],
             ),
           ),
         ],
@@ -109,16 +117,19 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
 
   // Example code of how to sign in with email and password.
   void _signInWithEmailAndPassword() async {
+    setState(() => _isLoggingIn = true);
     // NOTA: Usar try-catch con await es preferible a usar el método catchError(...) the Future.
     // Aunque también funcione (y pueda ser incluso mejor), este causa un bug en VSCode, el cual no
     // entiende que la excepción ha sido capturada, y la muestra como excepción sin tratar, aunque ya lo esté
     // (known issue desde hace meses, no parece que estén trabajando activamente en arreglarlo).
     try {
       try {
-        await _auth.signInWithEmailAndPassword(
-          email: _emailController.text,
+        Usuario usuario = Usuario.fromEmailAndPassword(
+          correo: _emailController.text,
           password: _passwordController.text,
         );
+        await usuario.conectar();
+        widget.loginCallback(usuario);
       } on PlatformException catch (error) {
         print(error);
         // Como se trata de un error de autenticacion, volvemos a lanzarlo como tal para que lo trate.
@@ -130,7 +141,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
       String message;
       switch (error.code) {
         case "ERROR_USER_NOT_FOUND":
-          message = "Usuario no válido";
+          message = "El usuario no existe";
           break;
         case "ERROR_WRONG_PASSWORD":
           message = "Contraseña incorrecta";
@@ -147,18 +158,8 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
       }
       Toast.show(message, context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-    }
 
-    final FirebaseUser user = await _auth.currentUser();
-    if (user != null) {
-      Autenticacion.userSignInCorrectly(context);
-      setState(() {
-        _success = true;
-        _userEmail = user.email;
-      });
-    } else {
-      Autenticacion.userSignInIncorrectly();
-      _success = false;
+      setState(() => _isLoggingIn = false);
     }
   }
 

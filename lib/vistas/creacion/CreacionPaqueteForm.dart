@@ -1,29 +1,29 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:transportify/modelos/DatosUsuarioActual.dart';
+import 'package:transportify/middleware/UsuarioBD.dart';
 import 'package:transportify/modelos/PuntoTransportify.dart';
 import 'package:transportify/modelos/Puntos.dart';
 import 'package:transportify/modelos/Paquete.dart';
 import 'package:transportify/modelos/Usuario.dart';
-import 'package:transportify/modelos/enumerados/EstadoPaquete.dart';
 import 'package:transportify/util/style.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:flutter/src/material/slider.dart';
-
-import '../PuntosDialog.dart';
+import 'package:transportify/vistas/MapaView.dart';
+import 'package:transportify/vistas/dialog/PuntosDialog.dart';
 
 class CreacionPaqueteForm extends StatefulWidget {
-  CreacionPaqueteForm([this.miPaquete]) : super();
+  CreacionPaqueteForm({this.miPaquete, this.usuario}) : super();
   @override
   _CreacionPaqueteFormState createState() => _CreacionPaqueteFormState();
 
   final Paquete miPaquete;
+  final Usuario usuario;
 }
 
 class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   final nombreController = TextEditingController();
   final pesoController = TextEditingController();
+  final precioController = TextEditingController();
   final origenController = TextEditingController();
   final destinoController = TextEditingController();
   final fechaController = TextEditingController();
@@ -33,6 +33,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
   final horaController = TextEditingController();
 
   double peso = 0.0;
+  double precio = 0.0;
   bool _fragil = false;
   double alto = 0.0;
   double ancho = 0.0;
@@ -49,12 +50,44 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
   final _formKey = GlobalKey<FormState>();
 
-  void _add() {
+  void _addPeso() {
     pesoController.text = (peso += 1).toString();
   }
 
-  void _remove() {
+  void _removePeso() {
     if (peso - 1 >= 0.0) pesoController.text = (peso -= 1).toString();
+  }
+
+  void _addPrecio() {
+    precioController.text = (precio += 1).toString();
+  }
+
+  void _removePrecio() {
+    if (precio - 1 >= 0.0) precioController.text = (precio -= 1).toString();
+  }
+
+  getPuntoSeleccionado(BuildContext context, bool origenLocation) async {
+    PuntoTransportify puntoInicial =
+        origenLocation ? puntos.origen : puntos.destino;
+        
+    final PuntoTransportify puntoSeleccionado =
+        await Navigator.of(context).push<PuntoTransportify>(MaterialPageRoute(
+            builder: (context) => MapaViewPuntos(
+                  usuario: widget.usuario,
+                  puntoInicial: puntoInicial,
+                )));
+
+    if (origenLocation) {
+      if (puntoSeleccionado != null) {
+        puntos.origen = puntoSeleccionado;
+        origenController.text = puntos.origen?.nombre;
+      }
+    } else {
+      if (puntoSeleccionado != null) {
+        puntos.destino = puntoSeleccionado;
+        destinoController.text = puntos.destino?.direccion;
+      }
+    }
   }
 
   @override
@@ -124,7 +157,7 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        _add();
+                        _addPeso();
                       },
                     ),
                   ),
@@ -137,7 +170,58 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        _remove();
+                        _removePeso();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20.0),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextFormField(
+                      maxLines: 1,
+                      keyboardType: TextInputType.number,
+                      autofocus: false,
+                      style: TextStyle(color: TransportifyColors.primarySwatch),
+                      decoration: TransportifyMethods.returnTextFormDecoration(
+                          "Precio(€)"),
+                      onChanged: (text) {
+                        precio = double.parse(text);
+                      },
+                      controller: precioController,
+                      validator: (value) {
+                        if (value.isEmpty || double.parse(value) <= 0)
+                          return 'Precio incorrecto';
+                        else
+                          return null;
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 10.0),
+                  Flexible(
+                    child: RaisedButton(
+                      color: TransportifyColors.primarySwatch[900],
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        _addPrecio();
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Flexible(
+                    child: RaisedButton(
+                      color: TransportifyColors.primarySwatch[900],
+                      child: Icon(
+                        Icons.remove,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        _removePrecio();
                       },
                     ),
                   ),
@@ -200,45 +284,79 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                 ],
               ),
               SizedBox(height: 20.0),
-              TextFormField(
-                maxLines: 1,
-                keyboardType: TextInputType.text,
-                autofocus: false,
-                style: TextStyle(color: TransportifyColors.primarySwatch),
-                controller: origenController,
-                decoration: TransportifyMethods.returnTextFormDecoration(
-                    "Punto Transportify de origen"),
-                onTap: () async {
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  PuntoTransportify returnPunto =
-                      await PuntosDialog.show(this.context);
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextFormField(
+                      maxLines: 1,
+                      keyboardType: TextInputType.text,
+                      autofocus: false,
+                      style: TextStyle(color: TransportifyColors.primarySwatch),
+                      controller: origenController,
+                      decoration: TransportifyMethods.returnTextFormDecoration(
+                          "Punto Transportify de origen"),
+                      onTap: () async {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        PuntoTransportify returnPunto = await PuntosDialog.show(
+                            this.context,
+                            ciudadInicial: widget.usuario?.ciudad,
+                            puntoInicial: puntos.origen);
 
-                  if (returnPunto != null) {
-                    puntos.origen = returnPunto;
-                    origenController.text = puntos.origen?.nombre;
-                  }
-                },
-                validator: (value) => puntos.validate(),
+                        if (returnPunto != null) {
+                          puntos.origen = returnPunto;
+                          origenController.text = puntos.origen?.nombre;
+                        }
+                      },
+                      validator: (value) => puntos.validate(),
+                    ),
+                  ),
+                  SizedBox(width: 10.0),
+                  IconButton(
+                    color: TransportifyColors.primarySwatch,
+                    icon: Icon(Icons.map, color: Colors.white),
+                    onPressed: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      getPuntoSeleccionado(context, true);
+                    },
+                  ),
+                ],
               ),
               SizedBox(height: 20.0),
-              TextFormField(
-                maxLines: 1,
-                autofocus: false,
-                style: TextStyle(color: TransportifyColors.primarySwatch),
-                controller: destinoController,
-                decoration: TransportifyMethods.returnTextFormDecoration(
-                    "Punto Transportify de destino"),
-                onTap: () async {
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  PuntoTransportify returnPunto =
-                      await PuntosDialog.show(this.context);
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextFormField(
+                      maxLines: 1,
+                      autofocus: false,
+                      style: TextStyle(color: TransportifyColors.primarySwatch),
+                      controller: destinoController,
+                      decoration: TransportifyMethods.returnTextFormDecoration(
+                          "Punto Transportify de destino"),
+                      onTap: () async {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        PuntoTransportify returnPunto = await PuntosDialog.show(
+                            this.context,
+                            puntoInicial: puntos
+                                ?.destino); // Ciudad inicial del usuario solo en origen
 
-                  if (returnPunto != null) {
-                    puntos.destino = returnPunto;
-                    destinoController.text = puntos.destino?.nombre;
-                  }
-                },
-                validator: (value) => puntos.validate(),
+                        if (returnPunto != null) {
+                          puntos.destino = returnPunto;
+                          destinoController.text = puntos.destino?.nombre;
+                        }
+                      },
+                      validator: (value) => puntos.validate(),
+                    ),
+                  ),
+                  SizedBox(width: 10.0),
+                  IconButton(
+                    color: TransportifyColors.primarySwatch,
+                    icon: Icon(Icons.map, color: Colors.white),
+                    onPressed: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      getPuntoSeleccionado(context, false);
+                    },
+                  ),
+                ],
               ),
               SizedBox(height: 20.0),
               TextFormField(
@@ -370,13 +488,13 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
                   width: 15,
                 ),
                 Expanded(
-                  child: buildButtonContainer("ACEPTAR"),
+                  child: buildButtonContainer("CANCELAR"),
                 ),
                 SizedBox(
                   width: 20,
                 ),
                 Expanded(
-                  child: buildButtonContainer("CANCELAR"),
+                  child: buildButtonContainer("ACEPTAR"),
                 ),
                 SizedBox(
                   width: 15,
@@ -389,11 +507,12 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
     );
   }
 
-  Paquete getPaqueteFromControllers() {
+  Future<Paquete> getPaqueteFromControllers() async {
     double _alto = double.parse(altoController.text);
     double _ancho = double.parse(anchoController.text);
     double _largo = double.parse(largoController.text);
     double _peso = double.parse(pesoController.text);
+    double _precio = double.parse(precioController.text);
     int diasMargenFinal = diasMargen.toInt();
     String _nombre = nombreController.text;
     DateTime fechaPaqueteElegida = new DateTime(
@@ -406,17 +525,20 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
     print(_nombre);
 
-    return new Paquete(
+    return Paquete(
       nombre: _nombre,
       alto: _alto,
       ancho: _ancho,
       largo: _largo,
       peso: _peso,
+      precio: _precio,
       fragil: _fragil,
       origen: puntos.origen,
       destino: puntos.destino,
       fechaEntrega: fechaPaqueteElegida,
+      fechaCreacion: DateTime.now(),
       diasMargen: diasMargenFinal,
+      remitente: await UsuarioBD.obtenerUsuarioActual(),
     );
   }
 
@@ -426,7 +548,9 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
     if (widget.miPaquete != null) {
       nombreController.text = widget.miPaquete.nombre;
       pesoController.text = widget.miPaquete.peso.toString();
+      precioController.text = widget.miPaquete.precio.toString();
       peso = widget.miPaquete.peso;
+      precio = widget.miPaquete.precio;
       puntos.origen = widget.miPaquete.origen;
       puntos.destino = widget.miPaquete.destino;
       if (widget.miPaquete.origen != null) {
@@ -469,37 +593,41 @@ class _CreacionPaqueteFormState extends State<CreacionPaqueteForm> {
 
   @override
   void dispose() {
-    if (widget.miPaquete != null) {
-      nombreController.dispose();
-      pesoController.dispose();
-      origenController.dispose();
-      destinoController.dispose();
-      fechaController.dispose();
-      horaController.dispose();
-      altoController.dispose();
-      anchoController.dispose();
-      largoController.dispose();
-      super.dispose();
-    }
+    nombreController.dispose();
+    pesoController.dispose();
+    precioController.dispose();
+    origenController.dispose();
+    destinoController.dispose();
+    fechaController.dispose();
+    horaController.dispose();
+    altoController.dispose();
+    anchoController.dispose();
+    largoController.dispose();
+
+    super.dispose();
   }
 
   Widget buildButtonContainer(String hintText) {
     return TransportifyFormButton(
       text: hintText,
-      onPressed: () {
-        if (hintText == "ACEPTAR" && widget.miPaquete == null) {
+      onPressed: () async {
+        if (hintText == "ACEPTAR" && !modificando) {
           if (_formKey.currentState.validate()) {
-            Paquete paquete = getPaqueteFromControllers();
+            Paquete paquete = await getPaqueteFromControllers();
             paquete.crearEnBD();
+            Usuario remitente = paquete.remitente;
+            remitente?.paquetesCreados++;
+            remitente?.updateBD();
             TransportifyMethods.doneDialog(context, "Paquete creado",
                 content: "El paquete ha sido creado con éxito");
           }
-        } else if (hintText == "ACEPTAR" && widget.miPaquete != null) {
+        } else if (hintText == "ACEPTAR" && modificando) {
           if (_formKey.currentState.validate()) {
             widget.miPaquete.alto = double.parse(altoController.text);
             widget.miPaquete.ancho = double.parse(anchoController.text);
             widget.miPaquete.largo = double.parse(largoController.text);
             widget.miPaquete.peso = double.parse(pesoController.text);
+            widget.miPaquete.precio = double.parse(precioController.text);
             widget.miPaquete.origen = puntos.origen;
             widget.miPaquete.destino = puntos.destino;
             widget.miPaquete.nombre = nombreController.text;

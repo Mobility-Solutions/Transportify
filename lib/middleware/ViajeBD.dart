@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:transportify/modelos/Usuario.dart';
 import 'package:transportify/modelos/Viaje.dart';
 
 import 'Datos.dart';
@@ -13,6 +15,7 @@ class ViajeBD {
   static const String atributo_transportista = "transportista";
   static const String atributo_carga_maxima = "carga_maxima";
   static const String atributo_fecha = "fecha";
+  static const String atributo_cancelado = "cancelado";
 
   static String obtenerDestino(DocumentSnapshot snapshot) =>
       snapshot[atributo_destino];
@@ -24,6 +27,8 @@ class ViajeBD {
       snapshot[atributo_carga_maxima];
   static Timestamp obtenerFecha(DocumentSnapshot snapshot) =>
       snapshot[atributo_fecha];
+  static bool obtenerCancelado(DocumentSnapshot snapshot) =>
+      snapshot[atributo_cancelado] ?? false;
 
   static StreamBuilder<QuerySnapshot> obtenerStreamBuilderListado(
       Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
@@ -31,73 +36,71 @@ class ViajeBD {
   }
 
   static Widget obtenerListadoViajesWidget(
-      {Function(Viaje) onSelected, bool Function(Viaje) filtro}) {
+      {Function(Viaje) onSelected,
+      Widget showOnEmpty,
+      bool Function(Viaje) filtro,
+      Usuario usuario}) {
     return obtenerStreamBuilderListado(
-        _obtenerListadoViajesBuilder(onSelected, filtro));
+        _obtenerListadoViajesBuilder(onSelected, showOnEmpty, filtro, usuario));
   }
 
   static Function(BuildContext, AsyncSnapshot<QuerySnapshot>)
       _obtenerListadoViajesBuilder(
-          Function(Viaje) onSelected, bool Function(Viaje) filtro) {
+    Function(Viaje) onSelected,
+    Widget showOnEmpty,
+    bool Function(Viaje) filtro,
+    Usuario usuario,
+  ) {
     return (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      return _obtenerListadoViajes(context, snapshot, onSelected, filtro);
+      return _obtenerListadoViajesWidget(
+          context, snapshot, onSelected, showOnEmpty, filtro, usuario);
     };
   }
 
-  static Widget _obtenerListadoViajes(
-      BuildContext context,
-      AsyncSnapshot<QuerySnapshot> snapshot,
-      Function(Viaje) onSelected,
-      bool Function(Viaje) filtro) {
-    if (!snapshot.hasData) return const Text('Cargando...');
+  static Widget _obtenerListadoViajesWidget(
+    BuildContext context,
+    AsyncSnapshot<QuerySnapshot> snapshot,
+    Function(Viaje) onSelected,
+    Widget showOnEmpty,
+    bool Function(Viaje) filtro,
+    Usuario usuario,
+  ) {
+    if (!snapshot.hasData)
+      return const Center(child: const CircularProgressIndicator());
 
     var viajes = snapshot.data.documents
         .map((snapshot) => Viaje.fromSnapshot(snapshot))
-        .where((viaje) => filtro == null || filtro(viaje));
+        .where((viaje) =>
+            (usuario == null || viaje.transportista == usuario) &&
+            (filtro == null || filtro(viaje)));
 
-    return ListView.builder(
-      itemBuilder: (context, index) {
-        if (index >= 0 && index < viajes.length) {
-          Viaje viaje = viajes.elementAt(index);
-          return _obtenerListViewItemViaje(viaje, onSelected);
-        } else {
-          return null;
-        }
-      },
-    );
+    return showOnEmpty != null && viajes.isEmpty
+        ? showOnEmpty
+        : ListView.builder(
+            itemCount: viajes.length,
+            itemBuilder: (context, index) {
+              Viaje viaje = viajes.elementAt(index);
+              return _obtenerListViewItemViaje(viaje, onSelected);
+            },
+          );
   }
 
   static Widget _obtenerListViewItemViaje(
       Viaje viaje, Function(Viaje) onSelected) {
-    String ciudadOrigen, ciudadDestino;
+    String ciudadOrigen = viaje.origen ?? "¿?",
+        ciudadDestino = viaje.destino ?? "¿?";
 
     Function onTap;
     if (onSelected != null) {
       onTap = () => onSelected(viaje);
     }
-    if (viaje.origen == null) {
-      ciudadOrigen = "Sin ciudad";
-    } else {
-      ciudadOrigen = viaje.origen;
-    }
-    if (viaje.destino == null) {
-      ciudadDestino = "Sin ciudad";
-    } else {
-      ciudadDestino = viaje.destino;
-    }
+
+    String fechaEntregaConFormato =
+        DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, "es_ES")
+            .format(viaje.fecha);
 
     return ListTile(
-      title: Text("Paquete desde " +
-          ciudadOrigen +
-          " a " +
-          ciudadDestino +
-          ", con fecha: " +
-          viaje.fecha.day.toString() +
-          "/" +
-          viaje.fecha.month.toString() +
-          "/" +
-          viaje.fecha.year.toString() +
-          "."),
+      title: Text("$fechaEntregaConFormato ($ciudadOrigen -> $ciudadDestino)"),
       onTap: onTap,
     );
   }

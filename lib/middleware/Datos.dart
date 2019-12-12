@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:transportify/middleware/MultipleCollectionStreamSystem.dart';
 import 'package:transportify/util/style.dart';
 
 import 'ComponenteBD.dart';
@@ -10,7 +11,23 @@ class Datos {
       String collectionPath,
       Widget Function(BuildContext, AsyncSnapshot<QuerySnapshot>) builder) {
     return obtenerStreamBuilderCollectionBDFromReference(
-        Firestore.instance.collection(collectionPath), builder);
+        obtenerColeccion(collectionPath), builder);
+  }
+
+  static MultipleCollectionStreamSystem obtenerStreamsCollectionsBD(
+          Map<Type, String> collectionPaths) =>
+      MultipleCollectionStreamSystem(collectionPaths.map(
+          (type, collectionPath) => MapEntry(type, obtenerColeccion(collectionPath).snapshots())));
+
+  static StreamBuilder<Map<Type, QuerySnapshot>>
+      obtenerStreamBuilderFromMultipleCollectionStreamSystem(
+          MultipleCollectionStreamSystem multipleCollectionStreamSystem,
+          Widget Function(BuildContext, AsyncSnapshot<Map<Type, QuerySnapshot>>)
+              builder) {
+    return StreamBuilder<Map<Type, QuerySnapshot>>(
+      stream: multipleCollectionStreamSystem.snapshots,
+      builder: builder,
+    );
   }
 
   static StreamBuilder<QuerySnapshot>
@@ -27,7 +44,7 @@ class Datos {
       String documentPath,
       Widget Function(BuildContext, AsyncSnapshot<DocumentSnapshot>) builder) {
     return obtenerStreamBuilderDocumentBDFromReference(
-        Firestore.instance.document(documentPath), builder);
+        obtenerDocumento(documentPath), builder);
   }
 
   static StreamBuilder<DocumentSnapshot>
@@ -41,11 +58,15 @@ class Datos {
     );
   }
 
+  static CollectionReference obtenerColeccion(String collectionPath) =>
+      Firestore.instance.collection(collectionPath);
+  static DocumentReference obtenerDocumento(String documentPath) =>
+      Firestore.instance.document(documentPath);
+
   static Future<DocumentReference> crearDocument(
       String collectionPath, Map<String, dynamic> data) {
     return Firestore.instance.collection(collectionPath).add(data);
   }
-
 
   static Future<void> eliminarTodosLosComponentes<T extends ComponenteBD>(
           Iterable<T> listado) =>
@@ -64,15 +85,19 @@ class Datos {
     return Container(
       color: selected ? TransportifyColors.primarySwatch : null,
       child: ListTile(
-        title: Text(
-          displayName,
-          style: TextStyle(
-            color: selected ? Colors.white : Colors.black,
-          ),
+        title: Wrap(
+          direction: Axis.horizontal,
+          children: <Widget>[
+            Text(
+              displayName,
+              style: TextStyle(
+                color: selected ? Colors.white : Colors.black,
+              ),
+            ),
+          ],
         ),
         onTap: onTap,
       ),
     );
   }
-
 }
